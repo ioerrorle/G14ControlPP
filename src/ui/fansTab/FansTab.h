@@ -4,7 +4,7 @@
 #include <QtCore/QArgument>
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QLabel>
-#include <src/atkacpi/FanControlSingleton.h>
+#include <src/atkacpi/AcpiControlSingleton.h>
 #include <src/ryzenadj/RyzenAdjSingleton.h>
 
 class FansTab : public QWidget

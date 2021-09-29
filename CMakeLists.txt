@@ -29,8 +29,8 @@ set(SOURCES
         src/ryzenadj/RyzenAdjTypes.h
         src/ui/fansTab/FansTab.cpp
         src/ui/fansTab/FansTab.h
-        src/atkacpi/FanControlSingleton.cpp
-        src/atkacpi/FanControlSingleton.h src/kbdlistener/KbdListenerSingleton.cpp src/kbdlistener/KbdListenerSingleton.h)
+        src/atkacpi/AcpiControlSingleton.cpp
+        src/atkacpi/AcpiControlSingleton.h src/kbdlistener/KbdListenerSingleton.cpp src/kbdlistener/KbdListenerSingleton.h)
 set(UI src/ui/MainWindow.ui src/kbdlistener/ListenerThread.cpp src/kbdlistener/ListenerThread.h)
 
 add_executable(G14ControlPP ${SOURCES} ${UI})

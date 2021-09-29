@@ -209,6 +209,12 @@ void ListenerThread::sendInputIfNeeded(const unsigned char *cc, int nCount) {
             case 0x8a://v
                 this->changeKbdBrightness(true);
                 break;
+            case 0x10://f7
+                AcpiControlSingleton::getInstance().lcdLightChange(true);
+                break;
+            case 0x20://f8
+                AcpiControlSingleton::getInstance().lcdLightChange(false);
+                break;
             default:
                 break;
         }

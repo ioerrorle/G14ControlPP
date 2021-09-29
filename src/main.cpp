@@ -2,7 +2,7 @@
 #include <QDebug>
 #include <src/ui/MainWindow.h>
 #include <src/ryzenadj/RyzenAdjSingleton.h>
-#include <src/atkacpi/FanControlSingleton.h>
+#include <src/atkacpi/AcpiControlSingleton.h>
 #include <src/kbdlistener/KbdListenerSingleton.h>
 
 int main(int argc, char *argv[])
@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    if (!FanControlSingleton::getInstance().init()) {
+    if (!AcpiControlSingleton::getInstance().init()) {
         //todo make a window for that
         return 1;
     }

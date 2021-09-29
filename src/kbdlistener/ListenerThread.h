@@ -15,7 +15,7 @@
 #include <hidclass.h>
 #include <cfgmgr32.h>
 #include <hidsdi.h>
-#include <src/atkacpi/FanControlSingleton.h>
+#include <src/atkacpi/AcpiControlSingleton.h>
 
 typedef WINBOOL (*HidD_SetFeature_Fn)(void*, void*, unsigned long);
 

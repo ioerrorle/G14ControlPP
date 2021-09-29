@@ -67,7 +67,7 @@ void FansTab::refresh() {
     RY.refreshTable();
 
     cpuRPM->setText(QString::asprintf("%6.2f°C, %d RPM",
-            RY.getCpuTemp(),
-            FanControlSingleton::getInstance().getCpuFanSpeed()));
-    gpuRPM->setText(QString::number(FanControlSingleton::getInstance().getGpuFanSpeed()) + " RPM");
+                                      RY.getCpuTemp(),
+                                      AcpiControlSingleton::getInstance().getCpuFanSpeed()));
+    gpuRPM->setText(QString::number(AcpiControlSingleton::getInstance().getGpuFanSpeed()) + " RPM");
 }
