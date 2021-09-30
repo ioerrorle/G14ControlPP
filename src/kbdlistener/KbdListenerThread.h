@@ -2,8 +2,8 @@
 // Created by ioerror on 28.09.2021.
 //
 
-#ifndef G14CONTROLPP_LISTENERTHREAD_H
-#define G14CONTROLPP_LISTENERTHREAD_H
+#ifndef G14CONTROLPP_KBDLISTENERTHREAD_H
+#define G14CONTROLPP_KBDLISTENERTHREAD_H
 
 #include <QObject>
 #include <QDebug>
@@ -19,7 +19,7 @@
 
 typedef WINBOOL (*HidD_SetFeature_Fn)(void*, void*, unsigned long);
 
-class ListenerThread : public QThread {
+class KbdListenerThread : public QThread {
 Q_OBJECT
     void run() override;
 
@@ -46,10 +46,10 @@ signals:
     void resultReady(const QString &s);
 
 public:
-    ListenerThread(QString &error);
+    KbdListenerThread(QString &error);
 
 
 };
 
 
-#endif //G14CONTROLPP_LISTENERTHREAD_H
+#endif //G14CONTROLPP_KBDLISTENERTHREAD_H

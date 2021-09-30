@@ -4,6 +4,7 @@
 #include "windows.h"
 #include <QByteArray>
 #include <QtCore/QByteArray>
+#include <ACPIListenerThread.h>
 
 class AcpiControlSingleton {
 public:
@@ -14,7 +15,7 @@ private:
 
     HANDLE ATKACPIhandle;
 
-    int controlInternal(unsigned long controlCode, unsigned char *inBuffer, int inBufferSize, unsigned char *outBuffer, int outBufferSize);
+    unsigned long controlInternal(unsigned long controlCode, unsigned char *inBuffer, int inBufferSize, unsigned char *outBuffer, int outBufferSize);
 
 public:
     AcpiControlSingleton(AcpiControlSingleton const &) = delete;

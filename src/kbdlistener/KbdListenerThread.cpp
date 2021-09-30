@@ -1,6 +1,6 @@
-#include "ListenerThread.h"
+#include "KbdListenerThread.h"
 
-ListenerThread::ListenerThread(QString &error) {
+KbdListenerThread::KbdListenerThread(QString &error) {
     QLibrary hidLib("hid.dll");
     QLibrary lib("cfgmgr32.dll");
     if (hidLib.load() && lib.load()) {
@@ -86,7 +86,7 @@ ListenerThread::ListenerThread(QString &error) {
     return;
 }
 
-void ListenerThread::run() {
+void KbdListenerThread::run() {
     {
         while (!isFinished()) {
             DWORD result = WaitForMultipleObjects(kbdEventHandles->size(), kbdEventHandles->constData(), false,
@@ -131,7 +131,7 @@ void ListenerThread::run() {
     }
 }
 
-void ListenerThread::createReadFileJob(QString &qString) {
+void KbdListenerThread::createReadFileJob(QString &qString) {
     int index = kbdEventHandles->size();
 
     HANDLE eventHandle = CreateEvent(NULL, FALSE, FALSE, QString::number(index).toStdString().c_str());
@@ -171,7 +171,7 @@ void ListenerThread::createReadFileJob(QString &qString) {
     }
 }
 
-void ListenerThread::sendInputIfNeeded(const unsigned char *cc, int nCount) {
+void KbdListenerThread::sendInputIfNeeded(const unsigned char *cc, int nCount) {
     if (nCount < 2) {
         return;
         //looks like it's not what we are looking for
@@ -221,7 +221,7 @@ void ListenerThread::sendInputIfNeeded(const unsigned char *cc, int nCount) {
     }
 }
 
-void ListenerThread::sendScanCode(WORD hwScanCode, WORD vScanCode) {
+void KbdListenerThread::sendScanCode(WORD hwScanCode, WORD vScanCode) {
 
     INPUT ip;
 
@@ -240,7 +240,7 @@ void ListenerThread::sendScanCode(WORD hwScanCode, WORD vScanCode) {
     SendInput(1, &ip, sizeof(INPUT));
 }
 
-void ListenerThread::releaseKey() {
+void KbdListenerThread::releaseKey() {
     if (this->pressedKeys == NULL) {
         return;
     }
@@ -259,7 +259,7 @@ void ListenerThread::releaseKey() {
     this->pressedKeys->clear();
 }
 
-void ListenerThread::sendHidControl(unsigned char *data) {
+void KbdListenerThread::sendHidControl(unsigned char *data) {
     WINBOOL result = HidD_SetFeature_Ptr(kbdHandles->at(0), data, 0x40);
     if (!result) {
         DWORD lastError = GetLastError();
@@ -267,7 +267,7 @@ void ListenerThread::sendHidControl(unsigned char *data) {
     }
 }
 
-void ListenerThread::changeKbdBrightness(bool increase) {
+void KbdListenerThread::changeKbdBrightness(bool increase) {
     if (increase && this->kbdBr >= 3) {
         this->kbdBr = 3;
     } else if (!increase && this->kbdBr <= 0) {

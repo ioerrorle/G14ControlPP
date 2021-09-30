@@ -11,7 +11,7 @@ KbdListenerSingleton::KbdListenerSingleton() {
 
 bool KbdListenerSingleton::init() {
     QString error;
-    this->workerThread = new ListenerThread(error);
+    this->workerThread = new KbdListenerThread(error);
     return true;
 }
 

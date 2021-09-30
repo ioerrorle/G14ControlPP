@@ -5,7 +5,7 @@
 #ifndef G14CONTROLPP_KBDLISTENERSINGLETON_H
 #define G14CONTROLPP_KBDLISTENERSINGLETON_H
 
-#include "ListenerThread.h"
+#include "KbdListenerThread.h"
 
 class KbdListenerSingleton {
 public:
@@ -13,7 +13,7 @@ public:
 
 private:
     KbdListenerSingleton();
-    ListenerThread *workerThread;
+    KbdListenerThread *workerThread;
 
 public:
     KbdListenerSingleton(KbdListenerSingleton const &) = delete;
