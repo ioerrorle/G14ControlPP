@@ -3,9 +3,9 @@
 
 #include <QObject>
 #include <QThread>
-#include <QDebug>
+//#include <QDebug>
 #include <windows.h>
-#include <winuser.h>
+//#include <winuser.h>
 
 class AcpiListenerThread : public QThread {
 Q_OBJECT
@@ -17,7 +17,7 @@ private:
     HANDLE eventHandle;
 
 public:
-    AcpiListenerThread(QString &error);
+    AcpiListenerThread(HANDLE acpiHandle, QString &error);
 
 signals:
     void resultReady(const unsigned long acpiCode);

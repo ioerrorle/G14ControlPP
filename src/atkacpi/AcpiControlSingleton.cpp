@@ -17,9 +17,45 @@ bool AcpiControlSingleton::init(QString &error) {
                                OPEN_EXISTING,
                                0,
                                NULL);
+
+    //todo check if handle was created
     if (!ATKACPIhandle) {
         return false;
     }
+    //todo send OSVR (os version)
+
+    //init ACPI
+    //todo i think outbuffer doesn't matter, can be 1 byte or so, same goes for inbuffer, 5 bytes is enough i think
+    unsigned char outBuffer[8];
+    DWORD bytesReturned;
+
+    unsigned char initData[12] = "INIT\x04";
+    memset(&initData[5], 0, 7);
+
+    WINBOOL result = DeviceIoControl(ATKACPIhandle,
+                                     0x22240C,
+                                     &initData[0],
+                                     8,
+                                     &outBuffer[0],
+                                     8,
+                                     &bytesReturned,
+                                     NULL);
+
+    if (!result) {
+        //todo return error string
+        auto errorCode = GetLastError();
+        return false;
+    }
+
+    //todo check outbuffer
+
+
+    //creating listener thread
+    this->acpiListenerThread = new AcpiListenerThread(this->ATKACPIhandle, error);
+    connect(this->acpiListenerThread, &AcpiListenerThread::resultReady, this, &AcpiControlSingleton::handleAcpiEvent);
+    connect(this->acpiListenerThread, &AcpiListenerThread::finished, this->acpiListenerThread,
+            &QObject::deleteLater);
+    this->acpiListenerThread->start();
 
     return true;
 }
@@ -48,6 +84,7 @@ unsigned long AcpiControlSingleton::controlInternal(unsigned long controlCode,
                                      outBufferSize, //read it
                                      &bytesReturned,
                                      NULL);
+    //todo handle result/error
 
     if (result != FALSE) {
         return bytesReturned;
@@ -106,7 +143,10 @@ void AcpiControlSingleton::lcdLightChange(bool increase) {
     unsigned char outBuffer[8];
 
     int bytesWritten = controlInternal(0x22240c, &input[0], 16, &outBuffer[0], 8);
+    //todo handle result/error
 }
 
-
+void AcpiControlSingleton::handleAcpiEvent(const unsigned long acpiCode) {
+    emit acpiEvent(acpiCode);
+}
 

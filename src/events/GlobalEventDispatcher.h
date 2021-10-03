@@ -7,8 +7,9 @@
 #include <windows.h>
 #include <QObject>
 #include <QtCore/QAbstractEventDispatcher>
-#include "KbdListenerThread.h"
-#include "AcpiListenerThread.h"
+#include "src/kbd/KbdControlSingleton.h"
+#include "src/atkacpi/AcpiControlSingleton.h"
+//#include "src/kbd/KbdListenerThread.h"
 
 class GlobalEventDispatcher : public QObject, public QAbstractNativeEventFilter {
 Q_OBJECT
@@ -19,17 +20,18 @@ public:
 private:
     GlobalEventDispatcher();
 
-    KbdListenerThread *kbdListenerThread;
-    AcpiListenerThread *acpiListenerThread;
+    INPUT *pressedKey;
 
     void handlePowerCfgChange(MSG msg);
+
+    void sendScanCode(WORD hwScanCode, WORD vScanCode);
 
 public:
     GlobalEventDispatcher(GlobalEventDispatcher const &) = delete;
 
     void operator=(GlobalEventDispatcher const &) = delete;
 
-    bool init(QString &error);
+    bool init(HWND mainWindowHandle, QString &error);
 
     //bool eventFilter(QObject *watched, QEvent *event) override;
 
@@ -39,13 +41,10 @@ public slots:
 
     void handleKbdFnPress(const unsigned char fnKeyCode);
 
-    void handleKbdThreadFinished(QPrivateSignal signal);
-
     void handleAcpiEvent(const unsigned long acpiCode);
 
-    void handleAcpiThreadFinished(QPrivateSignal signal);
 
-
+    void releaseKey();
 };
 
 

@@ -1,26 +1,13 @@
 #include "AcpiListenerThread.h"
 
-AcpiListenerThread::AcpiListenerThread(QString &error) {
+AcpiListenerThread::AcpiListenerThread(HANDLE acpiHandle, QString &error) {
+    this->acpiHandle = acpiHandle;
 
-
-    this->acpiHandle = CreateFile("\\\\.\\ATKACPI\\ASLDSRV",
-                                                      GENERIC_READ | GENERIC_WRITE,
-                                                      FILE_SHARE_READ | FILE_SHARE_WRITE,
-                                                      NULL,
-                                                      OPEN_EXISTING,
-                                                      0,
-                                                      NULL);
-
-    this->eventHandle = CreateEvent(NULL, FALSE, FALSE, "ATK 0100 Sync Event");
-}
-
-void AcpiListenerThread::run() {
     unsigned char outBuffer[8];
     DWORD bytesReturned;
 
     unsigned char initData[12] = "INIT\x04";
     memset(&initData[5], 0, 7);
-
 
     WINBOOL result = DeviceIoControl(acpiHandle,
                                      0x22240C,
@@ -31,17 +18,25 @@ void AcpiListenerThread::run() {
                                      &bytesReturned,
                                      NULL);
 
-    auto a = GetLastError();
+    //todo check result
 
-    qDebug() << "1st init " + QString::number(result) + ", error " + QString::number(a);
+    if (!result) {
+        auto errorCode = GetLastError();
+    }
+
+    this->eventHandle = CreateEvent(NULL, FALSE, FALSE, "ATK 0100 Sync Event");
+}
+
+void AcpiListenerThread::run() {
+    unsigned char outBuffer[8];
+    DWORD bytesReturned;
 
     unsigned char data[8] = {};
     data[0] = ((unsigned char *)&this->eventHandle)[0];
     data[1] = ((unsigned char *)&this->eventHandle)[1];
     memset(&data[3], 0, 5);
 
-
-    result = DeviceIoControl(acpiHandle,
+    WINBOOL result = DeviceIoControl(acpiHandle,
                                      0x222400,
                                      &data[0],
                                      8,
@@ -50,13 +45,15 @@ void AcpiListenerThread::run() {
                                      &bytesReturned,
                                      NULL);
 
-    a = GetLastError();
+    //todo check result
 
-    qDebug() << "1st control " + QString::number(result) + ", error " + QString::number(a);
+    auto errorCode = GetLastError();
+
+    //todo check result
 
     result = WaitForSingleObject(eventHandle, INFINITE);
 
-    qDebug() << "1st wait " + QString::number(result);
+    //todo check result
 
     unsigned long emittable = ((unsigned long *)&outBuffer)[0];
     emit resultReady(emittable);
@@ -71,11 +68,11 @@ void AcpiListenerThread::run() {
                                  &bytesReturned,
                                  NULL);
 
-        qDebug() << "2nd control " + QString::number(result);
+        //todo check result
 
         result = WaitForSingleObject(eventHandle, INFINITE);
 
-        qDebug() << "2nd wait " + QString::number(result);
+        //todo check result
 
         emittable = ((unsigned long *)&outBuffer)[0];
         emit resultReady(emittable);
