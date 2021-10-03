@@ -19,12 +19,11 @@ KbdListenerThread::KbdListenerThread(QString &error) {
                 "CM_Get_Device_Interface_ListA");
 
 
-        HidD_SetFeature_Ptr = (HidD_SetFeature_Fn) hidLib.resolve(
-                "HidD_SetFeature");
+        //HidD_SetFeature_Ptr = (HidD_SetFeature_Fn) hidLib.resolve("HidD_SetFeature");
 
         if (CM_Get_Device_Interface_List_Size_Ptr
             && CM_Get_Device_Interface_List_Ptr
-            && HidD_SetFeature_Ptr) {
+            /*&& HidD_SetFeature_Ptr*/) {
             unsigned long DeviceInterfaceListLength = 0;
 
             unsigned long cr = CM_Get_Device_Interface_List_Size_Ptr(&DeviceInterfaceListLength,
@@ -66,7 +65,6 @@ KbdListenerThread::KbdListenerThread(QString &error) {
             kbdOverlaps = new QVector<LPOVERLAPPED>;
             kbdReadResults = new QVector<LPVOID>;
             kbdReadCount = new QVector<LPDWORD>;
-            pressedKeys = new QVector<INPUT>();
 
             int index = 0;
             for (int i = 0; i < devices.size(); i++) {
@@ -138,8 +136,8 @@ void KbdListenerThread::createReadFileJob(QString &qString) {
 
     HANDLE fileHandle = CreateFile(
             qString.toLocal8Bit().constData(),
-            GENERIC_READ/* | GENERIC_WRITE*/,
-            FILE_SHARE_READ/* | FILE_SHARE_WRITE*/,
+            GENERIC_READ,
+            FILE_SHARE_READ,
             NULL,
             OPEN_EXISTING,
             FILE_FLAG_OVERLAPPED,
@@ -160,8 +158,7 @@ void KbdListenerThread::createReadFileJob(QString &qString) {
                                &overlapped);
     int a = GetLastError();
     if (!result1 && a != ERROR_IO_PENDING) {
-        qDebug() << "First read";
-        qDebug() << a;
+        qDebug() << QString::asprintf("Device %s doesn't support defined reading", qString.toLocal8Bit().constData());
     } else {
         this->kbdEventHandles->append(eventHandle);
         this->kbdHandles->append(fileHandle);
@@ -172,6 +169,7 @@ void KbdListenerThread::createReadFileJob(QString &qString) {
 }
 
 void KbdListenerThread::sendInputIfNeeded(const unsigned char *cc, int nCount) {
+    \
     if (nCount < 2) {
         return;
         //looks like it's not what we are looking for
@@ -180,7 +178,9 @@ void KbdListenerThread::sendInputIfNeeded(const unsigned char *cc, int nCount) {
         //it's Fn press or something like that, returning.
         return;
     }
-    if (cc[1] == 0x00) {
+
+    emit resultReady(cc[1]);
+    /*if (cc[1] == 0x00) {
         //all keys are released
         this->releaseKey();
         return;
@@ -192,11 +192,9 @@ void KbdListenerThread::sendInputIfNeeded(const unsigned char *cc, int nCount) {
             case 0xc4://up
                 this->sendScanCode(0xe049, VK_PRIOR);
                 break;
-
             case 0xc5://down
                 this->sendScanCode(0xe051, VK_NEXT);
                 break;
-
             case 0xb2://left
                 this->sendScanCode(0xe047, VK_HOME);
                 break;
@@ -218,10 +216,10 @@ void KbdListenerThread::sendInputIfNeeded(const unsigned char *cc, int nCount) {
             default:
                 break;
         }
-    }
+    }*/
 }
 
-void KbdListenerThread::sendScanCode(WORD hwScanCode, WORD vScanCode) {
+/*void KbdListenerThread::sendScanCode(WORD hwScanCode, WORD vScanCode) {
 
     INPUT ip;
 
@@ -282,4 +280,4 @@ void KbdListenerThread::changeKbdBrightness(bool increase) {
     unsigned char data[0x40] = {0x5a, 0xba, 0xc5, 0xc4, this->kbdBr};
     memset(&data[5], 0, sizeof(data) - 5);
     this->sendHidControl(data);
-}
+}*/

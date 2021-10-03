@@ -9,7 +9,7 @@ AcpiControlSingleton::AcpiControlSingleton() {
 
 }
 
-bool AcpiControlSingleton::init() {
+bool AcpiControlSingleton::init(QString &error) {
     ATKACPIhandle = CreateFile("\\\\.\\ATKACPI",
                                GENERIC_READ | GENERIC_WRITE,
                                FILE_SHARE_READ | FILE_SHARE_WRITE,
@@ -20,9 +20,6 @@ bool AcpiControlSingleton::init() {
     if (!ATKACPIhandle) {
         return false;
     }
-    QString error;
-    auto thread = new ACPIListenerThread(ATKACPIhandle, error);
-    thread->start();
 
     return true;
 }
@@ -36,18 +33,21 @@ int AcpiControlSingleton::dispose() {
     return 0;
 }
 
-unsigned long AcpiControlSingleton::controlInternal(unsigned long controlCode, unsigned char *inBuffer, int inBufferSize,
-                                          unsigned char *outBuffer, int outBufferSize) {
+unsigned long AcpiControlSingleton::controlInternal(unsigned long controlCode,
+                                                    unsigned char *inBuffer,
+                                                    int inBufferSize,
+                                                    unsigned char *outBuffer,
+                                                    int outBufferSize) {
     unsigned long bytesReturned;
 
     WINBOOL result = DeviceIoControl(ATKACPIhandle,
-                                 controlCode, //0x22240c
-                                 inBuffer, //DSTS\x04 00 00 00 + 4 bytes of device id (00130011 or 00140011)
-                                 inBufferSize, //0c
-                                 outBuffer, //read it
-                                 outBufferSize, //read it
-                                 &bytesReturned,
-                                 NULL);
+                                     controlCode, //0x22240c
+                                     inBuffer, //DSTS\x04 00 00 00 + 4 bytes of device id (00130011 or 00140011)
+                                     inBufferSize, //0c
+                                     outBuffer, //read it
+                                     outBufferSize, //read it
+                                     &bytesReturned,
+                                     NULL);
 
     if (result != FALSE) {
         return bytesReturned;

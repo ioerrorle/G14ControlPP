@@ -19,15 +19,14 @@ MainWindow::MainWindow(QWidget *parent)
 
     trayIcon = new QSystemTrayIcon(this);
     trayIcon->setIcon(this->style()->standardIcon(QStyle::SP_ComputerIcon));
-    trayIcon->setToolTip("Tray Program" "\n"
-                         "Работа со сворачиванием программы трей");
+    trayIcon->setToolTip("G14ControlPP");
     /* After that create a context menu of two items */
     QMenu *menu = new QMenu(this);
-    QAction *viewWindow = new QAction(trUtf8("Развернуть окно"), this);
-    QAction *quitAction = new QAction(trUtf8("Выход"), this);
+    QAction *viewWindow = new QAction(trUtf8("Maximize"), this);
+    QAction *quitAction = new QAction(trUtf8("Quit"), this);
 
     connect(viewWindow, SIGNAL(triggered()), this, SLOT(show()));
-    connect(quitAction, SIGNAL(triggered()), this, SLOT(close()));
+    connect(quitAction, SIGNAL(triggered()), this, SLOT(closeTrayAction()));
 
     menu->addAction(viewWindow);
     menu->addAction(quitAction);
@@ -44,10 +43,10 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
-    if (this->isVisible()) {
+    if (this->isVisible() && !closeActionTriggered) {
         event->ignore();
         this->hide();
-        QSystemTrayIcon::MessageIcon icon = QSystemTrayIcon::MessageIcon(QSystemTrayIcon::Information);
+        //QSystemTrayIcon::MessageIcon icon = QSystemTrayIcon::MessageIcon(QSystemTrayIcon::Information);
 
         /*trayIcon->showMessage("Tray Program",
                               trUtf8("Приложение свернуто в трей. Для того чтобы, "
@@ -63,8 +62,9 @@ void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason) {
 
             if (!this->isVisible()) {
                 this->show();
-            } else {
-                this->hide();
+            }
+            if (!this->isActiveWindow()) {
+                this->activateWindow();
             }
             break;
         default:
@@ -73,10 +73,15 @@ void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason) {
 }
 
 void MainWindow::refreshMainTab() {
-    if (((QTabWidget*)centralWidget())->currentWidget() == mainTab && this->isVisible()) {
+    if (((QTabWidget *) centralWidget())->currentWidget() == mainTab && this->isVisible()) {
         mainTab->refresh();
     }
-    if (((QTabWidget*)centralWidget())->currentWidget() == fansTab && this->isVisible()) {
+    if (((QTabWidget *) centralWidget())->currentWidget() == fansTab && this->isVisible()) {
         fansTab->refresh();
     }
+}
+
+void MainWindow::closeTrayAction() {
+    this->closeActionTriggered = true;
+    this->close();
 }

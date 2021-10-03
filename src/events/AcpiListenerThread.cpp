@@ -1,6 +1,8 @@
-#include "ACPIListenerThread.h"
+#include "AcpiListenerThread.h"
 
-ACPIListenerThread::ACPIListenerThread(HANDLE acpiHandle, QString &error) {
+AcpiListenerThread::AcpiListenerThread(QString &error) {
+
+
     this->acpiHandle = CreateFile("\\\\.\\ATKACPI\\ASLDSRV",
                                                       GENERIC_READ | GENERIC_WRITE,
                                                       FILE_SHARE_READ | FILE_SHARE_WRITE,
@@ -10,33 +12,19 @@ ACPIListenerThread::ACPIListenerThread(HANDLE acpiHandle, QString &error) {
                                                       NULL);
 
     this->eventHandle = CreateEvent(NULL, FALSE, FALSE, "ATK 0100 Sync Event");
-    //starting service
-//    HANDLE serviceFile = CreateFile("atkwmiacpi64.sys", NULL, NULL, NULL, OPEN_EXISTING, 0x80, NULL);
-//    //check for INVALID_HANDLE_VALUE
-//    CloseHandle(serviceFile);
-//    SC_HANDLE managerHandle = OpenSCManager(NULL, NULL, 0x0f003f);
-//    SC_HANDLE serviceHandle = CreateService(managerHandle,
-//            "ATKWMIACPIIO_64",
-//            "ATKWMIACPI Driver",
-//            0x0f01ff,
-//            );
-
-
 }
 
-void ACPIListenerThread::run() {
+void AcpiListenerThread::run() {
     unsigned char outBuffer[8];
     DWORD bytesReturned;
 
-    unsigned char data[8] = {};
-    data[0] = ((unsigned char *)&this->eventHandle)[0];
-    data[1] = ((unsigned char *)&this->eventHandle)[1];
-    memset(&data[3], 0, 5);
+    unsigned char initData[12] = "INIT\x04";
+    memset(&initData[5], 0, 7);
 
 
     WINBOOL result = DeviceIoControl(acpiHandle,
-                                     0x222400,
-                                     &data,
+                                     0x22240C,
+                                     &initData[0],
                                      8,
                                      &outBuffer[0],
                                      8,
@@ -45,11 +33,33 @@ void ACPIListenerThread::run() {
 
     auto a = GetLastError();
 
+    qDebug() << "1st init " + QString::number(result) + ", error " + QString::number(a);
+
+    unsigned char data[8] = {};
+    data[0] = ((unsigned char *)&this->eventHandle)[0];
+    data[1] = ((unsigned char *)&this->eventHandle)[1];
+    memset(&data[3], 0, 5);
+
+
+    result = DeviceIoControl(acpiHandle,
+                                     0x222400,
+                                     &data[0],
+                                     8,
+                                     &outBuffer[0],
+                                     8,
+                                     &bytesReturned,
+                                     NULL);
+
+    a = GetLastError();
+
     qDebug() << "1st control " + QString::number(result) + ", error " + QString::number(a);
 
     result = WaitForSingleObject(eventHandle, INFINITE);
 
     qDebug() << "1st wait " + QString::number(result);
+
+    unsigned long emittable = ((unsigned long *)&outBuffer)[0];
+    emit resultReady(emittable);
 
     while(!isFinished()) {
         result = DeviceIoControl(acpiHandle,
@@ -66,6 +76,9 @@ void ACPIListenerThread::run() {
         result = WaitForSingleObject(eventHandle, INFINITE);
 
         qDebug() << "2nd wait " + QString::number(result);
+
+        emittable = ((unsigned long *)&outBuffer)[0];
+        emit resultReady(emittable);
     }
 
 

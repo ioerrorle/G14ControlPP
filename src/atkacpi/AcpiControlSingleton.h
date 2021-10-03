@@ -3,8 +3,7 @@
 
 #include "windows.h"
 #include <QByteArray>
-#include <QtCore/QByteArray>
-#include <ACPIListenerThread.h>
+#include <QtCore/QByteArray>\
 
 class AcpiControlSingleton {
 public:
@@ -22,7 +21,7 @@ public:
 
     void operator=(AcpiControlSingleton const &) = delete;
 
-    bool init();
+    bool init(QString &error);
 
     long getCpuFanSpeed();
     long getGpuFanSpeed();

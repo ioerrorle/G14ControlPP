@@ -1,7 +1,3 @@
-//
-// Created by ioerror on 28.09.2021.
-//
-
 #ifndef G14CONTROLPP_KBDLISTENERTHREAD_H
 #define G14CONTROLPP_KBDLISTENERTHREAD_H
 
@@ -17,6 +13,8 @@
 #include <hidsdi.h>
 #include <src/atkacpi/AcpiControlSingleton.h>
 
+const QEvent::Type FN_KB_EVENT_TYPE = (QEvent::Type) 32167;
+
 typedef WINBOOL (*HidD_SetFeature_Fn)(void*, void*, unsigned long);
 
 class KbdListenerThread : public QThread {
@@ -29,24 +27,23 @@ private:
     QVector<LPOVERLAPPED> *kbdOverlaps;
     QVector<LPVOID> *kbdReadResults;
     QVector<LPDWORD> *kbdReadCount;
-    QVector<INPUT> *pressedKeys;
+    //QVector<INPUT> *pressedKeys;
 
     void createReadFileJob(QString &qString);
     void sendInputIfNeeded(const unsigned char * bytes, int nCount);
-    void sendScanCode(WORD hwScanCode, WORD vScanCode);
-    void releaseKey();
+    //void sendScanCode(WORD hwScanCode, WORD vScanCode);
+    //void releaseKey();
 
-    void sendHidControl(unsigned char * data);
-    void changeKbdBrightness(bool increase);
-    unsigned char kbdBr = 0;
-    HidD_SetFeature_Fn HidD_SetFeature_Ptr = NULL;
-
-signals:
-
-    void resultReady(const QString &s);
+    //void sendHidControl(unsigned char * data);
+    //void changeKbdBrightness(bool increase);
+    //unsigned char kbdBr = 0;
+    //HidD_SetFeature_Fn HidD_SetFeature_Ptr = NULL;
 
 public:
     KbdListenerThread(QString &error);
+
+signals:
+    void resultReady(const unsigned char fnKeyCode);
 
 
 };

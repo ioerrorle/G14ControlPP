@@ -5,21 +5,22 @@
 #include <QThread>
 #include <QDebug>
 #include <windows.h>
+#include <winuser.h>
 
-class ACPIListenerThread : public QThread {
-    Q_OBJECT
+class AcpiListenerThread : public QThread {
+Q_OBJECT
+
     void run() override;
 
 private:
-
     HANDLE acpiHandle;
     HANDLE eventHandle;
 
-    signals:
-            void resultReady(const QString &s);
-
 public:
-    ACPIListenerThread(HANDLE acpiHandle, QString &error);
+    AcpiListenerThread(QString &error);
+
+signals:
+    void resultReady(const unsigned long acpiCode);
 };
 
 
