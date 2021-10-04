@@ -11,7 +11,7 @@ Works:
 - Fn+F7/F8 control LCD brightness
 
 Roadmap:
-1) !!!DISABLE KBD BACKLIGHT WHEN LID IS CLOSED!!!
+1) ~~!!!DISABLE KBD BACKLIGHT WHEN LID IS CLOSED!!!~~ (done)
 2) Settings storage for various things
 3) Fan curves editor
 4) Multiple fan curves
