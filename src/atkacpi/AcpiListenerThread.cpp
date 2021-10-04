@@ -28,7 +28,7 @@ AcpiListenerThread::AcpiListenerThread(HANDLE acpiHandle, QString &error) {
 }
 
 void AcpiListenerThread::run() {
-    unsigned char outBuffer[8];
+    unsigned char outBuffer[16];
     DWORD bytesReturned;
 
     unsigned char data[8] = {};
@@ -41,7 +41,7 @@ void AcpiListenerThread::run() {
                                      &data[0],
                                      8,
                                      &outBuffer[0],
-                                     8,
+                                     16,
                                      &bytesReturned,
                                      NULL);
 

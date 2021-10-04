@@ -145,6 +145,17 @@ void KbdControlSingleton::changeKbdBrightness(bool increase) {
     //todo save kb brightness
 }
 
+void KbdControlSingleton::toggleKbdBacklight(bool enabled) {
+    unsigned char tmpKbdBrightness = 0;
+    if (enabled) {
+        tmpKbdBrightness = this->kbdBr;
+    }
+    unsigned char data[0x40] = {0x5a, 0xba, 0xc5, 0xc4, tmpKbdBrightness};
+    memset(&data[5], 0, sizeof(data) - 5);
+    this->sendHidControl(data, 0x40);
+    //todo save kb brightness
+}
+
 void KbdControlSingleton::handleKbdFnPress(const unsigned char fnKeyCode) {
     emit kbdFnEvent(fnKeyCode);
 }

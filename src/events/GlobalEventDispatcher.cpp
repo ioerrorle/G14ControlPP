@@ -8,11 +8,18 @@ GlobalEventDispatcher &GlobalEventDispatcher::getInstance() {
 GlobalEventDispatcher::GlobalEventDispatcher() {
 }
 
-bool GlobalEventDispatcher::nativeEventFilter(const QByteArray &eventType, void *message, long *) {
+const GUID GlobalEventDispatcher::guids[] = {GUID_CONSOLE_DISPLAY_STATE,
+                                             GUID_DEVICE_POWER_POLICY_VIDEO_BRIGHTNESS,
+                                             GUID_LIDSWITCH_STATE_CHANGE,
+                                             GUID_ACDC_POWER_SOURCE,
+                                             GUID_BATTERY_PERCENTAGE_REMAINING};
+
+bool GlobalEventDispatcher::nativeEventFilter(const QByteArray &eventType, void *message, long *extra) {
     MSG *msg = static_cast< MSG * >( message );
 
-    if (msg->message == WM_POWERBROADCAST) {
-        handlePowerCfgChange(*msg);
+    if (msg->message == WM_POWERBROADCAST && msg->wParam == PBT_POWERSETTINGCHANGE) {
+        handlePowerCfgChange(reinterpret_cast<POWERBROADCAST_SETTING *>(msg->lParam));
+        //todo handle all this shit
         /*qDebug() << ("Power broadcast");
         switch (msg->wParam) {
             case PBT_APMPOWERSTATUSCHANGE:
@@ -38,16 +45,8 @@ bool GlobalEventDispatcher::init(HWND mainWindowHandle, QString &error) {
 
     this->pressedKey = new INPUT;
 
-    GUID guids[7] = {GUID_CONSOLE_DISPLAY_STATE,
-                     GUID_DEVICE_POWER_POLICY_VIDEO_BRIGHTNESS,
-                     GUID_LIDSWITCH_STATE_CHANGE,
-                     GUID_LIDCLOSE_ACTION,
-                     GUID_LIDOPEN_POWERSTATE,
-                     GUID_ACDC_POWER_SOURCE,
-                     GUID_BATTERY_PERCENTAGE_REMAINING};
-
-    for (int i = 0; i < 7; i++) {
-        HANDLE handle = RegisterPowerSettingNotification(mainWindowHandle, &guids[i], DEVICE_NOTIFY_WINDOW_HANDLE);
+    for (const auto & guid : guids) {
+        HANDLE handle = RegisterPowerSettingNotification(mainWindowHandle, &guid, DEVICE_NOTIFY_WINDOW_HANDLE);
 
         //todo we need to unsub when app is closed
     }
@@ -137,19 +136,13 @@ void GlobalEventDispatcher::releaseKey() {
 }
 
 void GlobalEventDispatcher::handleAcpiEvent(const unsigned long acpiCode) {
-    qDebug() << "acpi event happened";
+
 }
 
-void GlobalEventDispatcher::handlePowerCfgChange(MSG msg) {
-    qDebug() << "powercfg event happened";
+void GlobalEventDispatcher::handlePowerCfgChange(POWERBROADCAST_SETTING *settings) {
+    if (settings->PowerSetting == GUID_LIDSWITCH_STATE_CHANGE) {
+        KbdControlSingleton::getInstance().toggleKbdBacklight(settings->Data[0]);
+    }
 }
-
-//void GlobalEventDispatcher::handleKbdThreadFinished(QThread::QPrivateSignal signal) {
-//
-//}
-
-//void GlobalEventDispatcher::handleAcpiThreadFinished(QThread::QPrivateSignal signal) {
-//
-//}
 
 

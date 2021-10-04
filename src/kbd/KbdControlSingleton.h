@@ -32,6 +32,8 @@ public:
 
     void changeKbdBrightness(bool increase);
 
+    void toggleKbdBacklight(bool enabled);
+
 public slots:
     void handleKbdFnPress(const unsigned char fnKeyCode);
 

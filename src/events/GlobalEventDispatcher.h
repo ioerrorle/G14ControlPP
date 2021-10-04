@@ -18,11 +18,14 @@ public:
     static GlobalEventDispatcher &getInstance();
 
 private:
+    const static GUID guids[];
+
+private:
     GlobalEventDispatcher();
 
     INPUT *pressedKey;
 
-    void handlePowerCfgChange(MSG msg);
+    void handlePowerCfgChange(POWERBROADCAST_SETTING *settings);
 
     void sendScanCode(WORD hwScanCode, WORD vScanCode);
 
