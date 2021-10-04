@@ -45,7 +45,7 @@ bool GlobalEventDispatcher::init(HWND mainWindowHandle, QString &error) {
 
     this->pressedKey = new INPUT;
 
-    for (const auto & guid : guids) {
+    for (const auto &guid : guids) {
         HANDLE handle = RegisterPowerSettingNotification(mainWindowHandle, &guid, DEVICE_NOTIFY_WINDOW_HANDLE);
 
         //todo we need to unsub when app is closed
@@ -69,6 +69,8 @@ bool GlobalEventDispatcher::init(HWND mainWindowHandle, QString &error) {
 }
 
 void GlobalEventDispatcher::handleKbdFnPress(const unsigned char fnKeyCode) {
+    QString error;
+
     switch (fnKeyCode) {
         case 0x00:
             this->releaseKey();
@@ -97,9 +99,17 @@ void GlobalEventDispatcher::handleKbdFnPress(const unsigned char fnKeyCode) {
         case 0x20://f8
             AcpiControlSingleton::getInstance().lcdLightChange(false);
             break;
+        case 0x7c://mute
+        {
+            WINBOOL mute = FALSE;
+            AudioUtils::toggleMute(mute, error);
+            break;
+        }
         default:
             break;
     }
+
+    qDebug() << error;
 }
 
 void GlobalEventDispatcher::sendScanCode(WORD hwScanCode, WORD vScanCode) {

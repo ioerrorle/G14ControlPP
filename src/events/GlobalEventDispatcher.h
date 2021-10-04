@@ -9,6 +9,8 @@
 #include <QtCore/QAbstractEventDispatcher>
 #include "src/kbd/KbdControlSingleton.h"
 #include "src/atkacpi/AcpiControlSingleton.h"
+#include "src/audio/AudioUtils.h"
+
 //#include "src/kbd/KbdListenerThread.h"
 
 class GlobalEventDispatcher : public QObject, public QAbstractNativeEventFilter {
