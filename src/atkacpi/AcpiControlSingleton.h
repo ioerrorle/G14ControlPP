@@ -6,12 +6,15 @@
 #include <QByteArray>
 #include <QtCore/QByteArray>
 #include "AcpiListenerThread.h"
+#include "FanDef.h"
 
 class AcpiControlSingleton : public QObject {
 Q_OBJECT
 
 public:
     static AcpiControlSingleton &getInstance();
+
+    static void fixFanCurve(FAN_DEVICE fanDevice, FanCurve &fanCurve);
 
 private:
     AcpiControlSingleton();
@@ -22,6 +25,8 @@ private:
     unsigned long
     controlInternal(unsigned long controlCode, unsigned char *inBuffer, int inBufferSize, unsigned char *outBuffer,
                     int outBufferSize);
+
+    void setFanCurve(FAN_DEVICE fanDevice, const FanCurve &fanCurve);
 
 public:
     AcpiControlSingleton(AcpiControlSingleton const &) = delete;
@@ -38,6 +43,10 @@ public:
     int dispose();
 
     void lcdLightChange(bool increase);
+
+    void setPowerPlan(ASUS_PLAN plan);
+
+    void setFanProfile(const FansProfile &fansProfile);
 
 public slots:
     void handleAcpiEvent(const unsigned long acpiCode);

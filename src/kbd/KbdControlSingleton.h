@@ -30,7 +30,8 @@ private:
 public:
     bool init(QString &error);
 
-    void changeKbdBrightness(bool increase);
+    void setKbdBrightness(uchar &kbdBr);
+    uchar changeKbdBrightness(bool increase);
 
     void toggleKbdBacklight(bool enabled);
 

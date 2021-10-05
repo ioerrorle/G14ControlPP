@@ -10,6 +10,7 @@
 #include "src/kbd/KbdControlSingleton.h"
 #include "src/atkacpi/AcpiControlSingleton.h"
 #include "src/audio/AudioUtils.h"
+#include "src/settings/Settings.h"
 
 //#include "src/kbd/KbdListenerThread.h"
 
@@ -30,6 +31,8 @@ private:
     void handlePowerCfgChange(POWERBROADCAST_SETTING *settings);
 
     void sendScanCode(WORD hwScanCode, WORD vScanCode);
+
+    void readSettings();
 
 public:
     GlobalEventDispatcher(GlobalEventDispatcher const &) = delete;

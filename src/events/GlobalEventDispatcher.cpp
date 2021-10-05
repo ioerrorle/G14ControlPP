@@ -44,6 +44,8 @@ bool GlobalEventDispatcher::init(HWND mainWindowHandle, QString &error) {
     QString err;
 
     this->pressedKey = new INPUT;
+    //read settings
+
 
     for (const auto &guid : guids) {
         HANDLE handle = RegisterPowerSettingNotification(mainWindowHandle, &guid, DEVICE_NOTIFY_WINDOW_HANDLE);
@@ -56,6 +58,8 @@ bool GlobalEventDispatcher::init(HWND mainWindowHandle, QString &error) {
     if (!KbdControlSingleton::getInstance().init(error))
         return false;
 
+    readSettings();
+
     //subscribe to global events
     QAbstractEventDispatcher::instance()->installNativeEventFilter(this);
 
@@ -66,6 +70,11 @@ bool GlobalEventDispatcher::init(HWND mainWindowHandle, QString &error) {
             &GlobalEventDispatcher::handleKbdFnPress);
 
     return true;
+}
+
+void GlobalEventDispatcher::readSettings() {
+    uchar kbdBr = SETT.getKbdBr();
+    KbdControlSingleton::getInstance().setKbdBrightness(kbdBr);
 }
 
 void GlobalEventDispatcher::handleKbdFnPress(const unsigned char fnKeyCode) {
@@ -87,12 +96,16 @@ void GlobalEventDispatcher::handleKbdFnPress(const unsigned char fnKeyCode) {
         case 0xb3://right
             this->sendScanCode(0xe04f, VK_END);
             break;
-        case 0x9e://C
-            KbdControlSingleton::getInstance().changeKbdBrightness(false);
+        case 0x9e: {//C
+            uchar kbdBr = KbdControlSingleton::getInstance().changeKbdBrightness(false);
+            SETT.putKbdBr(kbdBr);
             break;
-        case 0x8a://v
-            KbdControlSingleton::getInstance().changeKbdBrightness(true);
+        }
+        case 0x8a: {//v
+            uchar kbdBr = KbdControlSingleton::getInstance().changeKbdBrightness(true);
+            SETT.putKbdBr(kbdBr);
             break;
+        }
         case 0x10://f7
             AcpiControlSingleton::getInstance().lcdLightChange(true);
             break;

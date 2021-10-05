@@ -66,7 +66,7 @@ FansTab::FansTab(QWidget *parent) {
 void FansTab::refresh() {
     RY.refreshTable();
 
-    cpuRPM->setText(QString::asprintf("%6.2f°C, %d RPM",
+    cpuRPM->setText(QString::asprintf("%.2f°C, %ld RPM",
                                       RY.getCpuTemp(),
                                       AcpiControlSingleton::getInstance().getCpuFanSpeed()));
     gpuRPM->setText(QString::number(AcpiControlSingleton::getInstance().getGpuFanSpeed()) + " RPM");

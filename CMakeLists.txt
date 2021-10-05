@@ -30,8 +30,8 @@ set(SOURCES
         src/ui/fansTab/FansTab.cpp
         src/ui/fansTab/FansTab.h
         src/atkacpi/AcpiControlSingleton.cpp
-        src/atkacpi/AcpiControlSingleton.h src/atkacpi/AcpiListenerThread.cpp src/atkacpi/AcpiListenerThread.h src/events/GlobalEventDispatcher.cpp src/events/GlobalEventDispatcher.h src/kbd/KbdControlSingleton.cpp src/kbd/KbdControlSingleton.h src/audio/AudioUtils.h)
-set(UI src/ui/MainWindow.ui src/kbd/KbdListenerThread.cpp src/kbd/KbdListenerThread.h)
+        src/atkacpi/AcpiControlSingleton.h src/atkacpi/AcpiListenerThread.cpp src/atkacpi/AcpiListenerThread.h src/events/GlobalEventDispatcher.cpp src/events/GlobalEventDispatcher.h src/kbd/KbdControlSingleton.cpp src/kbd/KbdControlSingleton.h src/audio/AudioUtils.h src/settings/Settings.cpp src/settings/Settings.h src/atkacpi/FanDef.h src/atkacpi/FanDef.cpp)
+set(UI src/ui/MainWindow.ui src/kbd/KbdListenerThread.cpp src/kbd/KbdListenerThread.h src/settings/Settings.cpp src/settings/Settings.h)
 
 add_executable(G14ControlPP ${SOURCES} ${UI})
 #target_link_libraries(GraphiCa Qt${QT_VERSION_MAJOR}::Core)

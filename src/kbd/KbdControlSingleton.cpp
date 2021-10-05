@@ -127,7 +127,19 @@ void KbdControlSingleton::sendHidControl(unsigned char *data, unsigned short siz
     }
 }
 
-void KbdControlSingleton::changeKbdBrightness(bool increase) {
+void KbdControlSingleton::setKbdBrightness(uchar &kbdBr) {
+    if (kbdBr > 3) {
+        kbdBr = 3;
+    }
+
+    this->kbdBr = kbdBr;
+
+    unsigned char data[0x40] = {0x5a, 0xba, 0xc5, 0xc4, this->kbdBr};
+    memset(&data[5], 0, sizeof(data) - 5);
+    this->sendHidControl(data, 0x40);
+}
+
+uchar KbdControlSingleton::changeKbdBrightness(bool increase) {
     if (increase && this->kbdBr >= 3) {
         this->kbdBr = 3;
     } else if (!increase && this->kbdBr <= 0) {
@@ -139,10 +151,9 @@ void KbdControlSingleton::changeKbdBrightness(bool increase) {
             this->kbdBr--;
         }
     }
-    unsigned char data[0x40] = {0x5a, 0xba, 0xc5, 0xc4, this->kbdBr};
-    memset(&data[5], 0, sizeof(data) - 5);
-    this->sendHidControl(data, 0x40);
-    //todo save kb brightness
+
+    setKbdBrightness(this->kbdBr);
+    return this->kbdBr;
 }
 
 void KbdControlSingleton::toggleKbdBacklight(bool enabled) {
