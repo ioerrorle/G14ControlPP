@@ -5,6 +5,11 @@
 #include <src/events/GlobalEventDispatcher.h>
 
 int main(int argc, char *argv[]) {
+    qRegisterMetaTypeStreamOperators<_FanCurve>("_FanCurve");
+    qRegisterMetaTypeStreamOperators<_FansProfile>("_FansProfile");
+    qRegisterMetaTypeStreamOperators<QList<_FanCurve>>("_FanCurveList");
+    qRegisterMetaTypeStreamOperators<QList<_FansProfile>>("_FansProfileList");
+
     QApplication a(argc, argv);
 
     MainWindow mainWindow;

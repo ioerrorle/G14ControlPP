@@ -9,9 +9,8 @@ Settings::Settings() {
     QCoreApplication::setOrganizationName("IoError LTD");
     QCoreApplication::setOrganizationDomain("ioerror.pro");
     QCoreApplication::setApplicationName("G14ControlPP");
-    QSettings::setDefaultFormat( QSettings::IniFormat );
 
-    this->qSettings = new QSettings();
+    this->qSettings = new QSettings("config.ini", QSettings::IniFormat);
 }
 
 void Settings::putKbdBr(uchar value) {
@@ -28,6 +27,8 @@ void Settings::saveFansProfile(FansProfile &profile) {
 
     auto currentProfiles = getFansProfiles();
     currentProfiles.append(profile);
+
+    saveFansProfiles(currentProfiles);
 }
 
 void Settings::deleteFansProfile(FansProfile &profile) {
