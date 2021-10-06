@@ -16,11 +16,12 @@ Roadmap:
 3) ~~Fan curves editor~~ (done)
 4) ~~Multiple fan curves~~ (done)
 5) ~~Handle "Mute" button~~(done, mutes ALL mics, not only active)
-6) Handle "Toggle Touchpad" button
-7) Handle "Sleep" button
-8) Handle "Plane Mode" button
-9) Do something with "Fan Mode" button (circular switch between modes?)
-10) Handle "ROG" button
-11) Make an interface for AniMe matrix
+6) Battery health function
+7) Handle "Toggle Touchpad" button
+8) Handle "Sleep" button
+9) Handle "Plane Mode" button
+10) Do something with "Fan Mode" button (circular switch between modes?)
+11) Handle "ROG" button
+12) Make an interface for AniMe matrix
 
 Cmon, ASUS, it's really not this hard to make small dedicated software.
