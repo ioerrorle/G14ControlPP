@@ -12,10 +12,10 @@ Works:
 
 Roadmap:
 1) ~~!!!DISABLE KBD BACKLIGHT WHEN LID IS CLOSED!!!~~ (done)
-2) Settings storage for various things
-3) Fan curves editor
-4) Multiple fan curves
-5) Handle "Mute" button
+2) ~~Settings storage for various things~~ (done)
+3) ~~Fan curves editor~~ (done)
+4) ~~Multiple fan curves~~ (done)
+5) ~~Handle "Mute" button~~(done, mutes ALL mics, not only active)
 6) Handle "Toggle Touchpad" button
 7) Handle "Sleep" button
 8) Handle "Plane Mode" button
