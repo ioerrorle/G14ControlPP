@@ -1,129 +1,93 @@
 #include "FansTab.h"
+#include "ui_FansTab.h"
 
-FansTab::FansTab(QWidget *parent) {
 
-    //COMBO BOXES
-    auto *comboBoxesLayout = new QHBoxLayout;
+FansTab::FansTab(QWidget *parent) : QWidget(parent), ui(new Ui::FansTab) {
 
-    auto *arCrateProfileLabel = new QLabel("Armoury Crate profile");
-    this->arCrateProfileSelector = new QComboBox();
-    this->defaultFanCurves = new QCheckBox("Use default fan curves");
-    auto *fanCurveLabel = new QLabel("Fan curve");
-    this->fanCurveComboBox = new QComboBox();
+    ui->setupUi(this);
 
-    comboBoxesLayout->addWidget(arCrateProfileLabel);
-    comboBoxesLayout->addWidget(arCrateProfileSelector);
-    comboBoxesLayout->addWidget(defaultFanCurves);
-    comboBoxesLayout->addWidget(fanCurveLabel);
-    comboBoxesLayout->addWidget(fanCurveComboBox);
-    comboBoxesLayout->addStretch(1);
-
-    auto *comboBoxes = new QWidget();
-    comboBoxes->setLayout(comboBoxesLayout);
-
-    //fill combo boxes
-    for (ArmouryCratePowerPlan &plan : POWER_PLANS) {
-        arCrateProfileSelector->addItem(plan.name, plan.powerPlan);
-    }
-
-    connect(defaultFanCurves, &QCheckBox::stateChanged, this, &FansTab::defaultFanCurvesChange);
-    connect(fanCurveComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &FansTab::onFanCurveIndexChanged);
+    connect(ui->defaultFanCurves, &QCheckBox::stateChanged, this, &FansTab::defaultFanCurvesChange);
+    connect(ui->fanCurveComboBox, QOverload<int>::of(&QComboBox::activated), this,
+            &FansTab::onFanCurveIndexChanged);
 
     //CPU SECTION
-    auto *cpuSectionLayout = new QHBoxLayout;
+    cpuSliders[0] = ui->cpuSpeed_0;
+    cpuSliders[1] = ui->cpuSpeed_1;
+    cpuSliders[2] = ui->cpuSpeed_2;
+    cpuSliders[3] = ui->cpuSpeed_3;
+    cpuSliders[4] = ui->cpuSpeed_4;
+    cpuSliders[5] = ui->cpuSpeed_5;
+    cpuSliders[6] = ui->cpuSpeed_6;
+    cpuSliders[7] = ui->cpuSpeed_7;
 
     for (int i = 0; i < 8; i++) {
-        auto *sliderBox = new QWidget;
-        auto *sliderBoxLayout = new QVBoxLayout;
-        auto *tempValue = new QLabel(QString::number(35 + 10 * i) + tr("°C"));
-        tempValue->setStyleSheet("QLabel { width : 4em }");
-        auto *qSlider = new QSlider(Qt::Orientation::Vertical);
+        auto *qSlider = cpuSliders[i];
         qSlider->setMaximum(100);
-        cpuSliders[i] = qSlider;
-        sliderBoxLayout->addWidget(tempValue);
-        sliderBoxLayout->addWidget(qSlider);
-        sliderBoxLayout->addStretch(1);
-        sliderBox->setLayout(sliderBoxLayout);
-        cpuSectionLayout->addWidget(sliderBox);
+
+        connect(qSlider, &QSlider::valueChanged, this, &FansTab::onSliderValueChanged);
+        connect(qSlider, &QSlider::sliderMoved, this, [&](int value) {
+            QToolTip::showText(QCursor::pos(), QString("%1").arg(value), nullptr);
+        });
     }
-    cpuRPM = new QLabel(/*"CPU RPM: 2000"*/);
-    cpuSectionLayout->addWidget(cpuRPM);
-    cpuSectionLayout->addStretch(1);
-    auto *cpuSection = new QGroupBox(tr("CPU"));
-    cpuSection->setLayout(cpuSectionLayout);
 
     //GPU SECTION
-    auto *gpuSectionLayout = new QHBoxLayout;
+
+    gpuSliders[0] = ui->gpuSpeed_0;
+    gpuSliders[1] = ui->gpuSpeed_1;
+    gpuSliders[2] = ui->gpuSpeed_2;
+    gpuSliders[3] = ui->gpuSpeed_3;
+    gpuSliders[4] = ui->gpuSpeed_4;
+    gpuSliders[5] = ui->gpuSpeed_5;
+    gpuSliders[6] = ui->gpuSpeed_6;
+    gpuSliders[7] = ui->gpuSpeed_7;
 
     for (int i = 0; i < 8; i++) {
-        auto *sliderBox = new QWidget;
-        auto *sliderBoxLayout = new QVBoxLayout;
-        auto *tempValue = new QLabel(QString::number(35 + 10 * i) + tr("°C"));
-        tempValue->setStyleSheet("QLabel { width : 4em }");
-        auto *qSlider = new QSlider(Qt::Orientation::Vertical);
+        auto *qSlider = gpuSliders[i];
         qSlider->setMaximum(100);
-        gpuSliders[i] = qSlider;
-        sliderBoxLayout->addWidget(tempValue);
-        sliderBoxLayout->addWidget(qSlider);
-        sliderBoxLayout->addStretch(1);
-        sliderBox->setLayout(sliderBoxLayout);
-        gpuSectionLayout->addWidget(sliderBox);
+
+        connect(qSlider, &QSlider::valueChanged, this, &FansTab::onSliderValueChanged);
+        connect(qSlider, &QSlider::sliderMoved, this, [&](int value) {
+            QToolTip::showText(QCursor::pos(), QString("%1").arg(value), nullptr);
+        });
     }
 
-    gpuRPM = new QLabel(/*"GPU RPM: 2000"*/);
-
-    gpuSectionLayout->addWidget(gpuRPM);
-
-    gpuSectionLayout->addStretch(1);
-
-    auto *gpuSection = new QGroupBox(tr("GPU"));
-    gpuSection->setLayout(gpuSectionLayout);
-
     //BUTTONS SECTION
-    auto *buttonsLayout = new QHBoxLayout;
 
-    auto *saveButton = new QPushButton("Save");
-    auto *applyButton = new QPushButton("Apply");
-
-    connect(saveButton, &QPushButton::clicked, this, &FansTab::onSaveFanCurvesClicked);
-    connect(applyButton, &QPushButton::clicked, this, &FansTab::onApplyClicked);
-
-    buttonsLayout->addStretch(1);
-    buttonsLayout->addWidget(saveButton);
-    buttonsLayout->addWidget(applyButton);
-
-    auto *buttonsSection = new QWidget();
-    buttonsSection->setLayout(buttonsLayout);
+    connect(ui->saveButton, &QPushButton::clicked, this, &FansTab::onSaveFanCurvesClicked);
+    connect(ui->applyButton, &QPushButton::clicked, this, &FansTab::onApplyClicked);
 
     //ADD ALL
 
-    auto *container = new QVBoxLayout;
-    container->addWidget(comboBoxes);
-    container->addWidget(cpuSection);
-    container->addWidget(gpuSection);
-    container->addStretch(1);
-    container->addWidget(buttonsSection);
+    //fill combo boxes
+    for (ArmouryCratePowerPlan &plan : POWER_PLANS) {
+        ui->arCrateProfileComboBox->addItem(plan.name, QVariant::fromValue(plan.id));
+    }
+    loadSettings(true);
+}
 
-    setLayout(container);
-
-    //
+void FansTab::onSliderValueChanged(int value) {
+    this->curveChanged = true;
+    FansProfile profile = createFansProfileFromCurrentSettings();
+    AcpiControlSingleton::fixFanCurve(FAN_CPU, profile.cpu);
+    AcpiControlSingleton::fixFanCurve(FAN_GPU, profile.gpu);
+    selectFanProfile(profile, false);
 }
 
 void FansTab::refresh() {
     RY.refreshTable();
 
-    cpuRPM->setText(QString::asprintf("%.2f°C, %ld RPM",
+    ui->cpuRPM->setText(QString::asprintf("%.2f°C, %ld RPM",
                                       RY.getCpuTemp(),
                                       AcpiControlSingleton::getInstance().getCpuFanSpeed()));
-    gpuRPM->setText(QString::number(AcpiControlSingleton::getInstance().getGpuFanSpeed()) + " RPM");
+    ui->gpuRPM->setText(QString::number(AcpiControlSingleton::getInstance().getGpuFanSpeed()) + " RPM");
 }
 
 void FansTab::defaultFanCurvesChange(int state) {
     if (state) {
-        this->fanCurveComboBox->clear();
-        this->fanCurveComboBox->setEnabled(false);
+        ui->fanCurveComboBox->clear();
+        ui->fanCurveComboBox->setEnabled(false);
     } else {
-        this->fanCurveComboBox->setEnabled(true);
+        ui->fanCurveComboBox->setEnabled(true);
         reloadFanCurves();
     }
 }
@@ -134,37 +98,76 @@ void FansTab::onSaveFanCurvesClicked(bool checked) {
                                          tr("Curve name:"), QLineEdit::Normal,
                                          nullptr, &ok);
     if (ok && !text.isEmpty()) {
-        FansProfile profile = {};
-        profile.name = text;
-        FanCurve cpuCurve = {};
-        FanCurve gpuCurve = {};
-        for (int i = 0; i < 8; i++) {
-            cpuCurve.temp[i] = gpuCurve.temp[i] = 35 + i*10;
-            cpuCurve.speed[i] = cpuSliders[i]->value();
-            gpuCurve.speed[i] = gpuSliders[i]->value();
-        }
-        profile.cpu = cpuCurve;
-        profile.gpu = gpuCurve;
+        bool result = saveFansProfile(text, false);
+        if (!result) {
+            QMessageBox msgBox;
+            msgBox.setText("Fan curve with this name already exists");
+            msgBox.setInformativeText("Do you want to override it?");
+            msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+            msgBox.setDefaultButton(QMessageBox::Ok);
+            int ret = msgBox.exec();
 
-        SETT.saveFansProfile(profile);
-        reloadFanCurves();
-        selectFanProfile(profile);
+            if (ret == QMessageBox::Ok) {
+                bool result = saveFansProfile(text, true);
+            } else {
+                //it's either cancel or something strange
+            }
+        }
+
     }
+}
+
+bool FansTab::saveFansProfile(QString &name, bool override) {
+    FansProfile profile = createFansProfileFromCurrentSettings();
+    profile.name = name;
+
+    bool result = SETT.saveFansProfile(profile, override);
+
+    if (!result)
+        return false;
+
+    reloadFanCurves();
+    selectFanProfile(profile, true);
+    return true;
+}
+
+FansProfile FansTab::createFansProfileFromCurrentSettings() {
+    FansProfile profile = {};
+    if (!curveChanged) {
+        profile.name = ui->fanCurveComboBox->currentText();
+    }
+    FanCurve cpuCurve = {};
+    FanCurve gpuCurve = {};
+    for (int i = 0; i < 8; i++) {
+        cpuCurve.temp[i] = gpuCurve.temp[i] = 35 + i * 10;
+        cpuCurve.speed[i] = cpuSliders[i]->value();
+        gpuCurve.speed[i] = gpuSliders[i]->value();
+    }
+    profile.cpu = cpuCurve;
+    profile.gpu = gpuCurve;
+
+    return profile;
 }
 
 void FansTab::reloadFanCurves() {
-    if (fanCurveComboBox->isEnabled()) {
-        this->fanCurveComboBox->clear();
-        this->fanCurveComboBox->setEnabled(true);
+    if (ui->fanCurveComboBox->isEnabled()) {
+        ui->fanCurveComboBox->clear();
+        ui->fanCurveComboBox->setEnabled(true);
         auto profiles = SETT.getFansProfiles();
-        for(FansProfile &profile : profiles) {
-            this->fanCurveComboBox->addItem(profile.name, QVariant::fromValue(profile));
+        for (FansProfile &profile : profiles) {
+            ui->fanCurveComboBox->addItem(profile.name, QVariant::fromValue(profile));
         }
     }
 }
 
-void FansTab::selectFanProfile(FansProfile &profile) {
-    this->fanCurveComboBox->setCurrentText(profile.name);
+void FansTab::selectFanProfile(FansProfile &profile, bool selectIndex) {
+    if (selectIndex) {
+        int i = ui->fanCurveComboBox->findText(profile.name);
+        if (i != -1) {
+            ui->fanCurveComboBox->setCurrentIndex(i);
+        }
+    }
+    //this->fanCurveComboBox->setCurrentText(profile.name);
     for (int i = 0; i < 8; i++) {
         cpuSliders[i]->setValue(profile.cpu.speed[i]);
         gpuSliders[i]->setValue(profile.gpu.speed[i]);
@@ -172,30 +175,46 @@ void FansTab::selectFanProfile(FansProfile &profile) {
 }
 
 void FansTab::onFanCurveIndexChanged(int index) {
-    if (fanCurveComboBox->isEnabled()) {
-        auto profile = fanCurveComboBox->itemData(index).value<FansProfile>();
+    if (ui->fanCurveComboBox->isEnabled()) {
+        auto profile = ui->fanCurveComboBox->itemData(index).value<FansProfile>();
         selectFanProfile(profile);
+        this->curveChanged = false;
     }
 }
 
 void FansTab::onApplyClicked(bool checked) {
-    auto powerPlan = arCrateProfileSelector->itemData(arCrateProfileSelector->currentIndex()).value<ArmouryCratePowerPlan>();
+    auto powerPlanId = ui->arCrateProfileComboBox->currentData().value<uchar>();
+
+    SETT.setCurrentPowerPlan(powerPlanId);
+    SETT.setUseDefaultFanCurves(ui->defaultFanCurves->isChecked());
+    FansProfile fansProfile = createFansProfileFromCurrentSettings();
+    SETT.setCurrentFanCurveProfile(fansProfile);
+
+    applySettings(POWER_PLANS[powerPlanId], ui->defaultFanCurves->isChecked(), fansProfile);
+}
+
+void FansTab::applySettings(ArmouryCratePowerPlan &powerPlan, bool useDefaultFanCurves, FansProfile &fansProfile) {
     AcpiControlSingleton::getInstance().setPowerPlan(powerPlan.powerPlan);
-    if (!defaultFanCurves->isChecked()) {
-        FansProfile profile = {};
-        profile.name = fanCurveComboBox->currentText();
-        FanCurve cpuCurve = {};
-        FanCurve gpuCurve = {};
-        for (int i = 0; i < 8; i++) {
-            cpuCurve.temp[i] = gpuCurve.temp[i] = 35 + i*10;
-            cpuCurve.speed[i] = cpuSliders[i]->value();
-            gpuCurve.speed[i] = gpuSliders[i]->value();
-        }
-        AcpiControlSingleton::fixFanCurve(FAN_CPU, cpuCurve);
-        profile.cpu = cpuCurve;
-        AcpiControlSingleton::fixFanCurve(FAN_GPU, gpuCurve);
-        profile.gpu = gpuCurve;
-        selectFanProfile(profile);
-        AcpiControlSingleton::getInstance().setFanProfile(profile);
+    if (!useDefaultFanCurves) {
+        AcpiControlSingleton::getInstance().setFanProfile(fansProfile);
+    }
+}
+
+void FansTab::loadSettings(bool apply) {
+    auto powerPlan = SETT.getCurrentPowerPlan();
+    auto useDefaultFanCurves = SETT.getUseDefaultFanCurves();
+    auto profile = SETT.getCurrentFanCurveProfile();
+
+    int ppIndex = ui->arCrateProfileComboBox->findText(powerPlan.name);
+    if (ppIndex != -1) {
+        ui->arCrateProfileComboBox->setCurrentIndex(ppIndex);
+    }
+    ui->defaultFanCurves->setChecked(useDefaultFanCurves);
+    reloadFanCurves();
+    selectFanProfile(profile, true);
+    ui->fanCurveComboBox->setEnabled(!useDefaultFanCurves);
+
+    if (apply) {
+        applySettings(powerPlan, useDefaultFanCurves, profile);
     }
 }

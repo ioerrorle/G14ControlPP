@@ -11,9 +11,16 @@
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QInputDialog>
+#include <QtWidgets/QToolTip>
+#include <QtWidgets/QMessageBox>
 #include <src/atkacpi/AcpiControlSingleton.h>
 #include <src/ryzenadj/RyzenAdjSingleton.h>
 #include <src/settings/Settings.h>
+#include <QDebug>
+
+namespace Ui {
+    class FansTab;
+}
 
 class FansTab : public QWidget
 {
@@ -24,23 +31,27 @@ public:
     void refresh();
 
 private:
-    QLabel *gpuRPM;
-    QLabel *cpuRPM;
-    QComboBox *arCrateProfileSelector;
-    QCheckBox *defaultFanCurves;
-    QComboBox *fanCurveComboBox;
+    Ui::FansTab *ui;
+
     QSlider *cpuSliders[8];
     QSlider *gpuSliders[8];
+    bool curveChanged = false;
 
     void reloadFanCurves();
-    void selectFanProfile(FansProfile &profile);
+    void selectFanProfile(FansProfile &profile, bool selectIndex = false);
+    bool saveFansProfile(QString &name, bool override);
+    FansProfile createFansProfileFromCurrentSettings();
+    void applySettings(ArmouryCratePowerPlan &powerPlan, bool useDefaultFanCurves, FansProfile &fansProfile);
 
 public slots:
     void defaultFanCurvesChange(int state);
     void onSaveFanCurvesClicked(bool checked);
     void onFanCurveIndexChanged(int index);
-
+    void onSliderValueChanged(int value);
     void onApplyClicked(bool checked);
+    void loadSettings(bool apply = false);
+
+
 };
 
 

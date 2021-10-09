@@ -7,8 +7,10 @@
 int main(int argc, char *argv[]) {
     qRegisterMetaTypeStreamOperators<_FanCurve>("_FanCurve");
     qRegisterMetaTypeStreamOperators<_FansProfile>("_FansProfile");
+    qRegisterMetaTypeStreamOperators<_PowerProfile>("_PowerProfile");
     qRegisterMetaTypeStreamOperators<QList<_FanCurve>>("_FanCurveList");
     qRegisterMetaTypeStreamOperators<QList<_FansProfile>>("_FansProfileList");
+    qRegisterMetaTypeStreamOperators<QList<_PowerProfile>>("_PowerProfileList");
 
     QApplication a(argc, argv);
 

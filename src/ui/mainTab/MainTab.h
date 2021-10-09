@@ -10,6 +10,10 @@
 #include <QtWidgets/QVBoxLayout>
 #include <src/ryzenadj/RyzenAdjSingleton.h>
 
+namespace Ui {
+    class MainTab;
+}
+
 class MainTab : public QWidget
 {
     Q_OBJECT
@@ -18,9 +22,8 @@ public:
     explicit MainTab(QWidget *parent = nullptr);
     void refresh();
 private:
-    QLabel *stapmLimitLabel;
-    QLabel *fastLimitLabel;
-    QLabel *slowLimitLabel;
+    Ui::MainTab *ui;
+    void loadPowerProfiles();
 };
 
 #endif //G14CONTROLPP_MAINTAB_H

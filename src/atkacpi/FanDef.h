@@ -2,6 +2,7 @@
 #define G14CONTROLPP_FANDEF_H
 
 #include <QDataStream>
+#include <QMap>
 
 typedef uchar ASUS_PLAN;
 typedef uchar FAN_DEVICE;
@@ -11,19 +12,23 @@ typedef uchar FAN_DEVICE;
 #define PLAN_Silent ASUS_PLAN(0x02)
 
 struct _ArmouryCratePowerPlan {
+    uint id;
     QString name;
     ASUS_PLAN powerPlan;
 };
 
 typedef _ArmouryCratePowerPlan ArmouryCratePowerPlan;
 
-static ArmouryCratePowerPlan POWER_PLANS[5] = {
-        {"Windows", PLAN_PerformanceWindows},
-        {"Performance", PLAN_PerformanceWindows},
-        {"Turbo", PLAN_TurboManual},
-        {"Manual", PLAN_TurboManual},
-        {"Silent", PLAN_Silent},
+static QMap<uchar, ArmouryCratePowerPlan> POWER_PLANS{
+        {0, {0, "Windows", PLAN_PerformanceWindows}},
+        {1, {1, "Performance", PLAN_PerformanceWindows}},
+        {2, {2, "Turbo", PLAN_TurboManual}},
+        {3, {3, "Manual", PLAN_TurboManual}},
+        {4, {4, "Silent", PLAN_Silent}}
 };
+
+QDataStream &operator<<(QDataStream &out, const _ArmouryCratePowerPlan &v);
+QDataStream &operator>>(QDataStream &in, _ArmouryCratePowerPlan &v);
 
 Q_DECLARE_METATYPE(ArmouryCratePowerPlan);
 

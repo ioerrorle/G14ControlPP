@@ -48,6 +48,10 @@ public:
 
     void setFanProfile(const FansProfile &fansProfile);
 
+    void setMaxBatteryPercentage(uchar &value);
+
+    uchar getMaxBatteryPercentage();
+
 public slots:
     void handleAcpiEvent(const unsigned long acpiCode);
 

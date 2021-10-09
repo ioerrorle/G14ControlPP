@@ -1,29 +1,23 @@
 #include "MainTab.h"
-
-#define qnm(...) QString::number(__VA_ARGS__)
+#include "ui_MainTab.h"
 
 MainTab::MainTab(QWidget *parent)
-        : QWidget(parent) {
-    stapmLimitLabel = new QLabel();
-    fastLimitLabel = new QLabel();
-    slowLimitLabel = new QLabel();
+        : QWidget(parent), ui(new Ui::MainTab) {
+    ui->setupUi(this);
 
-    QVBoxLayout *mainLayout = new QVBoxLayout;
-    mainLayout->addWidget(stapmLimitLabel);
-    mainLayout->addWidget(fastLimitLabel);
-    mainLayout->addWidget(slowLimitLabel);
-    mainLayout->addStretch(1);
-    setLayout(mainLayout);
+    loadPowerProfiles();
 }
 
 void MainTab::refresh() {
         RY.refreshTable();
-        stapmLimitLabel->setText(QString::asprintf("STAPM Limit: %.1f (%.1f)", RY.getStapmLimit(), RY.getStapmValue()));
-                //tr("STAPM Limit: ") + qnm(RY.getStapmLimit()) + tr(" (") + qnm(RY.getStapmValue()) + tr(")"));
-        fastLimitLabel->setText(QString::asprintf("Fast Limit: %.1f (%.1f)", RY.getFastLimit(), RY.getFastValue()));
-                //tr("Fast Limit: ") + qnm(RY.getFastLimit()) + tr(" (") + qnm(RY.getFastValue()) + tr(")"));
-        slowLimitLabel->setText(QString::asprintf("Slow Limit: %.1f (%.1f)", RY.getSlowLimit(), RY.getSlowValue()));
-                //tr("Slow limit: ") + qnm(RY.getSlowLimit()) + tr(" (") + qnm(RY.getSlowValue()) + tr(")"));
+        ui->stapmLimit->setText(QString::asprintf("%.1f (%.1f)", RY.getStapmLimit(), RY.getStapmValue()));
+        ui->stapmTime->setText(QString::asprintf("%.0f", RY.getStapmTime()));
+        ui->fastLimit->setText(QString::asprintf("%.1f (%.1f)", RY.getFastLimit(), RY.getFastValue()));
+        ui->slowLimit->setText(QString::asprintf("%.1f (%.1f)", RY.getSlowLimit(), RY.getSlowValue()));
+        ui->slowTime->setText(QString::asprintf("%.0f", RY.getSlowTime()));
+        ui->mode->setText(RY.getCclkSetpoint() == 95.0f ? "Power saving" : "Performance");
 }
 
-#undef qnm
+void MainTab::loadPowerProfiles() {
+
+}

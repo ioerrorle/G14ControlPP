@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>G14ControlPP</string>
   </property>
   <widget class="QTabWidget" name="centralwidget"/>
   <widget class="QMenuBar" name="menubar">

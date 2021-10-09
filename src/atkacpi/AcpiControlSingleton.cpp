@@ -251,6 +251,39 @@ void AcpiControlSingleton::fixFanCurve(FAN_DEVICE fanDevice, FanCurve &fanCurve)
     }
 }
 
+void AcpiControlSingleton::setMaxBatteryPercentage(uchar &value) {
+    if (value > 100) {
+        value = 100;
+    }
+
+    unsigned char input[16] = {0x44, 0x45, 0x56, 0x53, 0x08, 0x00, 0x00, 0x00, /*prefix*/
+                               0x57, 0x00, 0x12, 0x00, value, 0x00, 0x00, 0x00 /* data */ /*default value for this was actually 0x00 0x00 0x09 0x00*/
+    };
+
+    unsigned char outBuffer[8];
+
+    int bytesWritten = controlInternal(0x22240c, &input[0], 16, &outBuffer[0], 8);
+    //todo handle result/error
+}
+
+uchar AcpiControlSingleton::getMaxBatteryPercentage() {
+    unsigned char input[16] = {0x44, 0x53, 0x54, 0x53, 0x04, 0x00, 0x00, 0x00, /*prefix*/
+                               0x57, 0x00, 0x12, 0x00 /* data */
+    };
+
+    unsigned char outBuffer[4];
+
+    int bytesWritten = controlInternal(0x22240c, &input[0], 12, &outBuffer[0], 4);
+
+    if (bytesWritten == 0) {
+        return 0;
+    }
+
+    long result = (unsigned char) (outBuffer[0]);
+
+    return result;
+}
+
 void AcpiControlSingleton::setFanProfile(const FansProfile &fansProfile) {
     setFanCurve(FAN_CPU, fansProfile.cpu);
     setFanCurve(FAN_GPU, fansProfile.gpu);

@@ -1,9 +1,32 @@
-//
-// Created by ioerror on 16.09.2021.
-//
-
 #ifndef G14CONTROLPP_RYZENADJTYPES_H
 #define G14CONTROLPP_RYZENADJTYPES_H
+
+#include <QDataStream>
+
+typedef uchar Setpoint;
+static Setpoint SP_PERFORMANCE = 0;
+static Setpoint SP_POWER_SAVING = 1;
+static Setpoint SP_DEFAULT = 2;
+
+struct _PowerProfile {
+    float stapmLimit;
+    float stapmTime;
+    float slowLimit;
+    float slowTime;
+    float fastLimit;
+    Setpoint mode;
+};
+
+typedef _PowerProfile PowerProfile;
+
+static PowerProfile STOCK_PROFILE {
+    35, 275, 42, 5, 60, true
+};
+
+QDataStream &operator<<(QDataStream &out, const _PowerProfile &v);
+QDataStream &operator>>(QDataStream &in, _PowerProfile &v);
+
+Q_DECLARE_METATYPE(PowerProfile);
 
 struct _RyzenAccess;
 typedef struct _RyzenAccess *RyzenAccess;

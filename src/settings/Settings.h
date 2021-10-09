@@ -26,9 +26,16 @@ public:
     void putKbdBr(uchar value);
     uchar getKbdBr();
 
-    void saveFansProfile(FansProfile &profile);
+    bool saveFansProfile(FansProfile &profile, bool override = true);
     void deleteFansProfile(FansProfile &profile);
     QList<FansProfile> getFansProfiles();
+
+    void setCurrentPowerPlan(uchar id);
+    ArmouryCratePowerPlan getCurrentPowerPlan();
+    void setUseDefaultFanCurves(bool value);
+    bool getUseDefaultFanCurves();
+    void setCurrentFanCurveProfile(FansProfile &profile);
+    FansProfile getCurrentFanCurveProfile();
 };
 
 

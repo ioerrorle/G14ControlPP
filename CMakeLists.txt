@@ -16,8 +16,6 @@ set(CMAKE_CXX_STANDARD 17)
 #find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
 find_package(Qt5Widgets REQUIRED)
 
-include_directories(SYSTEM ./src ./src/atkacpi)
-
 set(SOURCES
         src/main.cpp
         src/ui/MainWindow.cpp
@@ -30,8 +28,9 @@ set(SOURCES
         src/ui/fansTab/FansTab.cpp
         src/ui/fansTab/FansTab.h
         src/atkacpi/AcpiControlSingleton.cpp
-        src/atkacpi/AcpiControlSingleton.h src/atkacpi/AcpiListenerThread.cpp src/atkacpi/AcpiListenerThread.h src/events/GlobalEventDispatcher.cpp src/events/GlobalEventDispatcher.h src/kbd/KbdControlSingleton.cpp src/kbd/KbdControlSingleton.h src/audio/AudioUtils.h src/settings/Settings.cpp src/settings/Settings.h src/atkacpi/FanDef.h src/atkacpi/FanDef.cpp)
-set(UI src/ui/MainWindow.ui src/kbd/KbdListenerThread.cpp src/kbd/KbdListenerThread.h src/settings/Settings.cpp src/settings/Settings.h)
+        src/kbd/KbdListenerThread.cpp src/kbd/KbdListenerThread.h src/settings/Settings.cpp src/settings/Settings.h
+        src/atkacpi/AcpiControlSingleton.h src/atkacpi/AcpiListenerThread.cpp src/atkacpi/AcpiListenerThread.h src/events/GlobalEventDispatcher.cpp src/events/GlobalEventDispatcher.h src/kbd/KbdControlSingleton.cpp src/kbd/KbdControlSingleton.h src/audio/AudioUtils.h src/settings/Settings.cpp src/settings/Settings.h src/atkacpi/FanDef.h src/atkacpi/FanDef.cpp src/ui/batteryTab/BatteryTab.cpp src/ui/batteryTab/BatteryTab.h src/ui/hotkeys/HotkeysTab.cpp src/ui/hotkeys/HotkeysTab.h src/ui/powerPlans/PowerPlansTab.cpp src/ui/powerPlans/PowerPlansTab.h src/ryzenadj/RyzenAdjTypes.cpp)
+set(UI src/ui/MainWindow.ui src/ui/fansTab/FansTab.ui src/ui/mainTab/MainTab.ui)
 
 add_executable(G14ControlPP ${SOURCES} ${UI})
 #target_link_libraries(GraphiCa Qt${QT_VERSION_MAJOR}::Core)
