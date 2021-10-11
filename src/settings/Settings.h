@@ -5,6 +5,7 @@
 #include <QSettings>
 #include <QApplication>
 #include "src/atkacpi/AcpiControlSingleton.h"
+#include "src/ryzenadj/RyzenAdjTypes.h"
 
 #define SETT Settings::getInstance()
 
@@ -18,6 +19,7 @@ private:
     QSettings *qSettings;
 
     void saveFansProfiles(QList<FansProfile> &profiles);
+    void savePowerProfiles(QList<PowerProfile> &profiles);
 
 public:
     Settings(Settings const &) = delete;
@@ -32,10 +34,22 @@ public:
 
     void setCurrentPowerPlan(uchar id);
     ArmouryCratePowerPlan getCurrentPowerPlan();
+
     void setUseDefaultFanCurves(bool value);
     bool getUseDefaultFanCurves();
+
     void setCurrentFanCurveProfile(FansProfile &profile);
     FansProfile getCurrentFanCurveProfile();
+
+    bool savePowerProfile(PowerProfile &powerProfile, bool override = true);
+    void deletePowerProfile(PowerProfile &powerProfile);
+    QList<PowerProfile> getPowerProfiles(bool includeStock = true);
+
+    void setCurrentPowerProfile(PowerProfile &powerProfile);
+    PowerProfile getCurrentPowerProfile();
+
+    void putMaxBatteryCharge(const uchar value);
+    uchar getMaxBatteryCharge();
 };
 
 

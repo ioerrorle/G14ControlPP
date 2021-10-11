@@ -55,6 +55,12 @@ bool GlobalEventDispatcher::init(HWND mainWindowHandle, QString &error) {
 
     if (!AcpiControlSingleton::getInstance().init(error))
         return false;
+
+    this->acpiListenerThread = new AcpiListenerThread(error);
+    connect(this->acpiListenerThread, &AcpiListenerThread::resultReady, this, &GlobalEventDispatcher::handleAcpiEvent);
+    connect(this->acpiListenerThread, &AcpiListenerThread::finished, this->acpiListenerThread,
+            &QObject::deleteLater);
+    this->acpiListenerThread->start();
     if (!KbdControlSingleton::getInstance().init(error))
         return false;
 
@@ -63,9 +69,7 @@ bool GlobalEventDispatcher::init(HWND mainWindowHandle, QString &error) {
     //subscribe to global events
     QAbstractEventDispatcher::instance()->installNativeEventFilter(this);
 
-    //subscribe to singletons
-    connect(&AcpiControlSingleton::getInstance(), &AcpiControlSingleton::acpiEvent, this,
-            &GlobalEventDispatcher::handleAcpiEvent);
+
     connect(&KbdControlSingleton::getInstance(), &KbdControlSingleton::kbdFnEvent, this,
             &GlobalEventDispatcher::handleKbdFnPress);
 
@@ -122,7 +126,7 @@ void GlobalEventDispatcher::handleKbdFnPress(const unsigned char fnKeyCode) {
             break;
     }
 
-    qDebug() << error;
+    //qDebug() << error;
 }
 
 void GlobalEventDispatcher::sendScanCode(WORD hwScanCode, WORD vScanCode) {
@@ -159,12 +163,18 @@ void GlobalEventDispatcher::releaseKey() {
 }
 
 void GlobalEventDispatcher::handleAcpiEvent(const unsigned long acpiCode) {
-
+    //qDebug() << acpiCode;
 }
 
 void GlobalEventDispatcher::handlePowerCfgChange(POWERBROADCAST_SETTING *settings) {
+    //qDebug() << "Power event!";
     if (settings->PowerSetting == GUID_LIDSWITCH_STATE_CHANGE) {
         KbdControlSingleton::getInstance().toggleKbdBacklight(settings->Data[0]);
+    }
+    if (settings->PowerSetting == GUID_ACDC_POWER_SOURCE) {
+        //check power source
+        qDebug() << AcpiControlSingleton::getInstance().getPowerSourceType();
+        //settings->Data[0]; // o for AC, 1 for battery
     }
 }
 

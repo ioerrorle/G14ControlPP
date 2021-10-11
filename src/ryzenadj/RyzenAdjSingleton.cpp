@@ -156,9 +156,32 @@ float RyzenAdjSingleton::getSlowTime() { return this->get_slow_time_ptr(this->ry
 float RyzenAdjSingleton::getCclkSetpoint() { return this->get_cclk_setpoint_ptr(this->ry);  }
 float RyzenAdjSingleton::getCclkBusyValue() { return this->get_cclk_busy_value_ptr(this->ry);  }
 
-float RyzenAdjSingleton::getCpuTemp() {
-    float * table = getTableValues();
-    return table[0x44 / 4];
+float RyzenAdjSingleton::getValueByOffset(ushort offset) {
+    return getTableValues()[offset / 4];
+}
+
+float RyzenAdjSingleton::getCoreTempLimit() {
+    return getValueByOffset(0x40);
+}
+
+float RyzenAdjSingleton::getApuTempLimit() {
+    return getValueByOffset(0x48);
+}
+
+float RyzenAdjSingleton::getDGpuTempLimit() {
+    return getValueByOffset(0x50);
+}
+
+float RyzenAdjSingleton::getCoreTemp() {
+    return getValueByOffset(0x44);
+}
+
+float RyzenAdjSingleton::getApuTemp() {
+    return getValueByOffset(0x4C);
+}
+
+float RyzenAdjSingleton::getDGpuTemp() {
+    return getValueByOffset(0x54);
 }
 
 

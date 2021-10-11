@@ -20,11 +20,9 @@ struct _ArmouryCratePowerPlan {
 typedef _ArmouryCratePowerPlan ArmouryCratePowerPlan;
 
 static QMap<uchar, ArmouryCratePowerPlan> POWER_PLANS{
-        {0, {0, "Windows", PLAN_PerformanceWindows}},
-        {1, {1, "Performance", PLAN_PerformanceWindows}},
-        {2, {2, "Turbo", PLAN_TurboManual}},
-        {3, {3, "Manual", PLAN_TurboManual}},
-        {4, {4, "Silent", PLAN_Silent}}
+        {0, {0, "Windows/Performance", PLAN_PerformanceWindows}},
+        {1, {1, "Turbo/Manual", PLAN_TurboManual}},
+        {2, {2, "Silent", PLAN_Silent}}
 };
 
 QDataStream &operator<<(QDataStream &out, const _ArmouryCratePowerPlan &v);

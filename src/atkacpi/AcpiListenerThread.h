@@ -6,6 +6,7 @@
 //#include <QDebug>
 #include <windows.h>
 //#include <winuser.h>
+#include "AcpiControlSingleton.h"
 
 class AcpiListenerThread : public QThread {
 Q_OBJECT
@@ -13,11 +14,10 @@ Q_OBJECT
     void run() override;
 
 private:
-    HANDLE acpiHandle;
     HANDLE eventHandle;
 
 public:
-    AcpiListenerThread(HANDLE acpiHandle, QString &error);
+    AcpiListenerThread(QString &error);
 
 signals:
     void resultReady(const unsigned long acpiCode);

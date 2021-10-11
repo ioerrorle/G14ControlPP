@@ -42,6 +42,7 @@ private:
     bool saveFansProfile(QString &name, bool override);
     FansProfile createFansProfileFromCurrentSettings();
     void applySettings(ArmouryCratePowerPlan &powerPlan, bool useDefaultFanCurves, FansProfile &fansProfile);
+    void loadSettings(bool apply = false);
 
 public slots:
     void defaultFanCurvesChange(int state);
@@ -49,7 +50,7 @@ public slots:
     void onFanCurveIndexChanged(int index);
     void onSliderValueChanged(int value);
     void onApplyClicked(bool checked);
-    void loadSettings(bool apply = false);
+    void onDeleteProfileClicked(bool checked = false);
 
 
 };

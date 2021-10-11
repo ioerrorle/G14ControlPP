@@ -7,8 +7,9 @@
 #include <QAction>
 #include <QTimer>
 #include <QStyle>
-#include <src/ui/mainTab/MainTab.h>
+#include <src/ui/cpuTab/CpuTab.h>
 #include <src/ui/fansTab/FansTab.h>
+#include <src/ui/batteryTab/BatteryTab.h>
 
 namespace Ui {
     class MainWindow;
@@ -28,8 +29,9 @@ protected:
 private:
     Ui::MainWindow *ui;
     QSystemTrayIcon *trayIcon;
-    MainTab *mainTab;
+    CpuTab *cpuTab;
     FansTab *fansTab;
+    BatteryTab *batteryTab;
 
     bool closeActionTriggered = false;
 

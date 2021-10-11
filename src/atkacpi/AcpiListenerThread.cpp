@@ -1,29 +1,6 @@
 #include "AcpiListenerThread.h"
 
-AcpiListenerThread::AcpiListenerThread(HANDLE acpiHandle, QString &error) {
-    this->acpiHandle = acpiHandle;
-
-    unsigned char outBuffer[8];
-    DWORD bytesReturned;
-
-    unsigned char initData[12] = "INIT\x04";
-    memset(&initData[5], 0, 7);
-
-    WINBOOL result = DeviceIoControl(acpiHandle,
-                                     0x22240C,
-                                     &initData[0],
-                                     8,
-                                     &outBuffer[0],
-                                     8,
-                                     &bytesReturned,
-                                     NULL);
-
-    //todo check result
-
-    if (!result) {
-        auto errorCode = GetLastError();
-    }
-
+AcpiListenerThread::AcpiListenerThread(QString &error) {
     this->eventHandle = CreateEvent(NULL, FALSE, FALSE, "ATK 0100 Sync Event");
 }
 
@@ -36,22 +13,20 @@ void AcpiListenerThread::run() {
     data[1] = ((unsigned char *)&this->eventHandle)[1];
     memset(&data[3], 0, 5);
 
-    WINBOOL result = DeviceIoControl(acpiHandle,
+    AcpiControlSingleton::getInstance().controlInternal(
                                      0x222400,
                                      &data[0],
                                      8,
                                      &outBuffer[0],
-                                     16,
-                                     &bytesReturned,
-                                     NULL);
+                                     16);
 
     //todo check result
 
-    auto errorCode = GetLastError();
+    //auto errorCode = GetLastError();
 
     //todo check result
 
-    result = WaitForSingleObject(eventHandle, INFINITE);
+    WINBOOL result = WaitForSingleObject(eventHandle, INFINITE);
 
     //todo check result
 
@@ -59,15 +34,13 @@ void AcpiListenerThread::run() {
     emit resultReady(emittable);
 
     while(!isFinished()) {
-        result = DeviceIoControl(acpiHandle,
+        AcpiControlSingleton::getInstance().controlInternal(
+        //result = DeviceIoControl(acpiHandle,
                                  0x222408, //0x22240c
                                  NULL, //DSTS\x04 00 00 00 + 4 bytes of device id (00130011 or 00140011)
                                  0, //0c
                                  &outBuffer[0], //read it
-                                 4, //read it
-                                 &bytesReturned,
-                                 NULL);
-
+                                 4);
         //todo check result
 
         result = WaitForSingleObject(eventHandle, INFINITE);

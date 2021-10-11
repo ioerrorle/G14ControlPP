@@ -6,14 +6,16 @@ MainWindow::MainWindow(QWidget *parent)
           ui(new Ui::MainWindow) {
     ui->setupUi(this);
 
-    this->mainTab = new MainTab();
+    this->cpuTab = new CpuTab();
     this->fansTab = new FansTab();
+    this->batteryTab = new BatteryTab();
 
-    ui->centralwidget->addTab(mainTab, tr("Main"));
+    ui->centralwidget->addTab(cpuTab, tr("CPU"));
     ui->centralwidget->addTab(fansTab, tr("Fans"));
+    ui->centralwidget->addTab(batteryTab, tr("Battery"));
 
     QTimer *timer = new QTimer(this);
-    timer->setInterval(100);
+    timer->setInterval(250);
     connect(timer, &QTimer::timeout, this, &MainWindow::refreshMainTab);
     timer->start();
 
@@ -73,11 +75,13 @@ void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason) {
 }
 
 void MainWindow::refreshMainTab() {
-    if (((QTabWidget *) centralWidget())->currentWidget() == mainTab && this->isVisible()) {
-        mainTab->refresh();
-    }
-    if (((QTabWidget *) centralWidget())->currentWidget() == fansTab && this->isVisible()) {
-        fansTab->refresh();
+    if(this->isVisible()) {
+        if (((QTabWidget *) centralWidget())->currentWidget() == cpuTab && this->isVisible()) {
+            cpuTab->refresh();
+        }
+        if (((QTabWidget *) centralWidget())->currentWidget() == fansTab && this->isVisible()) {
+            fansTab->refresh();
+        }
     }
 }
 

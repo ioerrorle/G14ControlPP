@@ -6,9 +6,12 @@ FansTab::FansTab(QWidget *parent) : QWidget(parent), ui(new Ui::FansTab) {
 
     ui->setupUi(this);
 
+    ui->deleteProfile->setIcon(this->style()->standardIcon(QStyle::SP_TrashIcon));
+
     connect(ui->defaultFanCurves, &QCheckBox::stateChanged, this, &FansTab::defaultFanCurvesChange);
     connect(ui->fanCurveComboBox, QOverload<int>::of(&QComboBox::activated), this,
             &FansTab::onFanCurveIndexChanged);
+    connect(ui->deleteProfile, &QPushButton::clicked, this, &FansTab::onDeleteProfileClicked);
 
     //CPU SECTION
     cpuSliders[0] = ui->cpuSpeed_0;
@@ -62,7 +65,7 @@ FansTab::FansTab(QWidget *parent) : QWidget(parent), ui(new Ui::FansTab) {
     for (ArmouryCratePowerPlan &plan : POWER_PLANS) {
         ui->arCrateProfileComboBox->addItem(plan.name, QVariant::fromValue(plan.id));
     }
-    loadSettings(true);
+    loadSettings(false);
 }
 
 void FansTab::onSliderValueChanged(int value) {
@@ -77,7 +80,7 @@ void FansTab::refresh() {
     RY.refreshTable();
 
     ui->cpuRPM->setText(QString::asprintf("%.2f°C, %ld RPM",
-                                      RY.getCpuTemp(),
+                                      RY.getApuTemp(),
                                       AcpiControlSingleton::getInstance().getCpuFanSpeed()));
     ui->gpuRPM->setText(QString::number(AcpiControlSingleton::getInstance().getGpuFanSpeed()) + " RPM");
 }
@@ -217,4 +220,10 @@ void FansTab::loadSettings(bool apply) {
     if (apply) {
         applySettings(powerPlan, useDefaultFanCurves, profile);
     }
+}
+
+void FansTab::onDeleteProfileClicked(bool checked) {
+    auto currentData = ui->fanCurveComboBox->currentData().value<FansProfile>();
+    SETT.deleteFansProfile(currentData);
+    reloadFanCurves();
 }

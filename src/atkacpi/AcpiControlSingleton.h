@@ -2,11 +2,18 @@
 #define G14CONTROLPP_ACPICONTROLSINGLETON_H
 
 #include <QObject>
+#include <QMutex>
 #include "windows.h"
 #include <QByteArray>
 #include <QtCore/QByteArray>
-#include "AcpiListenerThread.h"
 #include "FanDef.h"
+#include <QDebug>
+
+typedef long PowerSourceType;
+
+#define POWER_SOURCE_USB PowerSourceType(0x00010002)
+#define POWER_SOURCE_180W PowerSourceType(0x00010001)
+#define POWER_SOURCE_BATTERY PowerSourceType(0x00000000)
 
 class AcpiControlSingleton : public QObject {
 Q_OBJECT
@@ -20,11 +27,7 @@ private:
     AcpiControlSingleton();
 
     HANDLE ATKACPIhandle;
-    AcpiListenerThread *acpiListenerThread;
-
-    unsigned long
-    controlInternal(unsigned long controlCode, unsigned char *inBuffer, int inBufferSize, unsigned char *outBuffer,
-                    int outBufferSize);
+    QMutex mutex;
 
     void setFanCurve(FAN_DEVICE fanDevice, const FanCurve &fanCurve);
 
@@ -35,10 +38,15 @@ public:
 
     bool init(QString &error);
 
+    unsigned long
+    controlInternal(unsigned long controlCode, unsigned char *inBuffer, int inBufferSize, unsigned char *outBuffer,
+                    int outBufferSize);
+
     long getCpuFanSpeed();
 
     long getGpuFanSpeed();
-    //quint64 getCpuVoltage();
+
+
 
     int dispose();
 
@@ -48,15 +56,9 @@ public:
 
     void setFanProfile(const FansProfile &fansProfile);
 
-    void setMaxBatteryPercentage(uchar &value);
+    void setMaxBatteryPercentage(const uchar value);
 
-    uchar getMaxBatteryPercentage();
-
-public slots:
-    void handleAcpiEvent(const unsigned long acpiCode);
-
-signals:
-    void acpiEvent(const unsigned long acpiCode);
+    PowerSourceType getPowerSourceType();
 };
 
 

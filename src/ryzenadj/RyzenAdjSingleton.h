@@ -83,6 +83,8 @@ private:
     get_cclk_setpoint get_cclk_setpoint_ptr = NULL;
     get_cclk_busy_value get_cclk_busy_value_ptr = NULL;
 
+    float getValueByOffset(ushort offset);
+
 public:
     RyzenAdjSingleton(RyzenAdjSingleton const &) = delete;
 
@@ -157,7 +159,13 @@ public:
     float getCclkSetpoint();
     float getCclkBusyValue();
 
-    float getCpuTemp();
+    float getCoreTempLimit();
+    float getApuTempLimit();
+    float getDGpuTempLimit();
+
+    float getCoreTemp();
+    float getApuTemp();
+    float getDGpuTemp();
 };
 
 

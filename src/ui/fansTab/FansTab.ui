@@ -2,17 +2,9 @@
 <ui version="4.0">
  <class>FansTab</class>
  <widget class="QWidget" name="FansTab">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>923</width>
-    <height>492</height>
-   </rect>
-  </property>
   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,1,0">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0,0">
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0,0,0">
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
@@ -45,6 +37,13 @@
       <widget class="QComboBox" name="fanCurveComboBox">
        <property name="styleSheet">
         <string notr="true">width : 9em</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="deleteProfile">
+       <property name="text">
+        <string/>
        </property>
       </widget>
      </item>
@@ -417,6 +416,12 @@
      <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
     </spacer>
    </item>
    <item>
@@ -425,6 +430,12 @@
       <spacer>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
        </property>
       </spacer>
      </item>
