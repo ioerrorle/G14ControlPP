@@ -9,6 +9,8 @@ CpuTab::CpuTab(QWidget *parent)
 
     connect(ui->powerProfileDropdown, QOverload<int>::of(&QComboBox::activated), this, &CpuTab::onPowerProfileSelected);
     connect(ui->deleteProfile, &QPushButton::clicked, this, &CpuTab::onDeleteProfileClicked);
+    connect(ui->save, &QPushButton::clicked, this, &CpuTab::onSaveClicked);
+    connect(ui->apply, &QPushButton::clicked, this, &CpuTab::onApplyClicked);
 
     loadPowerProfiles();
     loadCurrentPowerProfile();
@@ -58,14 +60,80 @@ void CpuTab::loadCurrentPowerProfile() {
     fillPowerProfileData(currentProfile);
 }
 
-void CpuTab::onDeleteProfileClicked(bool checked) {
+PowerProfile CpuTab::createPowerProfileFromData() {
+    PowerProfile result = {};
+    result.fastLimit = ui->fastLimitSetting->value();
+    result.slowLimit = ui->slowLimitSetting->value();
+    result.slowTime = ui->slowTimeSetting->value();
+    result.stapmLimit = ui->stapmLimitSetting->value();
+    result.stapmTime = ui->stapmTimeSetting->value();
+    result.mode = ui->modeSetting->currentData().value<Setpoint>();
+    return result;
+}
 
+bool CpuTab::saveCurrentPowerProfile(QString &name, bool override) {
+    PowerProfile profile = createPowerProfileFromData();
+    profile.name = name;
+
+    bool result = SETT.savePowerProfile(profile, override);
+
+    if (!result)
+        return false;
+
+    reloadPowerProfiles();
+    selectPowerProfile(profile, true);
+    return true;
+}
+
+void CpuTab::onDeleteProfileClicked(bool checked) {
+    auto currentData = ui->powerProfileDropdown->currentData().value<PowerProfile>();
+    SETT.deletePowerProfile(currentData);
+    reloadPowerProfiles();
 }
 
 void CpuTab::onSaveClicked(bool checked) {
+    bool ok;
+    QString text = QInputDialog::getText(this, tr("Save curves"),
+                                         tr("Curve name:"), QLineEdit::Normal,
+                                         nullptr, &ok);
+    if (ok && !text.isEmpty()) {
+        bool result = saveCurrentPowerProfile(text, false);
+        if (!result) {
+            QMessageBox msgBox;
+            msgBox.setText("Power plan with this name already exists");
+            msgBox.setInformativeText("Do you want to override it?");
+            msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+            msgBox.setDefaultButton(QMessageBox::Ok);
+            int ret = msgBox.exec();
 
+            if (ret == QMessageBox::Ok) {
+                bool result = saveCurrentPowerProfile(text, true);
+            } else {
+                //it's either cancel or something strange
+            }
+        }
+
+    }
 }
 
 void CpuTab::onApplyClicked(bool checked) {
 
+}
+
+void CpuTab::reloadPowerProfiles() {
+    ui->powerProfileDropdown->clear();
+    auto profiles = SETT.getPowerProfiles(true);
+    for (PowerProfile &profile : profiles) {
+        ui->powerProfileDropdown->addItem(profile.name, QVariant::fromValue(profile));
+    }
+}
+
+void CpuTab::selectPowerProfile(PowerProfile &profile, bool selectIndex) {
+    if (selectIndex) {
+        int i = ui->powerProfileDropdown->findText(profile.name);
+        if (i != -1) {
+            ui->powerProfileDropdown->setCurrentIndex(i);
+        }
+    }
+    fillPowerProfileData(profile);
 }

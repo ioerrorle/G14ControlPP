@@ -6,10 +6,12 @@ MainWindow::MainWindow(QWidget *parent)
           ui(new Ui::MainWindow) {
     ui->setupUi(this);
 
+    this->powerPlansTab = new PowerPlansTab();
     this->cpuTab = new CpuTab();
     this->fansTab = new FansTab();
     this->batteryTab = new BatteryTab();
 
+    ui->centralwidget->addTab(powerPlansTab, tr("Power plans"));
     ui->centralwidget->addTab(cpuTab, tr("CPU"));
     ui->centralwidget->addTab(fansTab, tr("Fans"));
     ui->centralwidget->addTab(batteryTab, tr("Battery"));

@@ -7,6 +7,7 @@
 #include <QAction>
 #include <QTimer>
 #include <QStyle>
+#include <src/ui/powerPlans/PowerPlansTab.h>
 #include <src/ui/cpuTab/CpuTab.h>
 #include <src/ui/fansTab/FansTab.h>
 #include <src/ui/batteryTab/BatteryTab.h>
@@ -29,6 +30,7 @@ protected:
 private:
     Ui::MainWindow *ui;
     QSystemTrayIcon *trayIcon;
+    PowerPlansTab *powerPlansTab;
     CpuTab *cpuTab;
     FansTab *fansTab;
     BatteryTab *batteryTab;

@@ -3,11 +3,18 @@
 
 #include <QWidget>
 
+namespace Ui {
+    class PowerPlansTab;
+}
+
 class PowerPlansTab : public QWidget {
     Q_OBJECT
 
 public:
     explicit PowerPlansTab(QWidget *parent = nullptr);
+
+private:
+    Ui::PowerPlansTab *ui;
 };
 
 

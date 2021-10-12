@@ -30,7 +30,7 @@ set(SOURCES
         src/atkacpi/AcpiControlSingleton.cpp
         src/kbd/KbdListenerThread.cpp src/kbd/KbdListenerThread.h src/settings/Settings.cpp src/settings/Settings.h
         src/atkacpi/AcpiControlSingleton.h src/atkacpi/AcpiListenerThread.cpp src/atkacpi/AcpiListenerThread.h src/events/GlobalEventDispatcher.cpp src/events/GlobalEventDispatcher.h src/kbd/KbdControlSingleton.cpp src/kbd/KbdControlSingleton.h src/audio/AudioUtils.h src/settings/Settings.cpp src/settings/Settings.h src/atkacpi/FanDef.h src/atkacpi/FanDef.cpp src/ui/batteryTab/BatteryTab.cpp src/ui/batteryTab/BatteryTab.h src/ui/hotkeys/HotkeysTab.cpp src/ui/hotkeys/HotkeysTab.h src/ui/powerPlans/PowerPlansTab.cpp src/ui/powerPlans/PowerPlansTab.h src/ryzenadj/RyzenAdjTypes.cpp)
-set(UI src/ui/MainWindow.ui src/ui/fansTab/FansTab.ui src/ui/cpuTab/CpuTab.ui src/ui/batteryTab/BatteryTab.ui)
+set(UI src/ui/MainWindow.ui src/ui/fansTab/FansTab.ui src/ui/cpuTab/CpuTab.ui src/ui/batteryTab/BatteryTab.ui src/ui/powerPlans/PowerPlansTab.ui)
 
 add_executable(G14ControlPP ${SOURCES} ${UI})
 #target_link_libraries(GraphiCa Qt${QT_VERSION_MAJOR}::Core)

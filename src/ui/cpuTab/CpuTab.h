@@ -2,6 +2,8 @@
 #define G14CONTROLPP_CPUTAB_H
 
 #include <QWidget>
+#include <QInputDialog>
+#include <QMessageBox>
 #include <src/ryzenadj/RyzenAdjSingleton.h>
 #include <src/settings/Settings.h>
 
@@ -26,8 +28,11 @@ private:
     Ui::CpuTab *ui;
     void loadPowerProfiles();
     void fillPowerProfileData(PowerProfile &profile);
-
     void loadCurrentPowerProfile();
+    PowerProfile createPowerProfileFromData();
+    bool saveCurrentPowerProfile(QString &name, bool override);
+    void reloadPowerProfiles();
+    void selectPowerProfile(PowerProfile &profile, bool selectIndex);
 };
 
 #endif //G14CONTROLPP_CPUTAB_H
