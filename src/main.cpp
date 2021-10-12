@@ -5,12 +5,18 @@
 #include <src/events/GlobalEventDispatcher.h>
 
 int main(int argc, char *argv[]) {
-    qRegisterMetaTypeStreamOperators<_FanCurve>("_FanCurve");
-    qRegisterMetaTypeStreamOperators<_FansProfile>("_FansProfile");
-    qRegisterMetaTypeStreamOperators<_PowerProfile>("_PowerProfile");
-    qRegisterMetaTypeStreamOperators<QList<_FanCurve>>("_FanCurveList");
-    qRegisterMetaTypeStreamOperators<QList<_FansProfile>>("_FansProfileList");
-    qRegisterMetaTypeStreamOperators<QList<_PowerProfile>>("_PowerProfileList");
+    QMetaType::registerComparators<FanCurve>();
+    QMetaType::registerComparators<FansProfile>();
+    QMetaType::registerComparators<PowerProfile>();
+    QMetaType::registerComparators<PowerPlan>();
+    qRegisterMetaTypeStreamOperators<FanCurve>("FanCurve");
+    qRegisterMetaTypeStreamOperators<FansProfile>("FansProfile");
+    qRegisterMetaTypeStreamOperators<PowerProfile>("PowerProfile");
+    qRegisterMetaTypeStreamOperators<PowerPlan>("PowerPlan");
+    qRegisterMetaTypeStreamOperators<QList<FanCurve>>("FanCurveList");
+    qRegisterMetaTypeStreamOperators<QList<FansProfile>>("FansProfileList");
+    qRegisterMetaTypeStreamOperators<QList<PowerProfile>>("PowerProfileList");
+    //qRegisterMetaTypeStreamOperators<QMap<int, PowerPlan>>("PowerPlanMap");
 
     QApplication a(argc, argv);
 

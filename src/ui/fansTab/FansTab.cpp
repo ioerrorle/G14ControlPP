@@ -62,7 +62,7 @@ FansTab::FansTab(QWidget *parent) : QWidget(parent), ui(new Ui::FansTab) {
     //ADD ALL
 
     //fill combo boxes
-    for (ArmouryCratePowerPlan &plan : POWER_PLANS) {
+    for (ArmouryCratePlan &plan : ARMOURY_CRATE_PLANS) {
         ui->arCrateProfileComboBox->addItem(plan.name, QVariant::fromValue(plan.id));
     }
     loadSettings(false);
@@ -193,11 +193,11 @@ void FansTab::onApplyClicked(bool checked) {
     FansProfile fansProfile = createFansProfileFromCurrentSettings();
     SETT.setCurrentFanCurveProfile(fansProfile);
 
-    applySettings(POWER_PLANS[powerPlanId], ui->defaultFanCurves->isChecked(), fansProfile);
+    applySettings(ARMOURY_CRATE_PLANS[powerPlanId], ui->defaultFanCurves->isChecked(), fansProfile);
 }
 
-void FansTab::applySettings(ArmouryCratePowerPlan &powerPlan, bool useDefaultFanCurves, FansProfile &fansProfile) {
-    AcpiControlSingleton::getInstance().setPowerPlan(powerPlan.powerPlan);
+void FansTab::applySettings(ArmouryCratePlan &powerPlan, bool useDefaultFanCurves, FansProfile &fansProfile) {
+    AcpiControlSingleton::getInstance().setPowerPlan(powerPlan.asusPlanCode);
     if (!useDefaultFanCurves) {
         AcpiControlSingleton::getInstance().setFanProfile(fansProfile);
     }

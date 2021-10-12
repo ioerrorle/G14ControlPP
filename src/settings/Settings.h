@@ -6,6 +6,20 @@
 #include <QApplication>
 #include "src/atkacpi/AcpiControlSingleton.h"
 #include "src/ryzenadj/RyzenAdjTypes.h"
+#include "src/ryzenadj/PowerProfile.h"
+
+typedef struct {
+    uchar armouryCratePlanId;
+    FansProfile fansProfile;
+    PowerProfile powerProfile;
+} PowerPlan;
+
+bool operator==(const PowerPlan& lhs, const PowerPlan& rhs);
+bool operator<(const PowerPlan& l, const PowerPlan& r);
+QDataStream &operator<<(QDataStream &out, const PowerPlan &v);
+QDataStream &operator>>(QDataStream &in, PowerPlan &v);
+
+Q_DECLARE_METATYPE(PowerPlan);
 
 #define SETT Settings::getInstance()
 
@@ -33,7 +47,7 @@ public:
     QList<FansProfile> getFansProfiles();
 
     void setCurrentPowerPlan(uchar id);
-    ArmouryCratePowerPlan getCurrentPowerPlan();
+    ArmouryCratePlan getCurrentPowerPlan();
 
     void setUseDefaultFanCurves(bool value);
     bool getUseDefaultFanCurves();
@@ -50,6 +64,10 @@ public:
 
     void putMaxBatteryCharge(const uchar value);
     uchar getMaxBatteryCharge();
+
+    void savePowerPlans(PowerPlan &dcPowerPlan, PowerPlan &acPowerPlan, PowerPlan &usbPowerPlan);
+    void loadPowerPlans(PowerPlan &dcPowerPlan, PowerPlan &acPowerPlan, PowerPlan &usbPowerPlan);
+    PowerPlan loadPowerPlanForPowerSource(PowerSourceType &source);
 };
 
 

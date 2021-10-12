@@ -11,9 +11,9 @@
 
 typedef long PowerSourceType;
 
-#define POWER_SOURCE_USB PowerSourceType(0x00010002)
-#define POWER_SOURCE_180W PowerSourceType(0x00010001)
-#define POWER_SOURCE_BATTERY PowerSourceType(0x00000000)
+#define POWER_SOURCE_USB 0x00010002
+#define POWER_SOURCE_180W 0x00010001
+#define POWER_SOURCE_BATTERY 0x00000000
 
 class AcpiControlSingleton : public QObject {
 Q_OBJECT

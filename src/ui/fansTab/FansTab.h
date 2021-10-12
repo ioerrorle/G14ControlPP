@@ -41,7 +41,7 @@ private:
     void selectFanProfile(FansProfile &profile, bool selectIndex = false);
     bool saveFansProfile(QString &name, bool override);
     FansProfile createFansProfileFromCurrentSettings();
-    void applySettings(ArmouryCratePowerPlan &powerPlan, bool useDefaultFanCurves, FansProfile &fansProfile);
+    void applySettings(ArmouryCratePlan &powerPlan, bool useDefaultFanCurves, FansProfile &fansProfile);
     void loadSettings(bool apply = false);
 
 public slots:

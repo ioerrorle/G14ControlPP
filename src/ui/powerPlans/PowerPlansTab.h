@@ -2,6 +2,8 @@
 #define G14CONTROLPP_POWERPLANSTAB_H
 
 #include <QWidget>
+#include "src/settings/Settings.h"
+
 
 namespace Ui {
     class PowerPlansTab;
@@ -15,6 +17,16 @@ public:
 
 private:
     Ui::PowerPlansTab *ui;
+
+    void loadProfiles();
+
+    void loadSettings(PowerSourceType powerSourceType);
+    void loadSettings();
+
+    PowerPlan createPowerPlan(PowerSourceType powerSourceType);
+
+public slots:
+    void saveSettings(bool checked = false);
 };
 
 

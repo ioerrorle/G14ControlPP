@@ -1,5 +1,31 @@
 #include "Settings.h"
 
+QDataStream &operator<<(QDataStream &out, const PowerPlan &v) {
+    out << v.armouryCratePlanId;
+    out << v.fansProfile;
+    out << v.powerProfile;
+    return out;
+}
+
+QDataStream &operator>>(QDataStream &in, PowerPlan &v) {
+    in >> v.armouryCratePlanId;
+    in >> v.fansProfile;
+    in >> v.powerProfile;
+    return in;
+}
+
+bool operator==(const PowerPlan& lhs, const PowerPlan& rhs){
+    return lhs.powerProfile == rhs.powerProfile
+           && lhs.fansProfile == rhs.fansProfile
+           && lhs.armouryCratePlanId == rhs.armouryCratePlanId;
+}
+
+bool operator<(const PowerPlan &l, const PowerPlan &r) {
+    return l.powerProfile < r.powerProfile
+           || l.fansProfile < r.fansProfile
+           || l.armouryCratePlanId < r.armouryCratePlanId;
+}
+
 Settings &Settings::getInstance() {
     static Settings instance;
     return instance;
@@ -70,9 +96,9 @@ void Settings::setCurrentPowerPlan(uchar id) {
     qSettings->setValue("current_power_plan", id);
 }
 
-ArmouryCratePowerPlan Settings::getCurrentPowerPlan() {
+ArmouryCratePlan Settings::getCurrentPowerPlan() {
     uchar powerPlanId = qSettings->value("current_power_plan", 0).value<bool>();
-    return POWER_PLANS[powerPlanId];
+    return ARMOURY_CRATE_PLANS[powerPlanId];
 }
 
 void Settings::setUseDefaultFanCurves(bool value) {
@@ -193,4 +219,49 @@ void Settings::putMaxBatteryCharge(uchar value) {
 
 uchar Settings::getMaxBatteryCharge() {
     return qSettings->value("battery_max_charge", 100).value<uchar>();
+}
+
+void Settings::savePowerPlans(PowerPlan &dcPowerPlan, PowerPlan &acPowerPlan, PowerPlan &usbPowerPlan) {
+    qSettings->setValue("dc_power_plan", QVariant::fromValue(dcPowerPlan));
+    qSettings->setValue("ac_power_plan", QVariant::fromValue(acPowerPlan));
+    qSettings->setValue("usb_power_plan", QVariant::fromValue(usbPowerPlan));
+}
+
+void Settings::loadPowerPlans(PowerPlan &dcPowerPlan, PowerPlan &acPowerPlan, PowerPlan &usbPowerPlan) {
+    if (qSettings->contains("dc_power_plan")) {
+        dcPowerPlan = qSettings->value("dc_power_plan").value<PowerPlan>();
+    } else {
+        dcPowerPlan = {0, {}, {}};
+    }
+    if (qSettings->contains("ac_power_plan")) {
+        acPowerPlan = qSettings->value("ac_power_plan").value<PowerPlan>();
+    } else {
+        acPowerPlan = {0, {}, {}};
+    }
+    if (qSettings->contains("usb_power_plan")) {
+        usbPowerPlan = qSettings->value("usb_power_plan").value<PowerPlan>();
+    } else {
+        usbPowerPlan = {0, {}, {}};
+    }
+}
+
+PowerPlan Settings::loadPowerPlanForPowerSource(PowerSourceType &source) {
+    QString key;
+    switch (source) {
+        case POWER_SOURCE_BATTERY:
+            key = "dc_power_plan";
+            break;
+        case POWER_SOURCE_180W:
+            key = "ac_power_plan";
+            break;
+        case POWER_SOURCE_USB:
+            key = "usb_power_plan";
+            break;
+    }
+
+    if (qSettings->contains(key)) {
+        return qSettings->value(key).value<PowerPlan>();
+    } else {
+        return {0, {}, {}};
+    }
 }

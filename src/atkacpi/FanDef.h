@@ -7,54 +7,52 @@
 typedef uchar ASUS_PLAN;
 typedef uchar FAN_DEVICE;
 
-#define PLAN_PerformanceWindows ASUS_PLAN(0x00)
-#define PLAN_TurboManual ASUS_PLAN(0x01)
-#define PLAN_Silent ASUS_PLAN(0x02)
+#define PLAN_PerformanceWindows 0x00
+#define PLAN_TurboManual 0x01
+#define PLAN_Silent 0x02
 
-struct _ArmouryCratePowerPlan {
+typedef struct {
     uint id;
     QString name;
-    ASUS_PLAN powerPlan;
-};
+    ASUS_PLAN asusPlanCode;
+} ArmouryCratePlan;
 
-typedef _ArmouryCratePowerPlan ArmouryCratePowerPlan;
-
-static QMap<uchar, ArmouryCratePowerPlan> POWER_PLANS{
+static QMap<uchar, ArmouryCratePlan> ARMOURY_CRATE_PLANS{
         {0, {0, "Windows/Performance", PLAN_PerformanceWindows}},
         {1, {1, "Turbo/Manual", PLAN_TurboManual}},
         {2, {2, "Silent", PLAN_Silent}}
 };
 
-QDataStream &operator<<(QDataStream &out, const _ArmouryCratePowerPlan &v);
-QDataStream &operator>>(QDataStream &in, _ArmouryCratePowerPlan &v);
+//inline bool operator==(const ArmouryCratePlan& l, const ArmouryCratePlan& r);
 
-Q_DECLARE_METATYPE(ArmouryCratePowerPlan);
+Q_DECLARE_METATYPE(ArmouryCratePlan);
 
 #define FAN_CPU FAN_DEVICE(0x24)
 #define FAN_GPU FAN_DEVICE(0x25)
 
-struct _FanCurve {
+typedef struct {
     uchar temp[8];
     uchar speed[8];
-};
-typedef _FanCurve FanCurve;
+} FanCurve;
 
-QDataStream &operator<<(QDataStream &out, const _FanCurve &v);
-QDataStream &operator>>(QDataStream &in, _FanCurve &v);
+inline bool operator==(const FanCurve& l, const FanCurve& r);
+inline bool operator<(const FanCurve& l, const FanCurve& r);
+QDataStream &operator<<(QDataStream &out, const FanCurve &v);
+QDataStream &operator>>(QDataStream &in, FanCurve &v);
 
-Q_DECLARE_METATYPE(_FanCurve);
+Q_DECLARE_METATYPE(FanCurve);
 
-struct _FansProfile {
+typedef struct {
     QString name;
-    _FanCurve cpu;
-    _FanCurve gpu;
-};
+    FanCurve cpu;
+    FanCurve gpu;
+} FansProfile;
 
-typedef _FansProfile FansProfile;
+bool operator==(const FansProfile& l, const FansProfile& r);
+bool operator<(const FansProfile& l, const FansProfile& r);
+QDataStream &operator<<(QDataStream &out, const FansProfile &v);
+QDataStream &operator>>(QDataStream &in, FansProfile &v);
 
-QDataStream &operator<<(QDataStream &out, const _FansProfile &v);
-QDataStream &operator>>(QDataStream &in, _FansProfile &v);
-
-Q_DECLARE_METATYPE(_FansProfile);
+Q_DECLARE_METATYPE(FansProfile);
 
 #endif //G14CONTROLPP_FANDEF_H
