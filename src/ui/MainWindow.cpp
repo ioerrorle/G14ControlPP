@@ -6,6 +6,8 @@ MainWindow::MainWindow(QWidget *parent)
           ui(new Ui::MainWindow) {
     ui->setupUi(this);
 
+    setWindowIcon(this->style()->standardIcon(QStyle::SP_ComputerIcon));
+
     this->powerPlansTab = new PowerPlansTab();
     this->cpuTab = new CpuTab();
     this->fansTab = new FansTab();

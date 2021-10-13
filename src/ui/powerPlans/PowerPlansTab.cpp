@@ -18,8 +18,8 @@ void PowerPlansTab::loadProfiles() {
     ui->acFanProfile->clear();
     ui->acPlan->clear();
     ui->usbPowerProfile->clear();
-    ui->acFanProfile->clear();
-    ui->acPlan->clear();
+    ui->usbFanProfile->clear();
+    ui->usbPlan->clear();
 
     ui->dcPowerProfile->addItem("Default", 0);
     ui->acPowerProfile->addItem("Default", 0);

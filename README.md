@@ -17,11 +17,11 @@ Roadmap:
 4) ~~Multiple fan curves~~ (done)
 5) ~~Handle "Mute" button~~(done, mutes ALL mics, not only active)
 6) ~~Battery health function~~ (done)
-7) Functional CPU settings tab
-8) Profiles tab (CPU, power plan, fan curve settings for each power supply)
-9) Handle "Toggle Touchpad" button
-10) Handle "Sleep" button
-11) Handle "Plane Mode" button
+7) ~~Functional CPU settings tab~~ (done)
+8) ~~Profiles tab (CPU, power plan, fan curve settings for each power supply)~~ (done)
+9) ~~Handle "Toggle Touchpad" button~~ (done)
+10) ~~Handle "Sleep" button~~ (done)
+11) ~~Handle "Plane Mode" button~~ (done)
 12) Do something with "Fan Mode" button (circular switch between modes?)
 13) Handle "ROG" button
 14) Make an interface for AniMe matrix

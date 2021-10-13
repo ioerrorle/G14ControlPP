@@ -1,9 +1,0 @@
-#ifndef G14CONTROLPP_HOTKEYACTION_H
-#define G14CONTROLPP_HOTKEYACTION_H
-
-class HotkeyAction {
-
-};
-
-
-#endif //G14CONTROLPP_HOTKEYACTION_H

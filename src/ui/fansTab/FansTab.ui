@@ -8,7 +8,7 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Armoury Crate profile:</string>
+        <string>Armoury Crate plan:</string>
        </property>
       </widget>
      </item>
