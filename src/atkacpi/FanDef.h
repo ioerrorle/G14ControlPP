@@ -35,8 +35,8 @@ typedef struct {
     uchar speed[8];
 } FanCurve;
 
-inline bool operator==(const FanCurve& l, const FanCurve& r);
-inline bool operator<(const FanCurve& l, const FanCurve& r);
+bool operator==(const FanCurve& l, const FanCurve& r);
+bool operator<(const FanCurve& l, const FanCurve& r);
 QDataStream &operator<<(QDataStream &out, const FanCurve &v);
 QDataStream &operator>>(QDataStream &in, FanCurve &v);
 

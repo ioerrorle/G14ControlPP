@@ -4,35 +4,52 @@
 #include <QWidget>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QTimer>
 #include <src/ryzenadj/RyzenAdjSingleton.h>
 #include <src/settings/Settings.h>
+#include "src/ui/base/BaseTab.h"
 
 namespace Ui {
     class CpuTab;
 }
 
-class CpuTab : public QWidget
-{
-    Q_OBJECT
+class CpuTab : public QWidget, public BaseTab {
+Q_OBJECT
 
 public:
     explicit CpuTab(QWidget *parent = nullptr);
-    void refresh();
+
+    void setSelected(bool selected);
+
 public slots:
+
     void onPowerProfileSelected(int index);
+
     void onDeleteProfileClicked(bool checked = false);
+
     void onSaveClicked(bool checked = false);
+
     void onApplyClicked(bool checked = false);
 
 private:
     Ui::CpuTab *ui;
+    QTimer *qTimer;
+
     void loadPowerProfiles();
+
     void fillPowerProfileData(PowerProfile &profile);
+
     void loadCurrentPowerProfile();
+
     PowerProfile createPowerProfileFromData();
+
     bool saveCurrentPowerProfile(QString &name, bool override);
+
     void reloadPowerProfiles();
+
     void selectPowerProfile(PowerProfile &profile, bool selectIndex);
+
+    void refresh();
 };
 
 #endif //G14CONTROLPP_CPUTAB_H

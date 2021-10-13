@@ -219,7 +219,7 @@
        </layout>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout_15">
+       <layout class="QVBoxLayout" name="verticalLayout_1">
         <item alignment="Qt::AlignTop">
          <widget class="QLabel" name="cpuRPM">
           <property name="text">
@@ -398,7 +398,7 @@
        </layout>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout_15">
+       <layout class="QVBoxLayout" name="verticalLayout_2">
         <item alignment="Qt::AlignTop">
          <widget class="QLabel" name="gpuRPM">
           <property name="text">

@@ -27,6 +27,8 @@ public:
 protected:
     void closeEvent(QCloseEvent *event) override;
 
+    void showEvent(QShowEvent *event) override;
+
 private:
     Ui::MainWindow *ui;
     QSystemTrayIcon *trayIcon;
@@ -37,13 +39,11 @@ private:
 
     bool closeActionTriggered = false;
 
-    void refreshMainTab();
-
 private slots:
 
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
-
     void closeTrayAction();
+    void onIndexChanged(int index);
 };
 
 

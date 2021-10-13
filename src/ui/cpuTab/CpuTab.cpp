@@ -14,6 +14,10 @@ CpuTab::CpuTab(QWidget *parent)
 
     loadPowerProfiles();
     loadCurrentPowerProfile();
+
+    qTimer = new QTimer(this);
+    qTimer->setInterval(250);
+    connect(qTimer, &QTimer::timeout, this, &CpuTab::refresh);
 }
 
 void CpuTab::refresh() {
@@ -136,4 +140,12 @@ void CpuTab::selectPowerProfile(PowerProfile &profile, bool selectIndex) {
         }
     }
     fillPowerProfileData(profile);
+}
+
+void CpuTab::setSelected(bool selected) {
+    if (selected) {
+        qTimer->start();
+    } else {
+        qTimer->stop();
+    }
 }

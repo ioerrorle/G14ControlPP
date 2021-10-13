@@ -10,7 +10,7 @@
      </property>
      <layout class="QGridLayout" columnstretch="0,1">
       <item row="5" column="0">
-       <widget class="QLabel" name="label">
+       <widget class="QLabel">
         <property name="text">
          <string>Core temp limit, °C</string>
         </property>
@@ -24,7 +24,7 @@
        </widget>
       </item>
       <item row="0" column="0">
-       <widget class="QLabel" name="label">
+       <widget class="QLabel">
         <property name="minimumSize">
          <size>
           <width>120</width>
@@ -37,14 +37,14 @@
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QLabel" name="label">
+       <widget class="QLabel">
         <property name="text">
          <string>Slow limit, W</string>
         </property>
        </widget>
       </item>
       <item row="3" column="0">
-       <widget class="QLabel" name="label">
+       <widget class="QLabel">
         <property name="text">
          <string>Slow time, s</string>
         </property>
@@ -65,14 +65,14 @@
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QLabel" name="label">
+       <widget class="QLabel">
         <property name="text">
          <string>STAPM time, s</string>
         </property>
        </widget>
       </item>
       <item row="4" column="0">
-       <widget class="QLabel" name="label">
+       <widget class="QLabel">
         <property name="text">
          <string>Fast limit, W</string>
         </property>
@@ -86,7 +86,7 @@
        </widget>
       </item>
       <item row="6" column="0">
-       <widget class="QLabel" name="label">
+       <widget class="QLabel">
         <property name="text">
          <string>APU temp limit, °C</string>
         </property>
@@ -100,7 +100,7 @@
        </widget>
       </item>
       <item row="8" column="0">
-       <widget class="QLabel" name="label">
+       <widget class="QLabel">
         <property name="text">
          <string>Mode</string>
         </property>
@@ -114,7 +114,7 @@
        </widget>
       </item>
       <item row="7" column="0">
-       <widget class="QLabel" name="label">
+       <widget class="QLabel">
         <property name="text">
          <string>dGPU temp limit, °C</string>
         </property>
@@ -147,7 +147,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QLabel" name="label">
+      <widget class="QLabel">
        <property name="text">
         <string>Power profile:</string>
        </property>
@@ -199,14 +199,14 @@
        </widget>
       </item>
       <item row="4" column="0">
-       <widget class="QLabel" name="label">
+       <widget class="QLabel">
         <property name="text">
          <string>Fast limit, W</string>
         </property>
        </widget>
       </item>
       <item row="0" column="0">
-       <widget class="QLabel" name="label">
+       <widget class="QLabel">
         <property name="minimumSize">
          <size>
           <width>120</width>
@@ -222,21 +222,21 @@
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QLabel" name="label">
+       <widget class="QLabel">
         <property name="text">
          <string>Slow limit, W</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QLabel" name="label">
+       <widget class="QLabel">
         <property name="text">
          <string>STAPM time, s</string>
         </property>
        </widget>
       </item>
       <item row="3" column="0">
-       <widget class="QLabel" name="label">
+       <widget class="QLabel">
         <property name="text">
          <string>Slow time, s</string>
         </property>
@@ -276,7 +276,7 @@
        </widget>
       </item>
       <item row="5" column="0">
-       <widget class="QLabel" name="label">
+       <widget class="QLabel">
         <property name="text">
          <string>Mode</string>
         </property>

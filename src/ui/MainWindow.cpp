@@ -16,18 +16,15 @@ MainWindow::MainWindow(QWidget *parent)
     ui->centralwidget->addTab(fansTab, tr("Fans"));
     ui->centralwidget->addTab(batteryTab, tr("Battery"));
 
-    QTimer *timer = new QTimer(this);
-    timer->setInterval(250);
-    connect(timer, &QTimer::timeout, this, &MainWindow::refreshMainTab);
-    timer->start();
+    connect(ui->centralwidget, &QTabWidget::currentChanged, this, &MainWindow::onIndexChanged);
 
     trayIcon = new QSystemTrayIcon(this);
     trayIcon->setIcon(this->style()->standardIcon(QStyle::SP_ComputerIcon));
     trayIcon->setToolTip("G14ControlPP");
     /* After that create a context menu of two items */
-    QMenu *menu = new QMenu(this);
-    QAction *viewWindow = new QAction(trUtf8("Maximize"), this);
-    QAction *quitAction = new QAction(trUtf8("Quit"), this);
+    auto *menu = new QMenu(this);
+    auto *viewWindow = new QAction("Maximize", this);
+    auto *quitAction = new QAction("Quit", this);
 
     connect(viewWindow, SIGNAL(triggered()), this, SLOT(show()));
     connect(quitAction, SIGNAL(triggered()), this, SLOT(closeTrayAction()));
@@ -49,6 +46,7 @@ MainWindow::~MainWindow() {
 void MainWindow::closeEvent(QCloseEvent *event) {
     if (this->isVisible() && !closeActionTriggered) {
         event->ignore();
+        onIndexChanged(-1);
         this->hide();
         //QSystemTrayIcon::MessageIcon icon = QSystemTrayIcon::MessageIcon(QSystemTrayIcon::Information);
 
@@ -58,6 +56,11 @@ void MainWindow::closeEvent(QCloseEvent *event) {
                               icon,
                               2000);*/
     }
+}
+
+void MainWindow::showEvent(QShowEvent *event) {
+    QWidget::showEvent(event);
+    onIndexChanged(ui->centralwidget->currentIndex());
 }
 
 void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason) {
@@ -76,18 +79,14 @@ void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason) {
     }
 }
 
-void MainWindow::refreshMainTab() {
-    if(this->isVisible()) {
-        if (((QTabWidget *) centralWidget())->currentWidget() == cpuTab && this->isVisible()) {
-            cpuTab->refresh();
-        }
-        if (((QTabWidget *) centralWidget())->currentWidget() == fansTab && this->isVisible()) {
-            fansTab->refresh();
-        }
-    }
-}
-
 void MainWindow::closeTrayAction() {
     this->closeActionTriggered = true;
     this->close();
+}
+
+void MainWindow::onIndexChanged(int index) {
+    for (int i = 0; i < ui->centralwidget->count(); i++) {
+        auto tab = dynamic_cast<BaseTab *>(ui->centralwidget->widget(i));
+        tab->setSelected(i == index);
+    }
 }

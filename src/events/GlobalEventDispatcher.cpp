@@ -173,7 +173,7 @@ void GlobalEventDispatcher::handlePowerCfgChange(POWERBROADCAST_SETTING *setting
     }
     if (settings->PowerSetting == GUID_ACDC_POWER_SOURCE) {
         //check power source
-        qDebug() << AcpiControlSingleton::getInstance().getPowerSourceType();
+        //qDebug() << AcpiControlSingleton::getInstance().getPowerSourceType();
         //settings->Data[0]; // o for AC, 1 for battery
     }
 }

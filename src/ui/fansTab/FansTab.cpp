@@ -66,6 +66,10 @@ FansTab::FansTab(QWidget *parent) : QWidget(parent), ui(new Ui::FansTab) {
         ui->arCrateProfileComboBox->addItem(plan.name, QVariant::fromValue(plan.id));
     }
     loadSettings(false);
+
+    qTimer = new QTimer(this);
+    qTimer->setInterval(250);
+    connect(qTimer, &QTimer::timeout, this, &FansTab::refresh);
 }
 
 void FansTab::onSliderValueChanged(int value) {
@@ -226,4 +230,12 @@ void FansTab::onDeleteProfileClicked(bool checked) {
     auto currentData = ui->fanCurveComboBox->currentData().value<FansProfile>();
     SETT.deleteFansProfile(currentData);
     reloadFanCurves();
+}
+
+void FansTab::setSelected(bool selected) {
+    if (selected) {
+        qTimer->start();
+    } else {
+        qTimer->stop();
+    }
 }

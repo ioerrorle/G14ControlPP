@@ -11,6 +11,16 @@ PowerPlansTab::PowerPlansTab(QWidget *parent) : QWidget(parent), ui(new Ui::Powe
 }
 
 void PowerPlansTab::loadProfiles() {
+    ui->dcPowerProfile->clear();
+    ui->dcFanProfile->clear();
+    ui->dcPlan->clear();
+    ui->acPowerProfile->clear();
+    ui->acFanProfile->clear();
+    ui->acPlan->clear();
+    ui->usbPowerProfile->clear();
+    ui->acFanProfile->clear();
+    ui->acPlan->clear();
+
     ui->dcPowerProfile->addItem("Default", 0);
     ui->acPowerProfile->addItem("Default", 0);
     ui->usbPowerProfile->addItem("Default", 0);
@@ -68,28 +78,20 @@ void PowerPlansTab::loadSettings(PowerSourceType powerSourceType) {
     }
 
     if (powerPlan.fansProfile.name.isEmpty()) {
-        qDebug() << "fansProfileNameEmpty";
         fanProfile->setCurrentIndex(fanProfile->findData(0));
     } else {
         index = fanProfile->findData(QVariant::fromValue(powerPlan.fansProfile));
         if (index != -1) {
-            qDebug() << "fansProfileName Found";
             fanProfile->setCurrentIndex(index);
-        } else {
-            qDebug() << "fansProfileName notFound";
         }
     }
 
     if (powerPlan.powerProfile.name.isEmpty()) {
-        qDebug() << "powerProfileNameEmpty";
         powerProfile->setCurrentIndex(fanProfile->findData(0));
     } else {
         index = powerProfile->findData(QVariant::fromValue(powerPlan.powerProfile));
         if (index != -1) {
-            qDebug() << "powerProfileName Found";
             powerProfile->setCurrentIndex(index);
-        } else {
-            qDebug() << "powerProfileName not Found";
         }
     }
 }
@@ -146,4 +148,11 @@ void PowerPlansTab::saveSettings(bool checked) {
     auto usb = createPowerPlan(POWER_SOURCE_USB);
 
     SETT.savePowerPlans(dc, ac, usb);
+}
+
+void PowerPlansTab::setSelected(bool selected) {
+    if (selected) {
+        loadProfiles();
+        loadSettings();
+    }
 }

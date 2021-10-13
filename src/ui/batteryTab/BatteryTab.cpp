@@ -26,4 +26,8 @@ void BatteryTab::loadSettings() {
     AcpiControlSingleton::getInstance().setMaxBatteryPercentage(ui->batterySlider->value());
 }
 
+void BatteryTab::setSelected(bool selected) {
+    //qDebug() << "battery";
+}
+
 
