@@ -139,6 +139,12 @@ void KbdControlSingleton::setKbdBrightness(uchar &kbdBr) {
     this->sendHidControl(data, 0x40);
 }
 
+void KbdControlSingleton::toggleTouchPad() {
+    unsigned char data[0x40] = {0x5a, 0xf4, 0x6b};
+    memset(&data[3], 0, sizeof(data) - 3);
+    this->sendHidControl(data, 0x40);
+}
+
 uchar KbdControlSingleton::changeKbdBrightness(bool increase) {
     if (increase && this->kbdBr >= 3) {
         this->kbdBr = 3;

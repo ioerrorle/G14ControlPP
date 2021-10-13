@@ -122,6 +122,19 @@ void GlobalEventDispatcher::handleKbdFnPress(const unsigned char fnKeyCode) {
             AudioUtils::toggleMute(mute, error);
             break;
         }
+        case 0x6c: //sleep
+            AcpiControlSingleton::getInstance().sendSleepCommand();
+            break;
+        case 0x88: //rfkill
+            AcpiControlSingleton::getInstance().sendRfKillCommand();
+            break;
+        case 0x38: //rog button
+            break;
+        case 0xae: //fan button
+            break;
+        case 0x6b: //toggle touchpad
+            KbdControlSingleton::getInstance().toggleTouchPad();
+            break;
         default:
             break;
     }

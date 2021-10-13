@@ -34,6 +34,7 @@ public:
     uchar changeKbdBrightness(bool increase);
 
     void toggleKbdBacklight(bool enabled);
+    void toggleTouchPad();
 
 public slots:
     void handleKbdFnPress(const unsigned char fnKeyCode);
@@ -42,8 +43,6 @@ signals:
     void kbdFnEvent(const unsigned char fnKeyCode);
 
     void sendHidControl(unsigned char *data);
-
-
 };
 
 

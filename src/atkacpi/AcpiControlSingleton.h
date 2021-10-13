@@ -59,6 +59,10 @@ public:
     void setMaxBatteryPercentage(const uchar value);
 
     PowerSourceType getPowerSourceType();
+
+    void sendSleepCommand();
+
+    void sendRfKillCommand();
 };
 
 

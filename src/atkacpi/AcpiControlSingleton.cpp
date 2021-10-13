@@ -299,3 +299,27 @@ PowerSourceType AcpiControlSingleton::getPowerSourceType() {
     return result;
 }
 
+void AcpiControlSingleton::sendSleepCommand() {
+    unsigned char input[16] = {0x44, 0x45, 0x56, 0x53,
+                               0x08, 0x00, 0x00, 0x00, /*prefix*/
+                               0x21, 0x00, 0x10, 0x00,
+                               0x6c, 0x00, 0x00, 0x00 /* data */
+    };
+
+    unsigned char outBuffer[8];
+
+    int bytesWritten = controlInternal(0x22240c, &input[0], 16, &outBuffer[0], 8);
+}
+
+void AcpiControlSingleton::sendRfKillCommand() {
+    unsigned char input[16] = {0x44, 0x45, 0x56, 0x53,
+                               0x08, 0x00, 0x00, 0x00, /*prefix*/
+                               0x21, 0x00, 0x10, 0x00,
+                               0x88, 0x00, 0x00, 0x00 /* data */
+    };
+
+    unsigned char outBuffer[8];
+
+    int bytesWritten = controlInternal(0x22240c, &input[0], 16, &outBuffer[0], 8);
+}
+
