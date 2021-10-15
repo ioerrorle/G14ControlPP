@@ -7,19 +7,7 @@
 #include "src/atkacpi/AcpiControlSingleton.h"
 #include "src/ryzenadj/RyzenAdjTypes.h"
 #include "src/ryzenadj/PowerProfile.h"
-
-typedef struct {
-    uchar armouryCratePlanId;
-    FansProfile fansProfile;
-    PowerProfile powerProfile;
-} PowerPlan;
-
-bool operator==(const PowerPlan& lhs, const PowerPlan& rhs);
-bool operator<(const PowerPlan& l, const PowerPlan& r);
-QDataStream &operator<<(QDataStream &out, const PowerPlan &v);
-QDataStream &operator>>(QDataStream &in, PowerPlan &v);
-
-Q_DECLARE_METATYPE(PowerPlan);
+#include "PowerPlanSet.h"
 
 #define SETT Settings::getInstance()
 
@@ -34,6 +22,7 @@ private:
 
     void saveFansProfiles(QList<FansProfile> &profiles);
     void savePowerProfiles(QList<PowerProfile> &profiles);
+    void savePowerPlanSets(QList<PowerPlanSet> &powerPlanSets);
 
 public:
     Settings(Settings const &) = delete;
@@ -68,6 +57,14 @@ public:
     void savePowerPlans(PowerPlan &dcPowerPlan, PowerPlan &acPowerPlan, PowerPlan &usbPowerPlan);
     void loadPowerPlans(PowerPlan &dcPowerPlan, PowerPlan &acPowerPlan, PowerPlan &usbPowerPlan);
     PowerPlan loadPowerPlanForPowerSource(PowerSourceType &source);
+
+    bool savePowerPlanSet(PowerPlanSet &powerPlanSet, bool override = true);
+    void deletePowerPlanSet(PowerPlanSet &powerPlanSet);
+    QList<PowerPlanSet> getPowerPlanSets(bool includeStock = true);
+
+    void setUsedPowerPlans(QStringList &list);
+    QStringList getUsedPowerPlans();
+    QStringList getUsedPowerPlans(QList<PowerPlanSet> &powerPlanSets);
 };
 
 

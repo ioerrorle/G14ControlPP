@@ -9,13 +9,16 @@ int main(int argc, char *argv[]) {
     QMetaType::registerComparators<FansProfile>();
     QMetaType::registerComparators<PowerProfile>();
     QMetaType::registerComparators<PowerPlan>();
+    QMetaType::registerComparators<PowerPlanSet>();
     qRegisterMetaTypeStreamOperators<FanCurve>("FanCurve");
     qRegisterMetaTypeStreamOperators<FansProfile>("FansProfile");
     qRegisterMetaTypeStreamOperators<PowerProfile>("PowerProfile");
     qRegisterMetaTypeStreamOperators<PowerPlan>("PowerPlan");
+    qRegisterMetaTypeStreamOperators<PowerPlanSet>("PowerPlanSet");
     qRegisterMetaTypeStreamOperators<QList<FanCurve>>("FanCurveList");
     qRegisterMetaTypeStreamOperators<QList<FansProfile>>("FansProfileList");
     qRegisterMetaTypeStreamOperators<QList<PowerProfile>>("PowerProfileList");
+    qRegisterMetaTypeStreamOperators<QList<PowerPlanSet>>("PowerPlanSetList");
     //qRegisterMetaTypeStreamOperators<QMap<int, PowerPlan>>("PowerPlanMap");
 
     QApplication a(argc, argv);

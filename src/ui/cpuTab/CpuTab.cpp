@@ -6,6 +6,7 @@ CpuTab::CpuTab(QWidget *parent)
     ui->setupUi(this);
 
     ui->deleteProfile->setIcon(this->style()->standardIcon(QStyle::SP_TrashIcon));
+    ui->save->setIcon(this->style()->standardIcon(QStyle::SP_DialogSaveButton));
 
     connect(ui->powerProfileDropdown, QOverload<int>::of(&QComboBox::activated), this, &CpuTab::onPowerProfileSelected);
     connect(ui->deleteProfile, &QPushButton::clicked, this, &CpuTab::onDeleteProfileClicked);

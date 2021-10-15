@@ -2,6 +2,8 @@
 #define G14CONTROLPP_POWERPLANSTAB_H
 
 #include <QWidget>
+#include <QInputDialog>
+#include <QMessageBox>
 #include "src/settings/Settings.h"
 #include "src/ui/base/BaseTab.h"
 
@@ -20,18 +22,31 @@ public:
 
 private:
     Ui::PowerPlansTab *ui;
+    bool powerPlanSetChanged;
 
     void loadProfiles();
 
-    void loadSettings(PowerSourceType powerSourceType);
-
-    void loadSettings();
+    void loadSettings(PowerSourceType powerSourceType, PowerPlan &powerPlan);
+//
+//    void loadSettings();
 
     PowerPlan createPowerPlan(PowerSourceType powerSourceType);
 
+    void selectSavedPowerPlan(QString &text);
+
+    void loadPowerPlans();
+
+    bool savePowerPlanSet(QString &name, bool override);
+
 public slots:
 
-    void saveSettings(bool checked = false);
+    void onSavePowerPlanSetClicked(bool checked = false);
+    void onApplyAndSaveClicked(bool checked = false);
+    void powerPlanSetSelected(int index);
+    void powerPlanSetActivated(int index);
+    void deleteSelectedPlanSet(bool checked = false);
+    void addPowerPlanToUsed(bool checked = false);
+    void removePowerPlanFromUsed(bool checked = false);
 };
 
 

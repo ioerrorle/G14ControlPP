@@ -1,31 +1,5 @@
 #include "Settings.h"
 
-QDataStream &operator<<(QDataStream &out, const PowerPlan &v) {
-    out << v.armouryCratePlanId;
-    out << v.fansProfile;
-    out << v.powerProfile;
-    return out;
-}
-
-QDataStream &operator>>(QDataStream &in, PowerPlan &v) {
-    in >> v.armouryCratePlanId;
-    in >> v.fansProfile;
-    in >> v.powerProfile;
-    return in;
-}
-
-bool operator==(const PowerPlan& lhs, const PowerPlan& rhs){
-    return lhs.powerProfile == rhs.powerProfile
-           && lhs.fansProfile == rhs.fansProfile
-           && lhs.armouryCratePlanId == rhs.armouryCratePlanId;
-}
-
-bool operator<(const PowerPlan &l, const PowerPlan &r) {
-    return l.powerProfile < r.powerProfile
-           || l.fansProfile < r.fansProfile
-           || l.armouryCratePlanId < r.armouryCratePlanId;
-}
-
 Settings &Settings::getInstance() {
     static Settings instance;
     return instance;
@@ -181,7 +155,7 @@ QList<PowerProfile> Settings::getPowerProfiles(bool includeStock) {
         result = qSettings->value("power_profiles_list").value<QList<PowerProfile>>();
     }
     if (includeStock) {
-        result.insert(0, STOCK_PROFILE);
+        result.insert(0, STOCK_POWER_PROFILE);
     }
     return result;
 }
@@ -209,7 +183,7 @@ PowerProfile Settings::getCurrentPowerProfile() {
     if (qSettings->contains("current_power_profile")) {
         return qSettings->value("current_power_profile").value<PowerProfile>();
     } else {
-        return STOCK_PROFILE;
+        return STOCK_POWER_PROFILE;
     }
 }
 
@@ -265,3 +239,107 @@ PowerPlan Settings::loadPowerPlanForPowerSource(PowerSourceType &source) {
         return {0, {}, {}};
     }
 }
+
+void Settings::savePowerPlanSets(QList<PowerPlanSet> &powerPlanSets) {
+    qSettings->setValue("power_plan_set_list", QVariant::fromValue(powerPlanSets));
+}
+
+bool Settings::savePowerPlanSet(PowerPlanSet &powerPlanSet, bool override) {
+    auto currentPowerPlanSets = getPowerPlanSets(false);
+    for (int i = 0; i < currentPowerPlanSets.size(); i++) {
+        if (powerPlanSet.name == currentPowerPlanSets[i].name) {
+            if (!override) {
+                return false;
+            } else {
+                currentPowerPlanSets.replace(i, powerPlanSet);
+                return true;
+            }
+        }
+    }
+
+    currentPowerPlanSets.append(powerPlanSet);
+    savePowerPlanSets(currentPowerPlanSets);
+    return true;
+}
+
+void Settings::deletePowerPlanSet(PowerPlanSet &powerPlanSet) {
+    auto currentPowerPlanSets = getPowerPlanSets(false);
+
+    for (int i = 0; i < currentPowerPlanSets.size(); i++) {
+        if (currentPowerPlanSets[i].name == powerPlanSet.name) {
+            currentPowerPlanSets.removeAt(i);
+            break;
+        }
+    }
+
+    savePowerPlanSets(currentPowerPlanSets);
+}
+
+QList<PowerPlanSet> Settings::getPowerPlanSets(bool includeDefault) {
+    QList<PowerPlanSet> result;
+    if (!qSettings->contains("power_plan_set_list")) {
+        result = QList<PowerPlanSet>();
+    } else {
+        result = qSettings->value("power_plan_set_list").value<QList<PowerPlanSet>>();
+    }
+    if (includeDefault) {
+        result.insert(0, {"Default"});
+    }
+    return result;
+}
+
+void Settings::setUsedPowerPlans(QStringList &list) {
+    if (!list.empty()) {
+        qSettings->setValue("used_power_plans_list", list);
+    } else {
+        qSettings->remove("used_power_plans_list");
+    }
+}
+
+QStringList Settings::getUsedPowerPlans() {
+    QStringList result;
+    if (!qSettings->contains("used_power_plans_list")) {
+        return QStringList();
+    } else {
+        result = qSettings->value("used_power_plans_list").value<QStringList>();
+    }
+
+    auto powerPlanSets = getPowerPlanSets(true);
+    QStringList powerPlanSetsNames;
+    for (const PowerPlanSet& set : powerPlanSets) {
+        powerPlanSetsNames.append(set.name);
+    }
+
+    for (int i = 0; i < result.size(); i++) {
+        if (!powerPlanSetsNames.contains(result[i])) {
+            result.removeAt(i);
+            i--;
+        }
+    }
+
+    return result;
+}
+
+QStringList Settings::getUsedPowerPlans(QList<PowerPlanSet> &powerPlanSets) {
+    QStringList result;
+    if (!qSettings->contains("used_power_plans_list")) {
+        return QStringList();
+    } else {
+        result = qSettings->value("used_power_plans_list").value<QStringList>();
+    }
+
+    QStringList powerPlanSetsNames;
+    for (const PowerPlanSet &set : powerPlanSets) {
+        powerPlanSetsNames.append(set.name);
+    }
+
+    for (int i = 0; i < result.size(); i++) {
+        if (!powerPlanSetsNames.contains(result[i])) {
+            result.removeAt(i);
+            i--;
+        }
+    }
+
+    return result;
+}
+

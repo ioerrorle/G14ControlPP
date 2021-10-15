@@ -11,13 +11,19 @@ bool operator==(const PowerProfile &l, const PowerProfile &r) {
 }
 
 bool operator<(const PowerProfile &l, const PowerProfile &r) {
-    return strcmp(l.name.toLocal8Bit().constData(), r.name.toLocal8Bit().constData()) < 0
-           || l.mode < r.mode
-           || l.stapmTime < r.stapmTime
-           || l.stapmLimit < r.stapmLimit
-           || l.slowTime < r.slowTime
-           || l.slowLimit < r.slowLimit
-           || l.fastLimit < r.fastLimit;
+    if (l.name < r.name) return true;
+    if (r.name < l.name) return false;
+    if (l.mode < r.mode) return true;
+    if (r.mode < l.mode) return false;
+    if (l.stapmLimit < r.stapmLimit) return true;
+    if (r.stapmLimit < l.stapmLimit) return false;
+    if (l.stapmTime < r.stapmTime) return true;
+    if (r.stapmTime < l.stapmTime) return false;
+    if (l.slowTime < r.slowTime) return true;
+    if (r.slowTime < l.slowTime) return false;
+    if (l.slowLimit < r.slowLimit) return true;
+    if (r.slowLimit < l.slowLimit) return false;
+    return l.fastLimit < r.fastLimit;
 }
 
 QDataStream &operator<<(QDataStream &out, const PowerProfile &v) {

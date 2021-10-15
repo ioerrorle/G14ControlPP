@@ -7,6 +7,7 @@ FansTab::FansTab(QWidget *parent) : QWidget(parent), ui(new Ui::FansTab) {
     ui->setupUi(this);
 
     ui->deleteProfile->setIcon(this->style()->standardIcon(QStyle::SP_TrashIcon));
+    ui->saveButton->setIcon(this->style()->standardIcon(QStyle::SP_DialogSaveButton));
 
     connect(ui->defaultFanCurves, &QCheckBox::stateChanged, this, &FansTab::defaultFanCurvesChange);
     connect(ui->fanCurveComboBox, QOverload<int>::of(&QComboBox::activated), this,

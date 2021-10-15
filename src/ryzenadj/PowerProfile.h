@@ -19,7 +19,7 @@ typedef struct {
     Setpoint mode;
 } PowerProfile;
 
-static PowerProfile STOCK_PROFILE {
+static PowerProfile STOCK_POWER_PROFILE {
         "Stock", 35, 200, 42, 5, 60, SP_DEFAULT
 };
 
