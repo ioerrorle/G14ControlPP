@@ -32,6 +32,7 @@ bool Settings::saveFansProfile(FansProfile &profile, bool override) {
                 return false;
             } else {
                 currentProfiles.replace(i, profile);
+                saveFansProfiles(currentProfiles);
                 return true;
             }
         }
@@ -124,6 +125,7 @@ bool Settings::savePowerProfile(PowerProfile &powerProfile, bool override) {
                 return false;
             } else {
                 currentProfiles.replace(i, powerProfile);
+                savePowerProfiles(currentProfiles);
                 return true;
             }
         }
@@ -252,13 +254,13 @@ bool Settings::savePowerPlanSet(PowerPlanSet &powerPlanSet, bool override) {
                 return false;
             } else {
                 currentPowerPlanSets.replace(i, powerPlanSet);
+                savePowerPlanSets(currentPowerPlanSets);
                 return true;
             }
         }
     }
 
     currentPowerPlanSets.append(powerPlanSet);
-    savePowerPlanSets(currentPowerPlanSets);
     return true;
 }
 
@@ -341,5 +343,31 @@ QStringList Settings::getUsedPowerPlans(QList<PowerPlanSet> &powerPlanSets) {
     }
 
     return result;
+}
+
+QString Settings::getCurrentPowerPlanSetName() {
+    if (!qSettings->contains("current_power_plan_set_name")) {
+        return "";
+    }
+    return qSettings->value("current_power_plan_set_name").value<QString>();
+}
+
+PowerPlanSet Settings::getPowerPlanSetByName(QString name) {
+    auto powerPlanSets = getPowerPlanSets(true);
+    for (PowerPlanSet set : powerPlanSets) {
+        if (set.name == name) {
+            return set;
+        }
+    }
+    PowerPlanSet result = {};
+    return result;
+}
+
+PowerPlanSet Settings::getCurrentPowerPlanSet() {
+    return getPowerPlanSetByName(getCurrentPowerPlanSetName());
+}
+
+void Settings::setCurrentPowerPlanSetName(QString &name) {
+    qSettings->setValue("current_power_plan_set_name", name);
 }
 

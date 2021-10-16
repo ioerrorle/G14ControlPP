@@ -9,9 +9,11 @@
 #include <QtCore/QAbstractEventDispatcher>
 #include "src/kbd/KbdControlSingleton.h"
 #include "src/atkacpi/AcpiControlSingleton.h"
+#include "src/ryzenadj/RyzenAdjSingleton.h"
 #include "src/atkacpi/AcpiListenerThread.h"
 #include "src/audio/AudioUtils.h"
 #include "src/settings/Settings.h"
+#include "src/ui/notificationHelper/NotificationHelper.h"
 
 //#include "src/kbd/KbdListenerThread.h"
 
@@ -49,11 +51,17 @@ public:
 
     bool nativeEventFilter(const QByteArray &eventType, void *message, long *) Q_DECL_OVERRIDE;
 
+    void switchToNextPowerPlanSet();
+
 public slots:
 
     void handleKbdFnPress(const unsigned char fnKeyCode);
 
     void handleAcpiEvent(const unsigned long acpiCode);
+
+    void applyPowerPlanFromCurrentSet();
+
+    void handleWakeUp();
 };
 
 

@@ -65,6 +65,13 @@ public:
     void setUsedPowerPlans(QStringList &list);
     QStringList getUsedPowerPlans();
     QStringList getUsedPowerPlans(QList<PowerPlanSet> &powerPlanSets);
+
+    void setCurrentPowerPlanSetName(QString &name);
+    QString getCurrentPowerPlanSetName();
+
+    PowerPlanSet getPowerPlanSetByName(QString name);
+
+    PowerPlanSet getCurrentPowerPlanSet();
 };
 
 

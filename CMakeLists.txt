@@ -35,7 +35,7 @@ set(SOURCES
         src/ui/batteryTab/BatteryTab.cpp src/ui/batteryTab/BatteryTab.h
         src/ui/hotkeys/HotkeysTab.cpp src/ui/hotkeys/HotkeysTab.h
         src/ui/powerPlans/PowerPlansTab.cpp src/ui/powerPlans/PowerPlansTab.h
-        src/ryzenadj/PowerProfile.cpp src/ryzenadj/PowerProfile.h src/settings/PowerPlan.cpp src/settings/PowerPlan.h src/settings/PowerPlanSet.cpp src/settings/PowerPlanSet.h)
+        src/ryzenadj/PowerProfile.cpp src/ryzenadj/PowerProfile.h src/settings/PowerPlan.cpp src/settings/PowerPlan.h src/settings/PowerPlanSet.cpp src/settings/PowerPlanSet.h src/ui/notificationHelper/NotificationHelper.cpp src/ui/notificationHelper/NotificationHelper.h)
 set(UI src/ui/MainWindow.ui src/ui/fansTab/FansTab.ui src/ui/cpuTab/CpuTab.ui src/ui/batteryTab/BatteryTab.ui src/ui/powerPlans/PowerPlansTab.ui src/ui/base/BaseTab.h)
 
 add_executable(G14ControlPP ${SOURCES} ${UI})

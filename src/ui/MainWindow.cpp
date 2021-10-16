@@ -28,6 +28,8 @@ MainWindow::MainWindow(QWidget *parent)
     auto *viewWindow = new QAction("Maximize", this);
     auto *quitAction = new QAction("Quit", this);
 
+    NotificationHelper::getInstance().init(trayIcon);
+
     connect(viewWindow, SIGNAL(triggered()), this, SLOT(show()));
     connect(quitAction, SIGNAL(triggered()), this, SLOT(closeTrayAction()));
 
@@ -50,13 +52,6 @@ void MainWindow::closeEvent(QCloseEvent *event) {
         event->ignore();
         onIndexChanged(-1);
         this->hide();
-        //QSystemTrayIcon::MessageIcon icon = QSystemTrayIcon::MessageIcon(QSystemTrayIcon::Information);
-
-        /*trayIcon->showMessage("Tray Program",
-                              trUtf8("Приложение свернуто в трей. Для того чтобы, "
-                                     "развернуть окно приложения, щелкните по иконке приложения в трее"),
-                              icon,
-                              2000);*/
     }
 }
 

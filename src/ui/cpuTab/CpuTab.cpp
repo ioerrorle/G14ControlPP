@@ -122,7 +122,8 @@ void CpuTab::onSaveClicked(bool checked) {
 }
 
 void CpuTab::onApplyClicked(bool checked) {
-
+    auto powerProfile = createPowerProfileFromData();
+    RY.setPowerProfile(powerProfile);
 }
 
 void CpuTab::reloadPowerProfiles() {

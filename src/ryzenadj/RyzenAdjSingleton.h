@@ -7,6 +7,7 @@
 #define RY RyzenAdjSingleton::getInstance()
 
 #include <QLibrary>
+#include "PowerProfile.h"
 
 class RyzenAdjSingleton {
 public:
@@ -166,6 +167,8 @@ public:
     float getCoreTemp();
     float getApuTemp();
     float getDGpuTemp();
+
+    void setPowerProfile(const PowerProfile &powerProfile);
 };
 
 

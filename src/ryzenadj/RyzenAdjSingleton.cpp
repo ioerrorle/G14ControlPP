@@ -184,4 +184,18 @@ float RyzenAdjSingleton::getDGpuTemp() {
     return getValueByOffset(0x54);
 }
 
+void RyzenAdjSingleton::setPowerProfile(const PowerProfile &powerProfile) {
+    setStapmLimit((uint32_t)(powerProfile.stapmLimit * 1000));
+    setStapmTime((uint32_t)powerProfile.stapmTime);
+    setSlowLimit((uint32_t)(powerProfile.slowLimit*1000));
+    setSlowTime((uint32_t)powerProfile.slowTime);
+    setFastLimit((uint32_t)(powerProfile.fastLimit*1000));
+    if (powerProfile.mode == SP_PERFORMANCE) {
+        setMaxPerformance();
+    }
+    if (powerProfile.mode ==SP_POWER_SAVING) {
+        setPowerSaving();
+    }
+}
+
 

@@ -11,6 +11,7 @@
 #include <src/ui/cpuTab/CpuTab.h>
 #include <src/ui/fansTab/FansTab.h>
 #include <src/ui/batteryTab/BatteryTab.h>
+#include <src/ui/notificationHelper/NotificationHelper.h>
 
 namespace Ui {
     class MainWindow;

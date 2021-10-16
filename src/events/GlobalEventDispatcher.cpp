@@ -17,8 +17,15 @@ const GUID GlobalEventDispatcher::guids[] = {GUID_CONSOLE_DISPLAY_STATE,
 bool GlobalEventDispatcher::nativeEventFilter(const QByteArray &eventType, void *message, long *extra) {
     MSG *msg = static_cast< MSG * >( message );
 
-    if (msg->message == WM_POWERBROADCAST && msg->wParam == PBT_POWERSETTINGCHANGE) {
-        handlePowerCfgChange(reinterpret_cast<POWERBROADCAST_SETTING *>(msg->lParam));
+    if (msg->message == WM_POWERBROADCAST) {
+        switch (msg->wParam) {
+            case PBT_POWERSETTINGCHANGE:
+                handlePowerCfgChange(reinterpret_cast<POWERBROADCAST_SETTING *>(msg->lParam));
+                break;
+            case PBT_APMRESUMEAUTOMATIC:
+                handleWakeUp();
+                break;
+        }
         //todo handle all this shit
         /*qDebug() << ("Power broadcast");
         switch (msg->wParam) {
@@ -131,6 +138,7 @@ void GlobalEventDispatcher::handleKbdFnPress(const unsigned char fnKeyCode) {
         case 0x38: //rog button
             break;
         case 0xae: //fan button
+            switchToNextPowerPlanSet();
             break;
         case 0x6b: //toggle touchpad
             KbdControlSingleton::getInstance().toggleTouchPad();
@@ -176,7 +184,7 @@ void GlobalEventDispatcher::releaseKey() {
 }
 
 void GlobalEventDispatcher::handleAcpiEvent(const unsigned long acpiCode) {
-    //qDebug() << acpiCode;
+    qDebug() << acpiCode;
 }
 
 void GlobalEventDispatcher::handlePowerCfgChange(POWERBROADCAST_SETTING *settings) {
@@ -185,10 +193,82 @@ void GlobalEventDispatcher::handlePowerCfgChange(POWERBROADCAST_SETTING *setting
         KbdControlSingleton::getInstance().toggleKbdBacklight(settings->Data[0]);
     }
     if (settings->PowerSetting == GUID_ACDC_POWER_SOURCE) {
+        applyPowerPlanFromCurrentSet();
         //check power source
         //qDebug() << AcpiControlSingleton::getInstance().getPowerSourceType();
         //settings->Data[0]; // o for AC, 1 for battery
     }
+}
+
+void GlobalEventDispatcher::applyPowerPlanFromCurrentSet() {
+    auto currentPowerPlanSet = SETT.getCurrentPowerPlanSet();
+    if (currentPowerPlanSet.name.isEmpty()) {
+        return;
+    }
+
+    PowerSourceType currentPS = AcpiControlSingleton::getInstance().getPowerSourceType();
+
+    PowerPlan powerPlan;
+    switch(currentPS) {
+        case POWER_SOURCE_BATTERY:
+            powerPlan = currentPowerPlanSet.dcPowerPlan;
+            break;
+        case POWER_SOURCE_180W:
+            powerPlan = currentPowerPlanSet.acPowerPlan;
+            break;
+        case POWER_SOURCE_USB:
+            powerPlan = currentPowerPlanSet.usbPowerPlan;
+            break;
+        default:
+            powerPlan = {0x00};
+    }
+
+    AcpiControlSingleton::getInstance().setPowerPlan(ARMOURY_CRATE_PLANS[powerPlan.armouryCratePlanId].asusPlanCode);
+
+    //wait 1 sec before applying additional things because ac power plan changes not right away
+    QTimer::singleShot(1000, this, [powerPlan] () {
+        if (!powerPlan.fansProfile.name.isEmpty()) {
+            AcpiControlSingleton::getInstance().setFanProfile(powerPlan.fansProfile);
+        }
+        if (!powerPlan.powerProfile.name.isEmpty()) {
+            RY.setPowerProfile(powerPlan.powerProfile); //fucking dangerous.
+        }
+    });
+}
+
+void GlobalEventDispatcher::switchToNextPowerPlanSet() {
+    auto usedPowerPlans = SETT.getUsedPowerPlans();
+    if (usedPowerPlans.isEmpty()) {
+        //we have no saved for fast switching power plans
+        return;
+    }
+    QString currentPowerPlanSetName = SETT.getCurrentPowerPlanSetName();
+    if (!usedPowerPlans.contains(currentPowerPlanSetName)) {
+        //current power plan set is not in the list, we will use first from the list
+        currentPowerPlanSetName = usedPowerPlans[0];
+    } else {
+        int index = (usedPowerPlans.indexOf(currentPowerPlanSetName) + 1) % usedPowerPlans.size();
+        currentPowerPlanSetName = usedPowerPlans[index];
+    }
+    //get this power plan from the settings
+    auto currentPowerPlanSet = SETT.getPowerPlanSetByName(currentPowerPlanSetName);
+    if (currentPowerPlanSet.name.isEmpty()) {
+        //for some reason we've got invalid set
+        return;
+    }
+    //save power plan set as current
+    SETT.setCurrentPowerPlanSetName(currentPowerPlanSetName);
+    //todo apply it
+    applyPowerPlanFromCurrentSet();
+    //create notification
+    auto title = tr("Power plan changed");
+    auto message = tr("Current power plan is ") + currentPowerPlanSetName;
+    NotificationHelper::getInstance().showMessage(title, message);
+}
+
+void GlobalEventDispatcher::handleWakeUp() {
+    applyPowerPlanFromCurrentSet();
+    KbdControlSingleton::getInstance().toggleKbdBacklight(true);
 }
 
 
