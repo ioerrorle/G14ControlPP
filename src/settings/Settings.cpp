@@ -261,6 +261,7 @@ bool Settings::savePowerPlanSet(PowerPlanSet &powerPlanSet, bool override) {
     }
 
     currentPowerPlanSets.append(powerPlanSet);
+    savePowerPlanSets(currentPowerPlanSets);
     return true;
 }
 
@@ -367,7 +368,7 @@ PowerPlanSet Settings::getCurrentPowerPlanSet() {
     return getPowerPlanSetByName(getCurrentPowerPlanSetName());
 }
 
-void Settings::setCurrentPowerPlanSetName(QString &name) {
+void Settings::setCurrentPowerPlanSetName(const QString &name) {
     qSettings->setValue("current_power_plan_set_name", name);
 }
 
