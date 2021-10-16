@@ -230,7 +230,7 @@
         <item alignment="Qt::AlignTop">
          <widget class="QLabel" name="cpuRPM">
           <property name="text">
-           <string>TextLabel</string>
+           <string/>
           </property>
          </widget>
         </item>
@@ -409,7 +409,7 @@
         <item alignment="Qt::AlignTop">
          <widget class="QLabel" name="gpuRPM">
           <property name="text">
-           <string>TextLabel</string>
+           <string/>
           </property>
          </widget>
         </item>

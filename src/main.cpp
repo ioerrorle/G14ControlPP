@@ -21,6 +21,8 @@ int main(int argc, char *argv[]) {
     qRegisterMetaTypeStreamOperators<QList<PowerPlanSet>>("PowerPlanSetList");
     //qRegisterMetaTypeStreamOperators<QMap<int, PowerPlan>>("PowerPlanMap");
 
+
+
     QApplication a(argc, argv);
 
     MainWindow mainWindow;
@@ -36,7 +38,6 @@ int main(int argc, char *argv[]) {
     if (!GlobalEventDispatcher::getInstance().init(mainWindowHandle, error)) {
         return 1;
     }
-
     mainWindow.show();
     return a.exec();
 }

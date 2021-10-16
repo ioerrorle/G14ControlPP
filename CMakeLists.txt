@@ -41,3 +41,7 @@ set(UI src/ui/MainWindow.ui src/ui/fansTab/FansTab.ui src/ui/cpuTab/CpuTab.ui sr
 add_executable(G14ControlPP ${SOURCES} ${UI})
 #target_link_libraries(GraphiCa Qt${QT_VERSION_MAJOR}::Core)
 target_link_libraries(G14ControlPP Qt5::Widgets)
+
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    set_property(TARGET G14ControlPP PROPERTY WIN32_EXECUTABLE true)
+endif()
