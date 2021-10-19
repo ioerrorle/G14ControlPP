@@ -1,15 +1,15 @@
 # G14ControlPP
 ASUS services replacement for Zephyrus G14 laptops
 
-##Introduction
+## Introduction
 Initially, main goal was to bring back PgUp/PgDown/Home/End keys functionality.
 Problem with it is that ASUS Optimization handles all the Fn+key presses and does what it wants, so, I realized that I need to reproduce at least minimum functionality of the service and disable it for good.
 So, here we go.
-##tl;dr of laptop firmware philosophy
+## tl;dr of laptop firmware philosophy
 There are 3 possible ***Power sources*** - **Battery**, **180W charger** and **USB-C 60W charger**. Laptop has 3 ***Armoury Crate*** plans: **"Windows/Performance",  "Turbo/Manual"** and **"Silent"**.
 Each plan has it's own **CPU power settings** (how much power can a CPU draw at max and for how long) and **Fans curves** (what speed will CPU/GPU fan have at certain temperature of a corresponding chip) for each **Power source**. in addition, fan curves and CPU settings can be applied manually. This utility allows you to do it.
 
-##Features
+## Features
 
 Works:
 - shows current APU TDP, temperature and fans RPM
