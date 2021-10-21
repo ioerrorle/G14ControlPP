@@ -11,6 +11,7 @@
 #include <src/ui/cpuTab/CpuTab.h>
 #include <src/ui/fansTab/FansTab.h>
 #include <src/ui/batteryTab/BatteryTab.h>
+#include <src/ui/hotkeys/HotkeysTab.h>
 #include <src/ui/notificationHelper/NotificationHelper.h>
 
 namespace Ui {
@@ -36,6 +37,7 @@ private:
     PowerPlansTab *powerPlansTab;
     CpuTab *cpuTab;
     FansTab *fansTab;
+    HotkeysTab *hotkeysTab;
     BatteryTab *batteryTab;
 
     bool closeActionTriggered = false;

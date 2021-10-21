@@ -8,6 +8,7 @@
 #include "src/ryzenadj/RyzenAdjTypes.h"
 #include "src/ryzenadj/PowerProfile.h"
 #include "PowerPlanSet.h"
+#include "src/ui/hotkeys/HotkeysProfile.h"
 
 #define SETT Settings::getInstance()
 
@@ -23,6 +24,7 @@ private:
     void saveFansProfiles(QList<FansProfile> &profiles);
     void savePowerProfiles(QList<PowerProfile> &profiles);
     void savePowerPlanSets(QList<PowerPlanSet> &powerPlanSets);
+    void saveHotkeysProfiles(QList<HotkeysProfile> &profiles);
 
 public:
     Settings(Settings const &) = delete;
@@ -46,7 +48,7 @@ public:
 
     bool savePowerProfile(PowerProfile &powerProfile, bool override = true);
     void deletePowerProfile(PowerProfile &powerProfile);
-    QList<PowerProfile> getPowerProfiles(bool includeStock = true);
+    QList<PowerProfile> getPowerProfiles();
 
     void setCurrentPowerProfile(PowerProfile &powerProfile);
     PowerProfile getCurrentPowerProfile();
@@ -72,6 +74,12 @@ public:
     PowerPlanSet getPowerPlanSetByName(QString name);
 
     PowerPlanSet getCurrentPowerPlanSet();
+
+    QList<HotkeysProfile> getHotkeysProfiles();
+    HotkeysProfile getCurrentHotkeysProfile();
+    void setCurrentHotkeysProfileName(const QString &name);
+    bool saveHotkeysProfile(HotkeysProfile &hotkeysProfile, bool override);
+    void deleteHotkeysProfile(const QString &hotkeysProfileName);
 };
 
 

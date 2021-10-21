@@ -118,7 +118,7 @@ void Settings::savePowerProfiles(QList<PowerProfile> &profiles) {
 }
 
 bool Settings::savePowerProfile(PowerProfile &powerProfile, bool override) {
-    auto currentProfiles = getPowerProfiles(false);
+    auto currentProfiles = getPowerProfiles();
     for (int i = 0; i < currentProfiles.size(); i++) {
         if (powerProfile.name == currentProfiles[i].name) {
             if (!override) {
@@ -137,7 +137,7 @@ bool Settings::savePowerProfile(PowerProfile &powerProfile, bool override) {
 }
 
 void Settings::deletePowerProfile(PowerProfile &powerProfile) {
-    auto currentProfiles = getPowerProfiles(false);
+    auto currentProfiles = getPowerProfiles();
 
     for (int i = 0; i < currentProfiles.size(); i++) {
         if (currentProfiles[i].name == powerProfile.name) {
@@ -149,15 +149,12 @@ void Settings::deletePowerProfile(PowerProfile &powerProfile) {
     savePowerProfiles(currentProfiles);
 }
 
-QList<PowerProfile> Settings::getPowerProfiles(bool includeStock) {
+QList<PowerProfile> Settings::getPowerProfiles() {
     QList<PowerProfile> result;
     if (!qSettings->contains("power_profiles_list")) {
         result = QList<PowerProfile>();
     } else {
         result = qSettings->value("power_profiles_list").value<QList<PowerProfile>>();
-    }
-    if (includeStock) {
-        result.insert(0, STOCK_POWER_PROFILE);
     }
     return result;
 }
@@ -174,7 +171,7 @@ void Settings::setCurrentPowerProfile(PowerProfile &powerProfile) {
 PowerProfile Settings::getCurrentPowerProfile() {
     auto name = qSettings->value("current_power_profile_name").value<QString>();
     if (!name.isEmpty()) {
-        auto savedPowerProfiles = getPowerProfiles(true);
+        auto savedPowerProfiles = getPowerProfiles();
         for (PowerProfile saved : savedPowerProfiles) {
             if (saved.name == name) {
                 return saved;
@@ -370,5 +367,83 @@ PowerPlanSet Settings::getCurrentPowerPlanSet() {
 
 void Settings::setCurrentPowerPlanSetName(const QString &name) {
     qSettings->setValue("current_power_plan_set_name", name);
+}
+
+void Settings::saveHotkeysProfiles(QList<HotkeysProfile> &profiles) {
+    qSettings->beginGroup("Hotkeys");
+    for (HotkeysProfile &profile : profiles) {
+        qSettings->setValue(profile.name, QVariant::fromValue(profile));
+    }
+    qSettings->endGroup();
+}
+
+QList<HotkeysProfile> Settings::getHotkeysProfiles() {
+    qSettings->beginGroup("Hotkeys");
+    auto result = QList<HotkeysProfile>();
+    for (QString &key : qSettings->allKeys()) {
+        result.append(qSettings->value(key).value<HotkeysProfile>());
+    }
+    if (!qSettings->allKeys().contains("Coder")) {
+        result.insert(0, HOTKEY_PROFILE_CODER);
+    }
+    if (!qSettings->allKeys().contains("Default")) {
+        result.insert(0, HOTKEY_PROFILE_DEFAULT);
+    }
+    qSettings->endGroup();
+    return result;
+}
+
+HotkeysProfile Settings::getCurrentHotkeysProfile() {
+    auto currentHotkeyProfileName = qSettings->value("current_hotkeys_profile").value<QString>();
+    if (currentHotkeyProfileName.isEmpty()) {
+        return HOTKEY_PROFILE_DEFAULT;
+    }
+    qSettings->beginGroup("Hotkeys");
+    auto allKeys = qSettings->allKeys();
+    //searching for current profile
+    for (QString &key : allKeys) {
+        if (key == currentHotkeyProfileName) {
+            auto result = qSettings->value(key).value<HotkeysProfile>();
+            qSettings->endGroup();
+            return result;
+        }
+    }
+    //not found
+    qSettings->endGroup();
+    qSettings->remove("current_hotkeys_profile");
+    return HOTKEY_PROFILE_DEFAULT;
+}
+
+void Settings::setCurrentHotkeysProfileName(const QString &name) {
+    if (name.isEmpty()) {
+        qSettings->remove("current_hotkeys_profile");
+    } else {
+        qSettings->setValue("current_hotkeys_profile", name);
+    }
+}
+
+bool Settings::saveHotkeysProfile(HotkeysProfile &hotkeysProfile, bool override) {
+    if (override) {
+        qSettings->beginGroup("Hotkeys");
+        qSettings->setValue(hotkeysProfile.name, QVariant::fromValue(hotkeysProfile));
+        qSettings->endGroup();
+        return true;
+    } else {
+        qSettings->beginGroup("Hotkeys");
+        if (qSettings->contains(hotkeysProfile.name)) {
+            qSettings->endGroup();
+            return false;
+        } else {
+            qSettings->setValue(hotkeysProfile.name, QVariant::fromValue(hotkeysProfile));
+            qSettings->endGroup();
+            return true;
+        }
+    }
+}
+
+void Settings::deleteHotkeysProfile(const QString &hotkeysProfileName) {
+    qSettings->beginGroup("Hotkeys");
+    qSettings->remove(hotkeysProfileName);
+    qSettings->endGroup();
 }
 

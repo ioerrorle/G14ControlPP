@@ -283,7 +283,7 @@ void PowerPlansTab::onApplyAndSaveClicked(bool checked) {
         }
         SETT.setCurrentPowerPlanSetName(ui->powerPlan->currentText());
         SETT.setUsedPowerPlans(fastSwitchProfiles);
-        applyPowerPlanFromCurrentSet();
+        GlobalEventDispatcher::getInstance().applyPowerPlanFromCurrentSet();
 
     } else {
         QMessageBox msgBox;
@@ -306,40 +306,4 @@ void PowerPlansTab::powerPlanSetActivated(int index) {
             ui->powerPlan->setCurrentIndex(0);
         }
     }
-}
-
-void PowerPlansTab::applyPowerPlanFromCurrentSet() {
-    auto currentPowerPlanSet = SETT.getCurrentPowerPlanSet();
-    if (currentPowerPlanSet.name.isEmpty()) {
-        return;
-    }
-
-    PowerSourceType currentPS = AcpiControlSingleton::getInstance().getPowerSourceType();
-
-    PowerPlan powerPlan;
-    switch(currentPS) {
-        case POWER_SOURCE_BATTERY:
-            powerPlan = currentPowerPlanSet.dcPowerPlan;
-            break;
-        case POWER_SOURCE_180W:
-            powerPlan = currentPowerPlanSet.acPowerPlan;
-            break;
-        case POWER_SOURCE_USB:
-            powerPlan = currentPowerPlanSet.usbPowerPlan;
-            break;
-        default:
-            powerPlan = {0x00};
-    }
-
-    AcpiControlSingleton::getInstance().setPowerPlan(ARMOURY_CRATE_PLANS[powerPlan.armouryCratePlanId].asusPlanCode);
-
-    //wait 1 sec before applying additional things because ac power plan changes not right away
-    QTimer::singleShot(1000, this, [powerPlan] () {
-        if (!powerPlan.fansProfile.name.isEmpty()) {
-            AcpiControlSingleton::getInstance().setFanProfile(powerPlan.fansProfile);
-        }
-        if (!powerPlan.powerProfile.name.isEmpty()) {
-            RY.setPowerProfile(powerPlan.powerProfile); //fucking dangerous.
-        }
-    });
 }

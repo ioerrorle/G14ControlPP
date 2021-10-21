@@ -34,7 +34,7 @@ private:
 
     void handlePowerCfgChange(POWERBROADCAST_SETTING *settings);
 
-    void sendScanCode(WORD hwScanCode, WORD vScanCode);
+    void sendScanCode(WORD vScanCode);
 
     void readSettings();
 
@@ -53,16 +53,15 @@ public:
 
     void switchToNextPowerPlanSet();
 
+    void applyPowerPlanFromCurrentSet();
+
 public slots:
 
     void handleKbdFnPress(const unsigned char fnKeyCode);
 
     void handleAcpiEvent(const unsigned long acpiCode);
 
-    void applyPowerPlanFromCurrentSet();
-
     void handleWakeUp();
 };
-
 
 #endif //G14CONTROLPP_GLOBALEVENTDISPATCHER_H

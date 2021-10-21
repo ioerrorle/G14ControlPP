@@ -31,9 +31,13 @@ public slots:
 
     void onApplyClicked(bool checked = false);
 
+    void onPowerProfileChanged(int value);
+
 private:
     Ui::CpuTab *ui;
     QTimer *qTimer;
+    bool powerProfileChanged;
+    bool fromDropdown = false;
 
     void loadPowerProfiles();
 
@@ -50,6 +54,8 @@ private:
     void selectPowerProfile(PowerProfile &profile, bool selectIndex);
 
     void refresh();
+
+    PowerProfile createPowerProfileFromCurrentCpuState();
 };
 
 #endif //G14CONTROLPP_CPUTAB_H

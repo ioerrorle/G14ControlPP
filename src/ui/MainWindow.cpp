@@ -11,11 +11,13 @@ MainWindow::MainWindow(QWidget *parent)
     this->powerPlansTab = new PowerPlansTab();
     this->cpuTab = new CpuTab();
     this->fansTab = new FansTab();
+    this->hotkeysTab = new HotkeysTab();
     this->batteryTab = new BatteryTab();
 
     ui->centralwidget->addTab(powerPlansTab, tr("Power plans"));
     ui->centralwidget->addTab(cpuTab, tr("CPU"));
     ui->centralwidget->addTab(fansTab, tr("Fans"));
+    ui->centralwidget->addTab(hotkeysTab, tr("Hotkeys"));
     ui->centralwidget->addTab(batteryTab, tr("Battery"));
 
     connect(ui->centralwidget, &QTabWidget::currentChanged, this, &MainWindow::onIndexChanged);

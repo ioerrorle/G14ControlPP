@@ -8,6 +8,7 @@
 #include "src/settings/Settings.h"
 #include "src/ui/base/BaseTab.h"
 #include "src/ryzenadj/RyzenAdjSingleton.h"
+#include "src/events/GlobalEventDispatcher.h"
 
 namespace Ui {
     class PowerPlansTab;
@@ -48,8 +49,6 @@ public slots:
     void deleteSelectedPlanSet(bool checked = false);
     void addPowerPlanToUsed(bool checked = false);
     void removePowerPlanFromUsed(bool checked = false);
-
-    void applyPowerPlanFromCurrentSet();
 };
 
 

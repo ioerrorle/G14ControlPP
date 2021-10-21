@@ -16,6 +16,13 @@ CpuTab::CpuTab(QWidget *parent)
     loadPowerProfiles();
     loadCurrentPowerProfile();
 
+    connect(ui->stapmLimitSetting, QOverload<int>::of(&QSpinBox::valueChanged), this, &CpuTab::onPowerProfileChanged);
+    connect(ui->stapmTimeSetting, QOverload<int>::of(&QSpinBox::valueChanged), this, &CpuTab::onPowerProfileChanged);
+    connect(ui->slowLimitSetting, QOverload<int>::of(&QSpinBox::valueChanged), this, &CpuTab::onPowerProfileChanged);
+    connect(ui->slowTimeSetting, QOverload<int>::of(&QSpinBox::valueChanged), this, &CpuTab::onPowerProfileChanged);
+    connect(ui->fastLimitSetting, QOverload<int>::of(&QSpinBox::valueChanged), this, &CpuTab::onPowerProfileChanged);
+    connect(ui->modeSetting, QOverload<int>::of(&QComboBox::activated), this, &CpuTab::onPowerProfileChanged);
+
     qTimer = new QTimer(this);
     qTimer->setInterval(250);
     connect(qTimer, &QTimer::timeout, this, &CpuTab::refresh);
@@ -36,28 +43,39 @@ void CpuTab::refresh() {
 }
 
 void CpuTab::loadPowerProfiles() {
-    auto currentPowerProfiles = SETT.getPowerProfiles();
-    for (PowerProfile profile : currentPowerProfiles) {
-        ui->powerProfileDropdown->addItem(profile.name, QVariant::fromValue(profile));
-    }
-
     ui->modeSetting->addItem("Performance", SP_PERFORMANCE);
     ui->modeSetting->addItem("Power saving", SP_POWER_SAVING);
     ui->modeSetting->addItem("Default", SP_DEFAULT);
+
+    reloadPowerProfiles();
 }
 
 void CpuTab::onPowerProfileSelected(int index) {
-    auto powerProfile = ui->powerProfileDropdown->itemData(index).value<PowerProfile>();
-    fillPowerProfileData(powerProfile);
+    if (ui->powerProfileDropdown->currentData() != -1) {
+        int noname = ui->powerProfileDropdown->findData(-1);
+        if (noname != -1) {
+            ui->powerProfileDropdown->removeItem(noname);
+        }
+    }
+    if (ui->powerProfileDropdown->currentData() == 0) {
+        auto powerProfile = createPowerProfileFromCurrentCpuState();
+        fillPowerProfileData(powerProfile);
+    } else {
+        powerProfileChanged = false;
+        auto powerProfile = ui->powerProfileDropdown->currentData().value<PowerProfile>();
+        fillPowerProfileData(powerProfile);
+    }
 }
 
 void CpuTab::fillPowerProfileData(PowerProfile &profile) {
+    fromDropdown = true;
     ui->stapmLimitSetting->setValue(profile.stapmLimit);
     ui->stapmTimeSetting->setValue(profile.stapmTime);
     ui->slowLimitSetting->setValue(profile.slowLimit);
     ui->slowTimeSetting->setValue(profile.slowTime);
     ui->fastLimitSetting->setValue(profile.fastLimit);
     ui->modeSetting->setCurrentIndex(ui->modeSetting->findData(profile.mode));
+    fromDropdown = false;
 }
 
 void CpuTab::loadCurrentPowerProfile() {
@@ -91,9 +109,12 @@ bool CpuTab::saveCurrentPowerProfile(QString &name, bool override) {
 }
 
 void CpuTab::onDeleteProfileClicked(bool checked) {
-    auto currentData = ui->powerProfileDropdown->currentData().value<PowerProfile>();
-    SETT.deletePowerProfile(currentData);
-    reloadPowerProfiles();
+    if (ui->powerProfileDropdown->currentData() != -1 && ui->powerProfileDropdown->currentData() != 0) {
+        auto currentData = ui->powerProfileDropdown->currentData().value<PowerProfile>();
+        SETT.deletePowerProfile(currentData);
+        reloadPowerProfiles();
+        onPowerProfileSelected(ui->powerProfileDropdown->currentIndex());
+    }
 }
 
 void CpuTab::onSaveClicked(bool checked) {
@@ -128,7 +149,8 @@ void CpuTab::onApplyClicked(bool checked) {
 
 void CpuTab::reloadPowerProfiles() {
     ui->powerProfileDropdown->clear();
-    auto profiles = SETT.getPowerProfiles(true);
+    auto profiles = SETT.getPowerProfiles();
+    ui->powerProfileDropdown->addItem("Current profile", 0);
     for (PowerProfile &profile : profiles) {
         ui->powerProfileDropdown->addItem(profile.name, QVariant::fromValue(profile));
     }
@@ -150,4 +172,30 @@ void CpuTab::setSelected(bool selected) {
     } else {
         qTimer->stop();
     }
+}
+
+void CpuTab::onPowerProfileChanged(int value) {
+    if (fromDropdown) {
+        return;
+    }
+    powerProfileChanged = true;
+    if (ui->powerProfileDropdown->currentData() != -1) {
+        if (ui->powerProfileDropdown->findText("<noname>") != -1) {
+            ui->powerProfileDropdown->setCurrentText("<noname>");
+        } else {
+            ui->powerProfileDropdown->insertItem(0, "<noname>", -1);
+            ui->powerProfileDropdown->setCurrentIndex(0);
+        }
+    }
+}
+
+PowerProfile CpuTab::createPowerProfileFromCurrentCpuState() {
+    PowerProfile powerProfile = {"",
+                                 RY.getStapmLimit(),
+                                 RY.getStapmTime(),
+                                 RY.getSlowLimit(),
+                                 RY.getSlowTime(),
+                                 RY.getFastLimit(),
+                                 RY.getCclkSetpoint() == 95.0f ? SP_POWER_SAVING : SP_PERFORMANCE};
+    return powerProfile;
 }

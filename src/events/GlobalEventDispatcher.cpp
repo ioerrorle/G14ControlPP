@@ -96,16 +96,16 @@ void GlobalEventDispatcher::handleKbdFnPress(const unsigned char fnKeyCode) {
             this->releaseKey();
             break;
         case 0xc4://up
-            this->sendScanCode(0xe049, VK_PRIOR);
+            this->sendScanCode(VK_PRIOR);
             break;
         case 0xc5://down
-            this->sendScanCode(0xe051, VK_NEXT);
+            this->sendScanCode(VK_NEXT);
             break;
         case 0xb2://left
-            this->sendScanCode(0xe047, VK_HOME);
+            this->sendScanCode(VK_HOME);
             break;
         case 0xb3://right
-            this->sendScanCode(0xe04f, VK_END);
+            this->sendScanCode(VK_END);
             break;
         case 0x9e: {//C
             uchar kbdBr = KbdControlSingleton::getInstance().changeKbdBrightness(false);
@@ -150,10 +150,10 @@ void GlobalEventDispatcher::handleKbdFnPress(const unsigned char fnKeyCode) {
     //qDebug() << error;
 }
 
-void GlobalEventDispatcher::sendScanCode(WORD hwScanCode, WORD vScanCode) {
+void GlobalEventDispatcher::sendScanCode(WORD vScanCode) {
 
     if (this->pressedKey != nullptr //dunno why i do it kekw
-        && this->pressedKey->ki.wScan != hwScanCode
+        //&& this->pressedKey->ki.wScan != hwScanCode
         && this->pressedKey->ki.wVk != vScanCode) {
         releaseKey();
     }
@@ -162,7 +162,7 @@ void GlobalEventDispatcher::sendScanCode(WORD hwScanCode, WORD vScanCode) {
 
     // Set up a generic keyboard event.
     this->pressedKey->type = INPUT_KEYBOARD;
-    this->pressedKey->ki.wScan = hwScanCode; // hardware scan code for key
+    //this->pressedKey->ki.wScan = hwScanCode; // hardware scan code for key
     this->pressedKey->ki.time = 0;
     this->pressedKey->ki.dwExtraInfo = 0;
 
@@ -258,7 +258,6 @@ void GlobalEventDispatcher::switchToNextPowerPlanSet() {
     }
     //save power plan set as current
     SETT.setCurrentPowerPlanSetName(currentPowerPlanSetName);
-    //todo apply it
     applyPowerPlanFromCurrentSet();
     //create notification
     auto title = tr("Power plan changed");

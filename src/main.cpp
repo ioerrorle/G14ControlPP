@@ -10,11 +10,15 @@ int main(int argc, char *argv[]) {
     QMetaType::registerComparators<PowerProfile>();
     QMetaType::registerComparators<PowerPlan>();
     QMetaType::registerComparators<PowerPlanSet>();
+    QMetaType::registerComparators<HotkeyAction>();
+    QMetaType::registerComparators<HotkeysProfile>();
     qRegisterMetaTypeStreamOperators<FanCurve>("FanCurve");
     qRegisterMetaTypeStreamOperators<FansProfile>("FansProfile");
     qRegisterMetaTypeStreamOperators<PowerProfile>("PowerProfile");
     qRegisterMetaTypeStreamOperators<PowerPlan>("PowerPlan");
     qRegisterMetaTypeStreamOperators<PowerPlanSet>("PowerPlanSet");
+    qRegisterMetaTypeStreamOperators<HotkeyAction>("HotkeyAction");
+    qRegisterMetaTypeStreamOperators<HotkeysProfile>("HotkeysProfile");
     qRegisterMetaTypeStreamOperators<QList<FanCurve>>("FanCurveList");
     qRegisterMetaTypeStreamOperators<QList<FansProfile>>("FansProfileList");
     qRegisterMetaTypeStreamOperators<QList<PowerProfile>>("PowerProfileList");
