@@ -25,6 +25,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
 
     ~MainWindow() override;
+    void bringToFront();
 
 protected:
     void closeEvent(QCloseEvent *event) override;

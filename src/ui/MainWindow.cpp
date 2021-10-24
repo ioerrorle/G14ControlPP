@@ -65,16 +65,19 @@ void MainWindow::showEvent(QShowEvent *event) {
 void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason) {
     switch (reason) {
         case QSystemTrayIcon::Trigger:
-
-            if (!this->isVisible()) {
-                this->show();
-            }
-            if (!this->isActiveWindow()) {
-                this->activateWindow();
-            }
+            bringToFront();
             break;
         default:
             break;
+    }
+}
+
+void MainWindow::bringToFront() {
+    if (!this->isVisible()) {
+        this->show();
+    }
+    if (!this->isActiveWindow()) {
+        this->activateWindow();
     }
 }
 

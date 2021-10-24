@@ -34,11 +34,13 @@ private:
 
     void handlePowerCfgChange(POWERBROADCAST_SETTING *settings);
 
-    void sendScanCode(WORD vScanCode);
+    void sendScanCode(quint32 vScanCode, quint32 modifiers);
 
     void readSettings();
 
     void releaseKey();
+
+    void processFnKeyAction(const HotkeyAction &hotkeyAction);
 
 public:
     GlobalEventDispatcher(GlobalEventDispatcher const &) = delete;

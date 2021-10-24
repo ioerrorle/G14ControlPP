@@ -408,8 +408,15 @@ HotkeysProfile Settings::getCurrentHotkeysProfile() {
             return result;
         }
     }
-    //not found
     qSettings->endGroup();
+    //check if it's hardcoded profile
+    if (currentHotkeyProfileName == HOTKEY_PROFILE_CODER.name) {
+        return HOTKEY_PROFILE_CODER;
+    }
+    if (currentHotkeyProfileName == HOTKEY_PROFILE_DEFAULT.name) {
+        return HOTKEY_PROFILE_DEFAULT;
+    }
+    //not found
     qSettings->remove("current_hotkeys_profile");
     return HOTKEY_PROFILE_DEFAULT;
 }

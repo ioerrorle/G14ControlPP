@@ -1,3 +1,4 @@
+#include <src/ui/MainWindow.h>
 #include "GlobalEventDispatcher.h"
 
 GlobalEventDispatcher &GlobalEventDispatcher::getInstance() {
@@ -89,59 +90,70 @@ void GlobalEventDispatcher::readSettings() {
 }
 
 void GlobalEventDispatcher::handleKbdFnPress(const unsigned char fnKeyCode) {
-    QString error;
+    auto profile = SETT.getCurrentHotkeysProfile();
 
     switch (fnKeyCode) {
         case 0x00:
             this->releaseKey();
             break;
         case 0xc4://up
-            this->sendScanCode(VK_PRIOR);
+            processFnKeyAction(profile.kbdBrU);
             break;
         case 0xc5://down
-            this->sendScanCode(VK_NEXT);
+            processFnKeyAction(profile.kbdBrD);
             break;
         case 0xb2://left
-            this->sendScanCode(VK_HOME);
+            processFnKeyAction(profile.leftButton);
             break;
         case 0xb3://right
-            this->sendScanCode(VK_END);
+            processFnKeyAction(profile.rightButton);
+            //this->sendScanCode(VK_END);
             break;
         case 0x9e: {//C
-            uchar kbdBr = KbdControlSingleton::getInstance().changeKbdBrightness(false);
-            SETT.putKbdBr(kbdBr);
+            processFnKeyAction(profile.cButton);
+            //uchar kbdBr = KbdControlSingleton::getInstance().changeKbdBrightness(false);
+            //SETT.putKbdBr(kbdBr);
             break;
         }
         case 0x8a: {//v
-            uchar kbdBr = KbdControlSingleton::getInstance().changeKbdBrightness(true);
-            SETT.putKbdBr(kbdBr);
+            processFnKeyAction(profile.vButton);
+            //uchar kbdBr = KbdControlSingleton::getInstance().changeKbdBrightness(true);
+            //SETT.putKbdBr(kbdBr);
             break;
         }
         case 0x10://f7
-            AcpiControlSingleton::getInstance().lcdLightChange(true);
+            processFnKeyAction(profile.lcdBrD);
+            //AcpiControlSingleton::getInstance().lcdLightChange(true);
             break;
         case 0x20://f8
-            AcpiControlSingleton::getInstance().lcdLightChange(false);
+            processFnKeyAction(profile.lcdBrU);
+            //AcpiControlSingleton::getInstance().lcdLightChange(false);
             break;
         case 0x7c://mute
         {
-            WINBOOL mute = FALSE;
-            AudioUtils::toggleMute(mute, error);
+            processFnKeyAction(profile.mute);
+            //WINBOOL mute = FALSE;
+            //AudioUtils::toggleMute(mute, error);
             break;
         }
         case 0x6c: //sleep
-            AcpiControlSingleton::getInstance().sendSleepCommand();
+            processFnKeyAction(profile.sleep);
+            //AcpiControlSingleton::getInstance().sendSleepCommand();
             break;
         case 0x88: //rfkill
-            AcpiControlSingleton::getInstance().sendRfKillCommand();
+            processFnKeyAction(profile.plane);
+            //AcpiControlSingleton::getInstance().sendRfKillCommand();
             break;
         case 0x38: //rog button
+            processFnKeyAction(profile.rog);
             break;
         case 0xae: //fan button
-            switchToNextPowerPlanSet();
+            processFnKeyAction(profile.fan);
+            //switchToNextPowerPlanSet();
             break;
         case 0x6b: //toggle touchpad
-            KbdControlSingleton::getInstance().toggleTouchPad();
+            processFnKeyAction(profile.touchpad);
+            //KbdControlSingleton::getInstance().toggleTouchPad();
             break;
         default:
             break;
@@ -150,11 +162,65 @@ void GlobalEventDispatcher::handleKbdFnPress(const unsigned char fnKeyCode) {
     //qDebug() << error;
 }
 
-void GlobalEventDispatcher::sendScanCode(WORD vScanCode) {
+void GlobalEventDispatcher::processFnKeyAction(const HotkeyAction &action) {
+    QString error;
+    WINBOOL result = FALSE;
+    uchar actionCode = action.action;
+    switch (actionCode) {
+        case HOTKEY_ACTION_MUTE:
+            AudioUtils::toggleMute(result, error);
+            break;
+        case HOTKEY_ACTION_CALL_G14CPP:
+            for (QWidget *topLevelWidget : QApplication::topLevelWidgets()) {
+                auto *mainWindow = qobject_cast<MainWindow*>(topLevelWidget);
+                if (mainWindow != nullptr) {
+                    mainWindow->bringToFront();
+                    break;
+                }
+            }
+            break;
+        case HOTKEY_ACTION_CHANGE_POWER_PLAN:
+            switchToNextPowerPlanSet();
+            break;
+        case HOTKEY_ACTION_LCD_BR_DOWN:
+            AcpiControlSingleton::getInstance().lcdLightChange(true);
+            break;
+        case HOTKEY_ACTION_LCD_BR_UP:
+            AcpiControlSingleton::getInstance().lcdLightChange(false);
+            break;
+        case HOTKEY_ACTION_TOGGLE_TOUCHPAD:
+            KbdControlSingleton::getInstance().toggleTouchPad();
+            break;
+        case HOTKEY_ACTION_PLANE_MODE:
+            AcpiControlSingleton::getInstance().sendRfKillCommand();
+            break;
+        case HOTKEY_ACTION_SLEEP:
+            AcpiControlSingleton::getInstance().sendSleepCommand();
+            break;
+        case HOTKEY_ACTION_KBD_BR_DOWN: {
+            uchar kbdBr = KbdControlSingleton::getInstance().changeKbdBrightness(false);
+            SETT.putKbdBr(kbdBr);
+            break;
+        }
+        case HOTKEY_ACTION_KBD_BR_UP: {
+            uchar kbdBr = KbdControlSingleton::getInstance().changeKbdBrightness(true);
+            SETT.putKbdBr(kbdBr);
+            break;
+        }
+        case HOTKEY_ACTION_BUTTON: {
+            sendScanCode(action.data, action.modifiers);
+            break;
+        }
 
+    }
+}
+
+void GlobalEventDispatcher::sendScanCode(quint32 hwScanCode, quint32 modifiers) {
+    //qDebug() << QString::number((WORD)hwScanCode, 16);
+    //qDebug() << QString::number((WORD)modifiers, 16);
     if (this->pressedKey != nullptr //dunno why i do it kekw
-        //&& this->pressedKey->ki.wScan != hwScanCode
-        && this->pressedKey->ki.wVk != vScanCode) {
+        //&& this->pressedKey->ki.wVk != vScanCode
+        && this->pressedKey->ki.wScan != hwScanCode) {
         releaseKey();
     }
 
@@ -162,13 +228,13 @@ void GlobalEventDispatcher::sendScanCode(WORD vScanCode) {
 
     // Set up a generic keyboard event.
     this->pressedKey->type = INPUT_KEYBOARD;
-    //this->pressedKey->ki.wScan = hwScanCode; // hardware scan code for key
+    this->pressedKey->ki.wScan = hwScanCode; // hardware scan code for key
     this->pressedKey->ki.time = 0;
     this->pressedKey->ki.dwExtraInfo = 0;
 
     // Press the "A" key
-    this->pressedKey->ki.wVk = vScanCode; // virtual-key code for the "a" key
-    this->pressedKey->ki.dwFlags = 0; // 0 for key press
+    //this->pressedKey->ki.wVk = vScanCode; // virtual-key code for the "a" key
+    this->pressedKey->ki.dwFlags = KEYEVENTF_SCANCODE | (hwScanCode >> 8);
 
     SendInput(1, this->pressedKey, sizeof(INPUT));
 }
@@ -178,8 +244,7 @@ void GlobalEventDispatcher::releaseKey() {
         return;
     }
 
-    this->pressedKey->ki.dwFlags = KEYEVENTF_KEYUP;
-
+    this->pressedKey->ki.dwFlags = KEYEVENTF_KEYUP | KEYEVENTF_SCANCODE | (this->pressedKey->ki.wScan >> 8);
     SendInput(1, this->pressedKey, sizeof(INPUT));
 }
 
@@ -209,7 +274,7 @@ void GlobalEventDispatcher::applyPowerPlanFromCurrentSet() {
     PowerSourceType currentPS = AcpiControlSingleton::getInstance().getPowerSourceType();
 
     PowerPlan powerPlan;
-    switch(currentPS) {
+    switch (currentPS) {
         case POWER_SOURCE_BATTERY:
             powerPlan = currentPowerPlanSet.dcPowerPlan;
             break;
@@ -223,10 +288,11 @@ void GlobalEventDispatcher::applyPowerPlanFromCurrentSet() {
             powerPlan = {0x00};
     }
 
-    AcpiControlSingleton::getInstance().setPowerPlan(ARMOURY_CRATE_PLANS[powerPlan.armouryCratePlanId].asusPlanCode);
+    AcpiControlSingleton::getInstance().setPowerPlan(
+            ARMOURY_CRATE_PLANS[powerPlan.armouryCratePlanId].asusPlanCode);
 
     //wait 1 sec before applying additional things because ac power plan changes not right away
-    QTimer::singleShot(1000, this, [powerPlan] () {
+    QTimer::singleShot(1000, this, [powerPlan]() {
         if (!powerPlan.fansProfile.name.isEmpty()) {
             AcpiControlSingleton::getInstance().setFanProfile(powerPlan.fansProfile);
         }

@@ -30,8 +30,8 @@ Roadmap:
 10) ~~Handle "Sleep" button~~ (done)
 11) ~~Handle "Plane Mode" button~~ (done)
 12) ~~Do something with "Fan Mode" button (circular switch between modes?)~~ (done)
-13) Make an interface for customizing Fn buttons
-14) Handle "ROG" button
+13) ~~Make an interface for customizing Fn buttons~~ (done)
+14) ~~Handle "ROG" button~~ (done)
 15) Save battery max charge setting, and apply it on start
 16) Refactor settings storage
 17) Fix fan curves tab
