@@ -32,7 +32,7 @@ Roadmap:
 12) ~~Do something with "Fan Mode" button (circular switch between modes?)~~ (done)
 13) ~~Make an interface for customizing Fn buttons~~ (done)
 14) ~~Handle "ROG" button~~ (done)
-15) Save battery max charge setting, and apply it on start
+15) ~~Save battery max charge setting, and apply it on start~~ (done)
 16) Refactor settings storage
 17) Fix fan curves tab
 18) Handle all the errors that are possible to catch

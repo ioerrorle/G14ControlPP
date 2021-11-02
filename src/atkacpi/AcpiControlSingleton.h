@@ -63,6 +63,8 @@ public:
     void sendSleepCommand();
 
     void sendRfKillCommand();
+
+    void getFanCurves(FAN_DEVICE device, unsigned char plan);
 };
 
 

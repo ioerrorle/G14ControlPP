@@ -41,7 +41,7 @@ set(SOURCES
         src/ui/notificationHelper/NotificationHelper.cpp src/ui/notificationHelper/NotificationHelper.h
         src/ui/hotkeys/HotkeyAction.cpp src/ui/hotkeys/HotkeyAction.h
         src/ui/hotkeys/HotkeysProfile.cpp src/ui/hotkeys/HotkeysProfile.h
-        src/ui/base/BaseTab.h)
+        src/ui/base/BaseTab.h src/ui/fansTab/fanCurveView/FanCurveView.cpp src/ui/fansTab/fanCurveView/FanCurveView.h src/ui/fansTab/fanCurveView/Node.cpp src/ui/fansTab/fanCurveView/Node.h src/ui/fansTab/fanCurveView/Edge.cpp src/ui/fansTab/fanCurveView/Edge.h)
 set(UI src/ui/MainWindow.ui src/ui/fansTab/FansTab.ui src/ui/cpuTab/CpuTab.ui src/ui/batteryTab/BatteryTab.ui src/ui/powerPlans/PowerPlansTab.ui )
 
 add_executable(G14ControlPP ${SOURCES} ${UI})

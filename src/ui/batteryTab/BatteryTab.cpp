@@ -1,7 +1,7 @@
 #include "BatteryTab.h"
 #include "ui_BatteryTab.h"
 
-BatteryTab::BatteryTab(QWidget *parent)  : QWidget(parent), ui(new Ui::BatteryTab) {
+BatteryTab::BatteryTab(QWidget *parent) : QWidget(parent), ui(new Ui::BatteryTab) {
     ui->setupUi(this);
     onSliderMoved(ui->batterySlider->value());
 
@@ -27,7 +27,5 @@ void BatteryTab::loadSettings() {
 }
 
 void BatteryTab::setSelected(bool selected) {
-    //qDebug() << "battery";
+
 }
-
-

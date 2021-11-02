@@ -268,7 +268,13 @@ void GlobalEventDispatcher::handlePowerCfgChange(POWERBROADCAST_SETTING *setting
 void GlobalEventDispatcher::applyPowerPlanFromCurrentSet() {
     auto currentPowerPlanSet = SETT.getCurrentPowerPlanSet();
     if (currentPowerPlanSet.name.isEmpty()) {
-        return;
+        PowerPlan defaultPp = {0};
+        defaultPp.armouryCratePlanId = 0;
+        currentPowerPlanSet = {0};
+        currentPowerPlanSet.usbPowerPlan = defaultPp;
+        currentPowerPlanSet.acPowerPlan = defaultPp;
+        currentPowerPlanSet.dcPowerPlan = defaultPp;
+
     }
 
     PowerSourceType currentPS = AcpiControlSingleton::getInstance().getPowerSourceType();

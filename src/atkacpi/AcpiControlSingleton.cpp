@@ -323,3 +323,19 @@ void AcpiControlSingleton::sendRfKillCommand() {
     int bytesWritten = controlInternal(0x22240c, &input[0], 16, &outBuffer[0], 8);
 }
 
+void AcpiControlSingleton::getFanCurves(FAN_DEVICE device, unsigned char plan) {
+    unsigned char input[16] = {0x44, 0x53, 0x54, 0x53,
+                               0x08, 0x00, 0x00, 0x00,
+                               device, 0x00, 0x11, 0x00,
+                               plan, 0x00, 0x00, 0x00};
+
+    unsigned char outBuffer[16];
+
+    int bytesWritten = controlInternal(0x22240c, &input[0], 16, &outBuffer[0], 16);
+
+    auto deb = qDebug();
+    for(int i = 0; i < 16; i++) {
+        deb << outBuffer[i] << ";";
+    }
+}
+
