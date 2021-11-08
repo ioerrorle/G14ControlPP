@@ -15,45 +15,59 @@ FansTab::FansTab(QWidget *parent) : QWidget(parent), ui(new Ui::FansTab) {
     connect(ui->deleteProfile, &QPushButton::clicked, this, &FansTab::onDeleteProfileClicked);
 
     //CPU SECTION
-    cpuSliders[0] = ui->cpuSpeed_0;
-    cpuSliders[1] = ui->cpuSpeed_1;
-    cpuSliders[2] = ui->cpuSpeed_2;
-    cpuSliders[3] = ui->cpuSpeed_3;
-    cpuSliders[4] = ui->cpuSpeed_4;
-    cpuSliders[5] = ui->cpuSpeed_5;
-    cpuSliders[6] = ui->cpuSpeed_6;
-    cpuSliders[7] = ui->cpuSpeed_7;
 
-    for (int i = 0; i < 8; i++) {
-        auto *qSlider = cpuSliders[i];
-        qSlider->setMaximum(100);
+    cpuFanEditor = new FanCurveView();
+    dynamic_cast<QHBoxLayout *>(ui->cpuGroup->layout())->insertWidget(0, cpuFanEditor);
+    //dynamic_cast<QHBoxLayout *>(ui->cpuGroup->layout())->setStretch(1, 1);
 
-        connect(qSlider, &QSlider::valueChanged, this, &FansTab::onSliderValueChanged);
-        connect(qSlider, &QSlider::sliderMoved, this, [&](int value) {
-            QToolTip::showText(QCursor::pos(), QString("%1").arg(value), nullptr);
-        });
-    }
+    ui->cpuRPM->setFixedWidth(250);
+    ui->gpuRPM->setFixedWidth(250);
+
+//    cpuSliders[0] = ui->cpuSpeed_0;
+//    cpuSliders[1] = ui->cpuSpeed_1;
+//    cpuSliders[2] = ui->cpuSpeed_2;
+//    cpuSliders[3] = ui->cpuSpeed_3;
+//    cpuSliders[4] = ui->cpuSpeed_4;
+//    cpuSliders[5] = ui->cpuSpeed_5;
+//    cpuSliders[6] = ui->cpuSpeed_6;
+//    cpuSliders[7] = ui->cpuSpeed_7;
+//
+//    for (int i = 0; i < 8; i++) {
+//        auto *qSlider = cpuSliders[i];
+//        qSlider->setMaximum(100);
+//
+//        connect(qSlider, &QSlider::valueChanged, this, &FansTab::onSliderValueChanged);
+//        connect(qSlider, &QSlider::sliderMoved, this, [&](int value) {
+//            QToolTip::showText(QCursor::pos(), QString("%1").arg(value), nullptr);
+//        });
+//    }
 
     //GPU SECTION
 
-    gpuSliders[0] = ui->gpuSpeed_0;
-    gpuSliders[1] = ui->gpuSpeed_1;
-    gpuSliders[2] = ui->gpuSpeed_2;
-    gpuSliders[3] = ui->gpuSpeed_3;
-    gpuSliders[4] = ui->gpuSpeed_4;
-    gpuSliders[5] = ui->gpuSpeed_5;
-    gpuSliders[6] = ui->gpuSpeed_6;
-    gpuSliders[7] = ui->gpuSpeed_7;
+    gpuFanEditor = new FanCurveView();
+    dynamic_cast<QHBoxLayout *>(ui->gpuGroup->layout())->insertWidget(0, gpuFanEditor);
+    //dynamic_cast<QHBoxLayout *>(ui->gpuGroup->layout())->setStretch(1,1);
 
-    for (int i = 0; i < 8; i++) {
-        auto *qSlider = gpuSliders[i];
-        qSlider->setMaximum(100);
+    //ui->gpuRPM->setStyleSheet("QLabel { width : 9em }");
 
-        connect(qSlider, &QSlider::valueChanged, this, &FansTab::onSliderValueChanged);
-        connect(qSlider, &QSlider::sliderMoved, this, [&](int value) {
-            QToolTip::showText(QCursor::pos(), QString("%1").arg(value), nullptr);
-        });
-    }
+//    gpuSliders[0] = ui->gpuSpeed_0;
+//    gpuSliders[1] = ui->gpuSpeed_1;
+//    gpuSliders[2] = ui->gpuSpeed_2;
+//    gpuSliders[3] = ui->gpuSpeed_3;
+//    gpuSliders[4] = ui->gpuSpeed_4;
+//    gpuSliders[5] = ui->gpuSpeed_5;
+//    gpuSliders[6] = ui->gpuSpeed_6;
+//    gpuSliders[7] = ui->gpuSpeed_7;
+//
+//    for (int i = 0; i < 8; i++) {
+//        auto *qSlider = gpuSliders[i];
+//        qSlider->setMaximum(100);
+//
+//        connect(qSlider, &QSlider::valueChanged, this, &FansTab::onSliderValueChanged);
+//        connect(qSlider, &QSlider::sliderMoved, this, [&](int value) {
+//            QToolTip::showText(QCursor::pos(), QString("%1").arg(value), nullptr);
+//        });
+//    }
 
     //BUTTONS SECTION
 
@@ -85,8 +99,8 @@ void FansTab::refresh() {
     RY.refreshTable();
 
     ui->cpuRPM->setText(QString::asprintf("%.2f°C, %ld RPM",
-                                      RY.getApuTemp(),
-                                      AcpiControlSingleton::getInstance().getCpuFanSpeed()));
+                                          RY.getApuTemp(),
+                                          AcpiControlSingleton::getInstance().getCpuFanSpeed()));
     ui->gpuRPM->setText(QString::number(AcpiControlSingleton::getInstance().getGpuFanSpeed()) + " RPM");
 }
 
@@ -141,18 +155,18 @@ bool FansTab::saveFansProfile(QString &name, bool override) {
 
 FansProfile FansTab::createFansProfileFromCurrentSettings() {
     FansProfile profile = {};
-    if (!curveChanged) {
-        profile.name = ui->fanCurveComboBox->currentText();
-    }
-    FanCurve cpuCurve = {};
-    FanCurve gpuCurve = {};
-    for (int i = 0; i < 8; i++) {
-        cpuCurve.temp[i] = gpuCurve.temp[i] = 35 + i * 10;
-        cpuCurve.speed[i] = cpuSliders[i]->value();
-        gpuCurve.speed[i] = gpuSliders[i]->value();
-    }
-    profile.cpu = cpuCurve;
-    profile.gpu = gpuCurve;
+//    if (!curveChanged) {
+//        profile.name = ui->fanCurveComboBox->currentText();
+//    }
+//    FanCurve cpuCurve = {};
+//    FanCurve gpuCurve = {};
+//    for (int i = 0; i < 8; i++) {
+//        cpuCurve.temp[i] = gpuCurve.temp[i] = 35 + i * 10;
+//        cpuCurve.speed[i] = cpuSliders[i]->value();
+//        gpuCurve.speed[i] = gpuSliders[i]->value();
+//    }
+//    profile.cpu = cpuCurve;
+//    profile.gpu = gpuCurve;
 
     return profile;
 }
@@ -169,17 +183,17 @@ void FansTab::reloadFanCurves() {
 }
 
 void FansTab::selectFanProfile(FansProfile &profile, bool selectIndex) {
-    if (selectIndex) {
-        int i = ui->fanCurveComboBox->findText(profile.name);
-        if (i != -1) {
-            ui->fanCurveComboBox->setCurrentIndex(i);
-        }
-    }
-    //this->fanCurveComboBox->setCurrentText(profile.name);
-    for (int i = 0; i < 8; i++) {
-        cpuSliders[i]->setValue(profile.cpu.speed[i]);
-        gpuSliders[i]->setValue(profile.gpu.speed[i]);
-    }
+//    if (selectIndex) {
+//        int i = ui->fanCurveComboBox->findText(profile.name);
+//        if (i != -1) {
+//            ui->fanCurveComboBox->setCurrentIndex(i);
+//        }
+//    }
+//    //this->fanCurveComboBox->setCurrentText(profile.name);
+//    for (int i = 0; i < 8; i++) {
+//        cpuSliders[i]->setValue(profile.cpu.speed[i]);
+//        gpuSliders[i]->setValue(profile.gpu.speed[i]);
+//    }
 }
 
 void FansTab::onFanCurveIndexChanged(int index) {

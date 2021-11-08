@@ -1,43 +1,63 @@
 #include "PowerProfile.h"
 
-bool operator==(const PowerProfile &l, const PowerProfile &r) {
-    return l.name == r.name
-           && l.mode == r.mode
-           && l.stapmTime == r.stapmTime
-           && l.stapmLimit == r.stapmLimit
-           && l.slowTime == r.slowTime
-           && l.slowLimit == r.slowLimit
-           && l.fastLimit == r.fastLimit;
+PowerProfile::PowerProfile(const QString &name, float stapmLimit, float stapmTime, float slowLimit, float slowTime,
+                           float fastLimit, Setpoint mode) : name(name), stapmLimit(stapmLimit), stapmTime(stapmTime),
+                                                             slowLimit(slowLimit), slowTime(slowTime),
+                                                             fastLimit(fastLimit), mode(mode) {
+
 }
 
-bool operator<(const PowerProfile &l, const PowerProfile &r) {
-    if (l.name < r.name) return true;
-    if (r.name < l.name) return false;
-    if (l.mode < r.mode) return true;
-    if (r.mode < l.mode) return false;
-    if (l.stapmLimit < r.stapmLimit) return true;
-    if (r.stapmLimit < l.stapmLimit) return false;
-    if (l.stapmTime < r.stapmTime) return true;
-    if (r.stapmTime < l.stapmTime) return false;
-    if (l.slowTime < r.slowTime) return true;
-    if (r.slowTime < l.slowTime) return false;
-    if (l.slowLimit < r.slowLimit) return true;
-    if (r.slowLimit < l.slowLimit) return false;
-    return l.fastLimit < r.fastLimit;
+const QString &PowerProfile::getName() const {
+    return name;
 }
 
-QDataStream &operator<<(QDataStream &out, const PowerProfile &v) {
-    out << v.name << v.slowLimit << v.slowTime << v.stapmLimit << v.stapmTime << v.fastLimit << v.mode;
-    return out;
+float PowerProfile::getStapmLimit() const {
+    return stapmLimit;
 }
 
-QDataStream &operator>>(QDataStream &in, PowerProfile &v) {
-    in >> v.name;
-    in >> v.slowLimit;
-    in >> v.slowTime;
-    in >> v.stapmLimit;
-    in >> v.stapmTime;
-    in >> v.fastLimit;
-    in >> v.mode;
-    return in;
+float PowerProfile::getStapmTime() const {
+    return stapmTime;
+}
+
+float PowerProfile::getSlowLimit() const {
+    return slowLimit;
+}
+
+float PowerProfile::getSlowTime() const {
+    return slowTime;
+}
+
+float PowerProfile::getFastLimit() const {
+    return fastLimit;
+}
+
+Setpoint PowerProfile::getMode() const {
+    return mode;
+}
+
+PowerProfile PowerProfile::fromQStringList(const QString &name, const QStringList &list) {
+    return PowerProfile(name, list[0].toFloat(), list[1].toFloat(), list[2].toFloat(), list[3].toFloat(), list[4].toFloat(), list[5].toInt());
+}
+
+QStringList PowerProfile::toQStringList() {
+    auto result = QStringList();
+    result.append(QString::number(stapmLimit));
+    result.append(QString::number(stapmTime));
+    result.append(QString::number(slowLimit));
+    result.append(QString::number(slowTime));
+    result.append(QString::number(fastLimit));
+    result.append(QString::number(mode));
+    return result;
+}
+
+PowerProfile PowerProfile::Default() {
+    return PowerProfile(QString(), 0, 0, 0, 0, 0, 0);
+}
+
+bool PowerProfile::isEmpty() {
+    return empty;
+}
+
+PowerProfile::PowerProfile() {
+    empty = true;
 }

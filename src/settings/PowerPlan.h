@@ -1,26 +1,30 @@
 #ifndef G14CONTROLPP_POWERPLAN_H
 #define G14CONTROLPP_POWERPLAN_H
 
-#include <QDataStream>
-#include "src/atkacpi/FanDef.h"
+#include <QString>
+#include "src/atkacpi/ArmouryCratePlan.h"
+#include "src/atkacpi/FansProfile.h"
 #include "src/ryzenadj/PowerProfile.h"
 
-typedef struct {
+class PowerPlan {
+
+public:
+    PowerPlan(uchar armouryCratePlanId, const QString &fansProfileName, const QString &powerProfileName);
+
+    PowerPlan();
+
+    static PowerPlan fromQString(const QString &string);
+    QString toQString();
+
+    ArmouryCratePlan getArmouryCratePlan();
+    FansProfile getFansProfile();
+    PowerProfile getPowerProfile();
+
+private:
+
     uchar armouryCratePlanId;
-    FansProfile fansProfile;
-    PowerProfile powerProfile;
-
-    ArmouryCratePlan armouryCratePlan() { return ARMOURY_CRATE_PLANS[armouryCratePlanId]; };
-} PowerPlan;
-
-bool operator==(const PowerPlan &lhs, const PowerPlan &rhs);
-
-bool operator<(const PowerPlan &l, const PowerPlan &r);
-
-QDataStream &operator<<(QDataStream &out, const PowerPlan &v);
-
-QDataStream &operator>>(QDataStream &in, PowerPlan &v);
-
-Q_DECLARE_METATYPE(PowerPlan);
+    QString fansProfileName;
+    QString powerProfileName;
+};
 
 #endif //G14CONTROLPP_POWERPLAN_H

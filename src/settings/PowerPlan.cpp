@@ -1,29 +1,33 @@
 #include "PowerPlan.h"
+#include "src/settings/Settings.h"
 
-QDataStream &operator<<(QDataStream &out, const PowerPlan &v) {
-    out << v.armouryCratePlanId;
-    out << v.fansProfile;
-    out << v.powerProfile;
-    return out;
+PowerPlan::PowerPlan(uchar armouryCratePlanId, const QString &fansProfileName, const QString &powerProfileName)
+        : armouryCratePlanId(armouryCratePlanId), fansProfileName(fansProfileName),
+          powerProfileName(powerProfileName) {
+
 }
 
-QDataStream &operator>>(QDataStream &in, PowerPlan &v) {
-    in >> v.armouryCratePlanId;
-    in >> v.fansProfile;
-    in >> v.powerProfile;
-    return in;
+ArmouryCratePlan PowerPlan::getArmouryCratePlan() {
+    return ArmouryCratePlan::plans()[armouryCratePlanId];
 }
 
-bool operator==(const PowerPlan& lhs, const PowerPlan& rhs){
-    return lhs.powerProfile == rhs.powerProfile
-           && lhs.fansProfile == rhs.fansProfile
-           && lhs.armouryCratePlanId == rhs.armouryCratePlanId;
+FansProfile PowerPlan::getFansProfile() {
+    return Settings::getInstance().getFansProfile(fansProfileName);
 }
 
-bool operator<(const PowerPlan &l, const PowerPlan &r) {
-    if (l.powerProfile < r.powerProfile) return true;
-    if (r.powerProfile < l.powerProfile) return false;
-    if (l.fansProfile < r.fansProfile) return true;
-    if (r.fansProfile < l.fansProfile) return false;
-    return l.armouryCratePlanId < r.armouryCratePlanId;
+PowerProfile PowerPlan::getPowerProfile() {
+    return Settings::getInstance().getPowerProfile(powerProfileName);
+}
+
+PowerPlan PowerPlan::fromQString(const QString &string) {
+    QStringList list = string.split(",");
+    return PowerPlan(list[0].toInt(), list[1], list[2]);
+}
+
+QString PowerPlan::toQString() {
+    return QString::asprintf("%d,%s,%s", armouryCratePlanId, fansProfileName.toLocal8Bit().data(), powerProfileName.toLocal8Bit().data());
+}
+
+PowerPlan::PowerPlan() {
+
 }

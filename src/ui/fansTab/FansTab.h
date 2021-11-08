@@ -7,10 +7,11 @@
 #include <QSlider>
 #include <QInputDialog>
 #include <QMessageBox>
-#include <src/atkacpi/AcpiControlSingleton.h>
-#include <src/ryzenadj/RyzenAdjSingleton.h>
-#include <src/settings/Settings.h>
+#include "src/atkacpi/AcpiControlSingleton.h"
+#include "src/ryzenadj/RyzenAdjSingleton.h"
+#include "src/settings/Settings.h"
 #include "src/ui/base/BaseTab.h"
+#include "fanCurveView/FanCurveView.h"
 
 namespace Ui {
     class FansTab;
@@ -27,8 +28,10 @@ public:
 private:
     Ui::FansTab *ui;
 
-    QSlider *cpuSliders[8];
-    QSlider *gpuSliders[8];
+    //QSlider *cpuSliders[8];
+    //QSlider *gpuSliders[8];
+    FanCurveView *cpuFanEditor;
+    FanCurveView *gpuFanEditor;
     QTimer *qTimer;
     bool curveChanged = false;
 

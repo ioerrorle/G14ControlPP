@@ -23,7 +23,7 @@ FanCurveView::FanCurveView(QWidget *parent) : QGraphicsView(parent) {
     
     uchar vals[] = {20 , 44 , 47 , 50 , 53 , 56 , 60 , 98 , 7 , 11 , 14 , 16 , 19 , 23 , 28 , 35};
     //uchar vals[] = {20 , 44 , 47 , 50 , 53 , 56 , 60 , 98 , 11 , 14 , 18 , 21 , 25 , 28 , 34 , 40 };
-    mempcpy(&values[0], &vals[0], 16);
+
 
     for (int i = 0; i < 8; i++) {
         nodes[i] = new Node(this);
@@ -31,6 +31,11 @@ FanCurveView::FanCurveView(QWidget *parent) : QGraphicsView(parent) {
         if (i > 0)
             scene->addItem(new Edge(nodes[i-1], nodes[i]));
     }
+}
+
+void FanCurveView::setFanCurve(uchar *vals) {
+    mempcpy(&values[0], vals, 16);
+    setNodesInPlace();
 }
 
 void FanCurveView::itemMoved() {

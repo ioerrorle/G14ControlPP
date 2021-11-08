@@ -323,7 +323,7 @@ void GlobalEventDispatcher::switchToNextPowerPlanSet() {
         currentPowerPlanSetName = usedPowerPlans[index];
     }
     //get this power plan from the settings
-    auto currentPowerPlanSet = SETT.getPowerPlanSetByName(currentPowerPlanSetName);
+    auto currentPowerPlanSet = SETT.getPowerPlanSet(currentPowerPlanSetName);
     if (currentPowerPlanSet.name.isEmpty()) {
         //for some reason we've got invalid set
         return;

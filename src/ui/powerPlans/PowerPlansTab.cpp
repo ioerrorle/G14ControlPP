@@ -36,11 +36,11 @@ void PowerPlansTab::loadPowerPlans() {
     auto powerPlanSets = SETT.getPowerPlanSets(true);
     auto usedPowerPlans = SETT.getUsedPowerPlans(powerPlanSets);
     for (PowerPlanSet &powerPlanSet : powerPlanSets) {
-        ui->powerPlan->addItem(powerPlanSet.name, QVariant::fromValue(powerPlanSet));
-        if (usedPowerPlans.contains(powerPlanSet.name)) {
-            new QListWidgetItem(powerPlanSet.name, ui->usedPowerPlans);
+        ui->powerPlan->addItem(powerPlanSet.getName(), QVariant::fromValue(powerPlanSet));
+        if (usedPowerPlans.contains(powerPlanSet.getName())) {
+            new QListWidgetItem(powerPlanSet.getName(), ui->usedPowerPlans);
         } else {
-            new QListWidgetItem(powerPlanSet.name, ui->unusedPowerPlans);
+            new QListWidgetItem(powerPlanSet.getName(), ui->unusedPowerPlans);
         }
     }
 }

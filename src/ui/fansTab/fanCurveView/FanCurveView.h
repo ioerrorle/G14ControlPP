@@ -31,6 +31,8 @@ public:
 
     QPointF calcPosition(uchar temp, uchar speed) const;
 
+    void setFanCurve(uchar * values);
+
 protected:
     void resizeEvent(QResizeEvent *event) override;
 

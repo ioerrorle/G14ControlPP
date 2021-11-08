@@ -4,9 +4,6 @@
 #include <QObject>
 #include <QSettings>
 #include <QApplication>
-#include "src/atkacpi/AcpiControlSingleton.h"
-#include "src/ryzenadj/RyzenAdjTypes.h"
-#include "src/ryzenadj/PowerProfile.h"
 #include "PowerPlanSet.h"
 #include "src/ui/hotkeys/HotkeysProfile.h"
 
@@ -21,11 +18,6 @@ private:
     Settings();
     QSettings *qSettings;
 
-    void saveFansProfiles(QList<FansProfile> &profiles);
-    void savePowerProfiles(QList<PowerProfile> &profiles);
-    void savePowerPlanSets(QList<PowerPlanSet> &powerPlanSets);
-    void saveHotkeysProfiles(QList<HotkeysProfile> &profiles);
-
 public:
     Settings(Settings const &) = delete;
     void operator=(Settings const &) = delete;
@@ -33,9 +25,10 @@ public:
     void putKbdBr(uchar value);
     uchar getKbdBr();
 
-    bool saveFansProfile(FansProfile &profile, bool override = true);
-    void deleteFansProfile(FansProfile &profile);
+    bool saveFansProfile(FansProfile &fansProfile, bool override = true);
+    void deleteFansProfile(const QString &name);
     QList<FansProfile> getFansProfiles();
+    FansProfile getFansProfile(const QString &name);
 
     void setCurrentPowerPlan(uchar id);
     ArmouryCratePlan getCurrentPowerPlan();
@@ -47,7 +40,8 @@ public:
     FansProfile getCurrentFanCurveProfile();
 
     bool savePowerProfile(PowerProfile &powerProfile, bool override = true);
-    void deletePowerProfile(PowerProfile &powerProfile);
+    void deletePowerProfile(QString &powerProfileName);
+    PowerProfile getPowerProfile(QString &name);
     QList<PowerProfile> getPowerProfiles();
 
     void setCurrentPowerProfile(PowerProfile &powerProfile);
@@ -56,12 +50,8 @@ public:
     void putMaxBatteryCharge(const uchar value);
     uchar getMaxBatteryCharge();
 
-    void savePowerPlans(PowerPlan &dcPowerPlan, PowerPlan &acPowerPlan, PowerPlan &usbPowerPlan);
-    void loadPowerPlans(PowerPlan &dcPowerPlan, PowerPlan &acPowerPlan, PowerPlan &usbPowerPlan);
-    PowerPlan loadPowerPlanForPowerSource(PowerSourceType &source);
-
     bool savePowerPlanSet(PowerPlanSet &powerPlanSet, bool override = true);
-    void deletePowerPlanSet(PowerPlanSet &powerPlanSet);
+    void deletePowerPlanSet(const QString &powerPlanSetName);
     QList<PowerPlanSet> getPowerPlanSets(bool includeStock = true);
 
     void setUsedPowerPlans(QStringList &list);
@@ -71,7 +61,7 @@ public:
     void setCurrentPowerPlanSetName(const QString &name);
     QString getCurrentPowerPlanSetName();
 
-    PowerPlanSet getPowerPlanSetByName(QString name);
+    PowerPlanSet getPowerPlanSet(const QString &name);
 
     PowerPlanSet getCurrentPowerPlanSet();
 

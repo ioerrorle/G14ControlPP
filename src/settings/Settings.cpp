@@ -21,50 +21,45 @@ uchar Settings::getKbdBr() {
     return qSettings->value(tr("keyboard_brightness"), 0).value<unsigned char>();
 }
 
-bool Settings::saveFansProfile(FansProfile &profile, bool override) {
-    AcpiControlSingleton::fixFanCurve(FAN_CPU, profile.cpu);
-    AcpiControlSingleton::fixFanCurve(FAN_GPU, profile.gpu);
-
-    auto currentProfiles = getFansProfiles();
-    for (int i = 0; i < currentProfiles.size(); i++) {
-        if (profile.name == currentProfiles[i].name) {
-            if (!override) {
-                return false;
-            } else {
-                currentProfiles.replace(i, profile);
-                saveFansProfiles(currentProfiles);
-                return true;
-            }
-        }
+bool Settings::saveFansProfile(FansProfile &fansProfile, bool override) {
+    bool result;
+    qSettings->beginGroup("FansProfiles");
+    if (qSettings->contains(fansProfile.getName()) && !override) {
+        result = false;
+    } else {
+        qSettings->setValue(fansProfile.getName(), fansProfile.toQStringList());
+        result = true;
     }
-
-    currentProfiles.append(profile);
-    saveFansProfiles(currentProfiles);
-    return true;
+    qSettings->endGroup();
+    return result;
 }
 
-void Settings::deleteFansProfile(FansProfile &profile) {
-    auto currentProfiles = getFansProfiles();
-
-    for (int i = 0; i < currentProfiles.size(); i++) {
-        if (currentProfiles[i].name == profile.name) {
-            currentProfiles.removeAt(i);
-            break;
-        }
-    }
-
-    saveFansProfiles(currentProfiles);
+void Settings::deleteFansProfile(const QString &name) {
+    qSettings->beginGroup("FansProfiles");
+    qSettings->remove(name);
+    qSettings->endGroup();
 }
 
 QList<FansProfile> Settings::getFansProfiles() {
-    if (!qSettings->contains("fan_profiles_list")) {
-        return QList<FansProfile>();
+    qSettings->beginGroup("FansProfiles");
+    QList<FansProfile> result;
+    for (const QString &key : qSettings->allKeys()) {
+        result.append(FansProfile::fromQStringList(key, qSettings->value(key).toStringList()));
     }
-    return qSettings->value("fan_profiles_list").value<QList<FansProfile>>();
+    qSettings->endGroup();
+    return result;
 }
 
-void Settings::saveFansProfiles(QList<FansProfile> &profiles) {
-    qSettings->setValue("fan_profiles_list", QVariant::fromValue(profiles));
+FansProfile Settings::getFansProfile(const QString &name) {
+    qSettings->beginGroup("FansProfiles");
+    if (qSettings->contains(name)) {
+        auto result = FansProfile::fromQStringList(name, qSettings->value(name).toStringList());
+        qSettings->endGroup();
+        return result;
+    } else {
+        qSettings->endGroup();
+        return FansProfile();
+    }
 }
 
 void Settings::setCurrentPowerPlan(uchar id) {
@@ -73,7 +68,7 @@ void Settings::setCurrentPowerPlan(uchar id) {
 
 ArmouryCratePlan Settings::getCurrentPowerPlan() {
     uchar powerPlanId = qSettings->value("current_power_plan", 0).value<bool>();
-    return ARMOURY_CRATE_PLANS[powerPlanId];
+    return ArmouryCratePlan::plans()[powerPlanId];
 }
 
 void Settings::setUseDefaultFanCurves(bool value) {
@@ -85,8 +80,8 @@ bool Settings::getUseDefaultFanCurves() {
 }
 
 void Settings::setCurrentFanCurveProfile(FansProfile &profile) {
-    if (!profile.name.isEmpty()) {
-        qSettings->setValue("current_fan_profile_name", profile.name);
+    if (!profile.isEmpty()) {
+        qSettings->setValue("current_fan_profile_name", profile.getName());
     } else {
         qSettings->remove("current_fan_profile_name");
     }
@@ -96,93 +91,67 @@ void Settings::setCurrentFanCurveProfile(FansProfile &profile) {
 FansProfile Settings::getCurrentFanCurveProfile() {
     auto name = qSettings->value("current_fan_profile_name").value<QString>();
     if (!name.isEmpty()) {
-        auto savedFanCurves = getFansProfiles();
-        for (FansProfile saved : savedFanCurves) {
-            if (saved.name == name) {
-                return saved;
-            }
-        }
+        return getFansProfile(name);
+    } else {
+        return FansProfile();
     }
-
-    FansProfile result = {};
-    if (qSettings->contains("current_fan_profile")) {
-        result = qSettings->value("current_fan_profile").value<FansProfile>();
-    }
-    AcpiControlSingleton::fixFanCurve(FAN_CPU, result.cpu);
-    AcpiControlSingleton::fixFanCurve(FAN_GPU, result.gpu);
-    return result;
-}
-
-void Settings::savePowerProfiles(QList<PowerProfile> &profiles) {
-    qSettings->setValue("power_profiles_list", QVariant::fromValue(profiles));
 }
 
 bool Settings::savePowerProfile(PowerProfile &powerProfile, bool override) {
-    auto currentProfiles = getPowerProfiles();
-    for (int i = 0; i < currentProfiles.size(); i++) {
-        if (powerProfile.name == currentProfiles[i].name) {
-            if (!override) {
-                return false;
-            } else {
-                currentProfiles.replace(i, powerProfile);
-                savePowerProfiles(currentProfiles);
-                return true;
-            }
-        }
+    bool result;
+    qSettings->beginGroup("PowerProfiles");
+    if (qSettings->contains(powerProfile.getName()) && !override) {
+        result = false;
+    } else {
+        qSettings->setValue(powerProfile.getName(), powerProfile.toQStringList());
+        result = true;
     }
-
-    currentProfiles.append(powerProfile);
-    savePowerProfiles(currentProfiles);
-    return true;
+    qSettings->endGroup();
+    return result;
 }
 
-void Settings::deletePowerProfile(PowerProfile &powerProfile) {
-    auto currentProfiles = getPowerProfiles();
+void Settings::deletePowerProfile(QString &name) {
+    qSettings->beginGroup("PowerProfiles");
+    qSettings->remove(name);
+    qSettings->endGroup();
+}
 
-    for (int i = 0; i < currentProfiles.size(); i++) {
-        if (currentProfiles[i].name == powerProfile.name) {
-            currentProfiles.removeAt(i);
-            break;
-        }
+PowerProfile Settings::getPowerProfile(QString &name) {
+    qSettings->beginGroup("PowerProfiles");
+    if (qSettings->contains(name)) {
+        auto result = PowerProfile::fromQStringList(name, qSettings->value(name).toStringList());
+        qSettings->endGroup();
+        return result;
+    } else {
+        qSettings->endGroup();
+        return PowerProfile();
     }
-
-    savePowerProfiles(currentProfiles);
 }
 
 QList<PowerProfile> Settings::getPowerProfiles() {
+    qSettings->beginGroup("PowerProfiles");
     QList<PowerProfile> result;
-    if (!qSettings->contains("power_profiles_list")) {
-        result = QList<PowerProfile>();
-    } else {
-        result = qSettings->value("power_profiles_list").value<QList<PowerProfile>>();
+    for (const QString &key : qSettings->allKeys()) {
+        result.append(PowerProfile::fromQStringList(key, qSettings->value(key).toStringList()));
     }
+    qSettings->endGroup();
     return result;
 }
 
 void Settings::setCurrentPowerProfile(PowerProfile &powerProfile) {
-    if (!powerProfile.name.isEmpty()) {
-        qSettings->setValue("current_power_profile_name", powerProfile.name);
+    if (powerProfile.isEmpty()) {
+        qSettings->setValue("current_power_profile_name", powerProfile.getName());
     } else {
         qSettings->remove("current_power_profile_name");
     }
-    qSettings->setValue("current_power_profile", QVariant::fromValue(powerProfile));
 }
 
 PowerProfile Settings::getCurrentPowerProfile() {
     auto name = qSettings->value("current_power_profile_name").value<QString>();
     if (!name.isEmpty()) {
-        auto savedPowerProfiles = getPowerProfiles();
-        for (PowerProfile saved : savedPowerProfiles) {
-            if (saved.name == name) {
-                return saved;
-            }
-        }
-    }
-
-    if (qSettings->contains("current_power_profile")) {
-        return qSettings->value("current_power_profile").value<PowerProfile>();
+        return getPowerProfile(name);
     } else {
-        return STOCK_POWER_PROFILE;
+        return PowerProfile();
     }
 }
 
@@ -194,98 +163,45 @@ uchar Settings::getMaxBatteryCharge() {
     return qSettings->value("battery_max_charge", 100).value<uchar>();
 }
 
-void Settings::savePowerPlans(PowerPlan &dcPowerPlan, PowerPlan &acPowerPlan, PowerPlan &usbPowerPlan) {
-    qSettings->setValue("dc_power_plan", QVariant::fromValue(dcPowerPlan));
-    qSettings->setValue("ac_power_plan", QVariant::fromValue(acPowerPlan));
-    qSettings->setValue("usb_power_plan", QVariant::fromValue(usbPowerPlan));
-}
-
-void Settings::loadPowerPlans(PowerPlan &dcPowerPlan, PowerPlan &acPowerPlan, PowerPlan &usbPowerPlan) {
-    if (qSettings->contains("dc_power_plan")) {
-        dcPowerPlan = qSettings->value("dc_power_plan").value<PowerPlan>();
-    } else {
-        dcPowerPlan = {0, {}, {}};
-    }
-    if (qSettings->contains("ac_power_plan")) {
-        acPowerPlan = qSettings->value("ac_power_plan").value<PowerPlan>();
-    } else {
-        acPowerPlan = {0, {}, {}};
-    }
-    if (qSettings->contains("usb_power_plan")) {
-        usbPowerPlan = qSettings->value("usb_power_plan").value<PowerPlan>();
-    } else {
-        usbPowerPlan = {0, {}, {}};
-    }
-}
-
-PowerPlan Settings::loadPowerPlanForPowerSource(PowerSourceType &source) {
-    QString key;
-    switch (source) {
-        case POWER_SOURCE_BATTERY:
-            key = "dc_power_plan";
-            break;
-        case POWER_SOURCE_180W:
-            key = "ac_power_plan";
-            break;
-        case POWER_SOURCE_USB:
-            key = "usb_power_plan";
-            break;
-    }
-
-    if (qSettings->contains(key)) {
-        return qSettings->value(key).value<PowerPlan>();
-    } else {
-        return {0, {}, {}};
-    }
-}
-
-void Settings::savePowerPlanSets(QList<PowerPlanSet> &powerPlanSets) {
-    qSettings->setValue("power_plan_set_list", QVariant::fromValue(powerPlanSets));
-}
-
 bool Settings::savePowerPlanSet(PowerPlanSet &powerPlanSet, bool override) {
-    auto currentPowerPlanSets = getPowerPlanSets(false);
-    for (int i = 0; i < currentPowerPlanSets.size(); i++) {
-        if (powerPlanSet.name == currentPowerPlanSets[i].name) {
-            if (!override) {
-                return false;
-            } else {
-                currentPowerPlanSets.replace(i, powerPlanSet);
-                savePowerPlanSets(currentPowerPlanSets);
-                return true;
-            }
-        }
+    bool result;
+    qSettings->beginGroup("PowerPlanSets");
+    if (qSettings->contains(powerPlanSet.getName()) && !override) {
+        result = false;
+    } else {
+        qSettings->setValue(powerPlanSet.getName(), powerPlanSet.toQStringList());
+        result = true;
     }
-
-    currentPowerPlanSets.append(powerPlanSet);
-    savePowerPlanSets(currentPowerPlanSets);
-    return true;
+    qSettings->endGroup();
+    return result;
 }
 
-void Settings::deletePowerPlanSet(PowerPlanSet &powerPlanSet) {
-    auto currentPowerPlanSets = getPowerPlanSets(false);
-
-    for (int i = 0; i < currentPowerPlanSets.size(); i++) {
-        if (currentPowerPlanSets[i].name == powerPlanSet.name) {
-            currentPowerPlanSets.removeAt(i);
-            break;
-        }
-    }
-
-    savePowerPlanSets(currentPowerPlanSets);
+void Settings::deletePowerPlanSet(const QString &powerPlanSetName) {
+    qSettings->beginGroup("PowerPlanSets");
+    qSettings->remove(powerPlanSetName);
+    qSettings->endGroup();
 }
 
 QList<PowerPlanSet> Settings::getPowerPlanSets(bool includeDefault) {
+    qSettings->beginGroup("PowerPlanSets");
     QList<PowerPlanSet> result;
-    if (!qSettings->contains("power_plan_set_list")) {
-        result = QList<PowerPlanSet>();
-    } else {
-        result = qSettings->value("power_plan_set_list").value<QList<PowerPlanSet>>();
+    for (const QString &key : qSettings->allKeys()) {
+        result.append(PowerPlanSet::fromQStringList(key, qSettings->value(key).toStringList()));
     }
-    if (includeDefault) {
-        result.insert(0, {"Default"});
-    }
+    qSettings->endGroup();
     return result;
+}
+
+PowerPlanSet Settings::getPowerPlanSet(const QString &name) {
+    qSettings->beginGroup("PowerPlanSets");
+    if (qSettings->contains(name)) {
+        auto result = PowerPlanSet::fromQStringList(name, qSettings->value(name).toStringList());
+        qSettings->endGroup();
+        return result;
+    } else {
+        qSettings->endGroup();
+        return PowerPlanSet();
+    }
 }
 
 void Settings::setUsedPowerPlans(QStringList &list) {
@@ -306,8 +222,8 @@ QStringList Settings::getUsedPowerPlans() {
 
     auto powerPlanSets = getPowerPlanSets(true);
     QStringList powerPlanSetsNames;
-    for (const PowerPlanSet& set : powerPlanSets) {
-        powerPlanSetsNames.append(set.name);
+    for (const PowerPlanSet &set : powerPlanSets) {
+        powerPlanSetsNames.append(set.getName());
     }
 
     for (int i = 0; i < result.size(); i++) {
@@ -330,7 +246,7 @@ QStringList Settings::getUsedPowerPlans(QList<PowerPlanSet> &powerPlanSets) {
 
     QStringList powerPlanSetsNames;
     for (const PowerPlanSet &set : powerPlanSets) {
-        powerPlanSetsNames.append(set.name);
+        powerPlanSetsNames.append(set.getName());
     }
 
     for (int i = 0; i < result.size(); i++) {
@@ -350,31 +266,12 @@ QString Settings::getCurrentPowerPlanSetName() {
     return qSettings->value("current_power_plan_set_name").value<QString>();
 }
 
-PowerPlanSet Settings::getPowerPlanSetByName(QString name) {
-    auto powerPlanSets = getPowerPlanSets(true);
-    for (PowerPlanSet set : powerPlanSets) {
-        if (set.name == name) {
-            return set;
-        }
-    }
-    PowerPlanSet result = {};
-    return result;
-}
-
 PowerPlanSet Settings::getCurrentPowerPlanSet() {
-    return getPowerPlanSetByName(getCurrentPowerPlanSetName());
+    return getPowerPlanSet(getCurrentPowerPlanSetName());
 }
 
 void Settings::setCurrentPowerPlanSetName(const QString &name) {
     qSettings->setValue("current_power_plan_set_name", name);
-}
-
-void Settings::saveHotkeysProfiles(QList<HotkeysProfile> &profiles) {
-    qSettings->beginGroup("Hotkeys");
-    for (HotkeysProfile &profile : profiles) {
-        qSettings->setValue(profile.name, QVariant::fromValue(profile));
-    }
-    qSettings->endGroup();
 }
 
 QList<HotkeysProfile> Settings::getHotkeysProfiles() {
@@ -399,14 +296,9 @@ HotkeysProfile Settings::getCurrentHotkeysProfile() {
         return HOTKEY_PROFILE_DEFAULT;
     }
     qSettings->beginGroup("Hotkeys");
-    auto allKeys = qSettings->allKeys();
-    //searching for current profile
-    for (QString &key : allKeys) {
-        if (key == currentHotkeyProfileName) {
-            auto result = qSettings->value(key).value<HotkeysProfile>();
-            qSettings->endGroup();
-            return result;
-        }
+    if (qSettings->contains(currentHotkeyProfileName)) {
+        qSettings->endGroup();
+        return qSettings->value(currentHotkeyProfileName).value<HotkeysProfile>();
     }
     qSettings->endGroup();
     //check if it's hardcoded profile
