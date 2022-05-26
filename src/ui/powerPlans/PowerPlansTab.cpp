@@ -60,10 +60,10 @@ void PowerPlansTab::loadProfiles() {
     ui->acPowerProfile->addItem("Default", 0);
     ui->usbPowerProfile->addItem("Default", 0);
     auto powerProfiles = SETT.getPowerProfiles();
-    for (PowerProfile &profile : powerProfiles) {
-        ui->dcPowerProfile->addItem(profile.name, QVariant::fromValue(profile));
-        ui->acPowerProfile->addItem(profile.name, QVariant::fromValue(profile));
-        ui->usbPowerProfile->addItem(profile.name, QVariant::fromValue(profile));
+    for (CpuProfile &profile : powerProfiles) {
+        ui->dcPowerProfile->addItem(profile.getName(), profile.toQStringList());
+        ui->acPowerProfile->addItem(profile.getName(), profile.toQStringList());
+        ui->usbPowerProfile->addItem(profile.getName(), profile.toQStringList());
     }
 
     ui->dcFanProfile->addItem("Default", 0);
@@ -71,15 +71,15 @@ void PowerPlansTab::loadProfiles() {
     ui->usbFanProfile->addItem("Default", 0);
     auto fanProfiles = SETT.getFansProfiles();
     for (FansProfile &profile : fanProfiles) {
-        ui->dcFanProfile->addItem(profile.name, QVariant::fromValue(profile));
-        ui->acFanProfile->addItem(profile.name, QVariant::fromValue(profile));
-        ui->usbFanProfile->addItem(profile.name, QVariant::fromValue(profile));
+        ui->dcFanProfile->addItem(profile.getName(), profile.toQStringList());
+        ui->acFanProfile->addItem(profile.getName(), profile.toQStringList());
+        ui->usbFanProfile->addItem(profile.getName(), profile.toQStringList());
     }
 
-    for (ArmouryCratePlan &plan : ARMOURY_CRATE_PLANS) {
-        ui->dcPlan->addItem(plan.name, plan.id);
-        ui->acPlan->addItem(plan.name, plan.id);
-        ui->usbPlan->addItem(plan.name, plan.id);
+    for (ArmouryCratePlan &plan : ArmouryCratePlan::plans()) {
+        ui->dcPlan->addItem(plan.getName(), plan.getId());
+        ui->acPlan->addItem(plan.getName(), plan.getId());
+        ui->usbPlan->addItem(plan.getName(), plan.getId());
     }
 }
 
@@ -106,18 +106,19 @@ PowerPlan PowerPlansTab::createPowerPlan(PowerSourceType powerSourceType) {
             break;
     }
 
-    PowerPlan plan = {};
-    plan.armouryCratePlanId = arcPlan->currentData().value<uchar>();
+    auto armouryCratePlanId = arcPlan->currentData().value<uchar>();
+    FansProfile fansProfile;
     if (fanProfile->currentData() == 0) {
-        plan.fansProfile = {};
+        fansProfile = FansProfile();
     } else {
-        plan.fansProfile = fanProfile->currentData().value<FansProfile>();
+        fansProfile = FansProfile::fromQStringList(fanProfile->currentText(), fanProfile->currentData().value<QStringList>());
     }
 
+    CpuProfile cpuProfile;
     if (powerProfile->currentData() == 0) {
-        plan.powerProfile = {};
+        cpuProfile = CpuProfile();
     } else {
-        plan.powerProfile = powerProfile->currentData().value<PowerProfile>();
+        cpuProfile = CpuProfile::fromQStringList(powerProfile->currentText(), powerProfile->currentData().value<QStringList>());
     }
 
     return plan;
@@ -192,13 +193,13 @@ void PowerPlansTab::powerPlanSetSelected(int index) {
         }
         powerPlanSetChanged = false;
         auto powerPlanSet = ui->powerPlan->currentData().value<PowerPlanSet>();
-        loadSettings(POWER_SOURCE_BATTERY, powerPlanSet.dcPowerPlan);
-        loadSettings(POWER_SOURCE_180W, powerPlanSet.acPowerPlan);
-        loadSettings(POWER_SOURCE_USB, powerPlanSet.usbPowerPlan);
+        loadSettings(POWER_SOURCE_BATTERY, powerPlanSet.getDcPowerPlan());
+        loadSettings(POWER_SOURCE_180W, powerPlanSet.getAcPowerPlan());
+        loadSettings(POWER_SOURCE_USB, powerPlanSet.getUsbPowerPlan());
     }
 }
 
-void PowerPlansTab::loadSettings(PowerSourceType powerSourceType, PowerPlan &powerPlan) {
+void PowerPlansTab::loadSettings(PowerSourceType powerSourceType, const PowerPlan &powerPlan) {
     QComboBox *arcPlan;
     QComboBox *fanProfile;
     QComboBox *powerProfile;
@@ -221,24 +222,24 @@ void PowerPlansTab::loadSettings(PowerSourceType powerSourceType, PowerPlan &pow
             break;
     }
 
-    int index = arcPlan->findData(powerPlan.armouryCratePlanId);
+    int index = arcPlan->findData(powerPlan.getArmouryCratePlan().getId());
     if (index != -1) {
         arcPlan->setCurrentIndex(index);
     }
 
-    if (powerPlan.fansProfile.name.isEmpty()) {
+    if (powerPlan.getFansProfile().isEmpty()) {
         fanProfile->setCurrentIndex(fanProfile->findData(0));
     } else {
-        index = fanProfile->findData(QVariant::fromValue(powerPlan.fansProfile));
+        index = fanProfile->findData(powerPlan.getFansProfile().toQStringList());
         if (index != -1) {
             fanProfile->setCurrentIndex(index);
         }
     }
 
-    if (powerPlan.powerProfile.name.isEmpty()) {
+    if (powerPlan.getPowerProfile().isEmpty()) {
         powerProfile->setCurrentIndex(fanProfile->findData(0));
     } else {
-        index = powerProfile->findData(QVariant::fromValue(powerPlan.powerProfile));
+        index = powerProfile->findData(powerPlan.getPowerProfile().toQStringList());
         if (index != -1) {
             powerProfile->setCurrentIndex(index);
         }
@@ -247,7 +248,7 @@ void PowerPlansTab::loadSettings(PowerSourceType powerSourceType, PowerPlan &pow
 
 void PowerPlansTab::deleteSelectedPlanSet(bool checked) {
     auto selectedPowerPlanSet = ui->powerPlan->currentData().value<PowerPlanSet>();
-    SETT.deletePowerPlanSet(selectedPowerPlanSet);
+    SETT.deletePowerPlanSet(selectedPowerPlanSet.getName());
     loadPowerPlans();
 }
 

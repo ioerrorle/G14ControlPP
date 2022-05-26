@@ -7,15 +7,15 @@ PowerPlan::PowerPlan(uchar armouryCratePlanId, const QString &fansProfileName, c
 
 }
 
-ArmouryCratePlan PowerPlan::getArmouryCratePlan() {
+const ArmouryCratePlan PowerPlan::getArmouryCratePlan() const {
     return ArmouryCratePlan::plans()[armouryCratePlanId];
 }
 
-FansProfile PowerPlan::getFansProfile() {
+const FansProfile PowerPlan::getFansProfile() const {
     return Settings::getInstance().getFansProfile(fansProfileName);
 }
 
-PowerProfile PowerPlan::getPowerProfile() {
+const CpuProfile PowerPlan::getPowerProfile() const {
     return Settings::getInstance().getPowerProfile(powerProfileName);
 }
 

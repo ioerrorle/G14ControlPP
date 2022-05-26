@@ -27,9 +27,6 @@ public:
 
 private:
     Ui::FansTab *ui;
-
-    //QSlider *cpuSliders[8];
-    //QSlider *gpuSliders[8];
     FanCurveView *cpuFanEditor;
     FanCurveView *gpuFanEditor;
     QTimer *qTimer;

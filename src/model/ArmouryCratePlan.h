@@ -13,6 +13,8 @@ typedef uchar FAN_DEVICE;
 class ArmouryCratePlan {
 
 public:
+    ArmouryCratePlan();
+
     static QMap<uchar, ArmouryCratePlan> plans();
 
     uint getId() const;

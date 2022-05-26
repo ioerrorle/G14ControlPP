@@ -28,7 +28,7 @@ private:
 
     void loadProfiles();
 
-    void loadSettings(PowerSourceType powerSourceType, PowerPlan &powerPlan);
+    void loadSettings(PowerSourceType powerSourceType, const PowerPlan &powerPlan);
 //
 //    void loadSettings();
 

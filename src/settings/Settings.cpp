@@ -85,7 +85,7 @@ void Settings::setCurrentFanCurveProfile(FansProfile &profile) {
     } else {
         qSettings->remove("current_fan_profile_name");
     }
-    qSettings->setValue("current_fan_profile", QVariant::fromValue(profile));
+    qSettings->setValue("current_fan_profile", profile.toQStringList());
 }
 
 FansProfile Settings::getCurrentFanCurveProfile() {
@@ -97,7 +97,7 @@ FansProfile Settings::getCurrentFanCurveProfile() {
     }
 }
 
-bool Settings::savePowerProfile(PowerProfile &powerProfile, bool override) {
+bool Settings::savePowerProfile(CpuProfile &powerProfile, bool override) {
     bool result;
     qSettings->beginGroup("PowerProfiles");
     if (qSettings->contains(powerProfile.getName()) && !override) {
@@ -110,35 +110,35 @@ bool Settings::savePowerProfile(PowerProfile &powerProfile, bool override) {
     return result;
 }
 
-void Settings::deletePowerProfile(QString &name) {
+void Settings::deletePowerProfile(const QString &name) {
     qSettings->beginGroup("PowerProfiles");
     qSettings->remove(name);
     qSettings->endGroup();
 }
 
-PowerProfile Settings::getPowerProfile(QString &name) {
+CpuProfile Settings::getPowerProfile(const QString &name) {
     qSettings->beginGroup("PowerProfiles");
     if (qSettings->contains(name)) {
-        auto result = PowerProfile::fromQStringList(name, qSettings->value(name).toStringList());
+        auto result = CpuProfile::fromQStringList(name, qSettings->value(name).toStringList());
         qSettings->endGroup();
         return result;
     } else {
         qSettings->endGroup();
-        return PowerProfile();
+        return CpuProfile();
     }
 }
 
-QList<PowerProfile> Settings::getPowerProfiles() {
+QList<CpuProfile> Settings::getPowerProfiles() {
     qSettings->beginGroup("PowerProfiles");
-    QList<PowerProfile> result;
+    QList<CpuProfile> result;
     for (const QString &key : qSettings->allKeys()) {
-        result.append(PowerProfile::fromQStringList(key, qSettings->value(key).toStringList()));
+        result.append(CpuProfile::fromQStringList(key, qSettings->value(key).toStringList()));
     }
     qSettings->endGroup();
     return result;
 }
 
-void Settings::setCurrentPowerProfile(PowerProfile &powerProfile) {
+void Settings::setCurrentPowerProfile(CpuProfile &powerProfile) {
     if (powerProfile.isEmpty()) {
         qSettings->setValue("current_power_profile_name", powerProfile.getName());
     } else {
@@ -146,12 +146,12 @@ void Settings::setCurrentPowerProfile(PowerProfile &powerProfile) {
     }
 }
 
-PowerProfile Settings::getCurrentPowerProfile() {
+CpuProfile Settings::getCurrentPowerProfile() {
     auto name = qSettings->value("current_power_profile_name").value<QString>();
     if (!name.isEmpty()) {
         return getPowerProfile(name);
     } else {
-        return PowerProfile();
+        return CpuProfile();
     }
 }
 

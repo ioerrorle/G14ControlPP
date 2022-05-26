@@ -1,3 +1,4 @@
+#include <src/atkacpi/AcpiControlSingleton.h>
 #include "BatteryTab.h"
 #include "ui_BatteryTab.h"
 

@@ -41,21 +41,21 @@ private:
 
     void loadPowerProfiles();
 
-    void fillPowerProfileData(PowerProfile &profile);
+    void fillPowerProfileData(CpuProfile &profile);
 
     void loadCurrentPowerProfile();
 
-    PowerProfile createPowerProfileFromData();
+    CpuProfile createPowerProfileFromData();
 
     bool saveCurrentPowerProfile(QString &name, bool override);
 
     void reloadPowerProfiles();
 
-    void selectPowerProfile(PowerProfile &profile, bool selectIndex);
+    void selectPowerProfile(CpuProfile &profile, bool selectIndex);
 
     void refresh();
 
-    PowerProfile createPowerProfileFromCurrentCpuState();
+    CpuProfile createPowerProfileFromCurrentCpuState();
 };
 
 #endif //G14CONTROLPP_CPUTAB_H

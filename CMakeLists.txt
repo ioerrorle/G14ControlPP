@@ -31,17 +31,24 @@ set(SOURCES
         src/kbd/KbdControlSingleton.cpp src/kbd/KbdControlSingleton.h
         src/audio/AudioUtils.h src/audio/AudioUtils.cpp
         src/settings/Settings.cpp src/settings/Settings.h
-        src/atkacpi/FanDef.h src/atkacpi/FanDef.cpp
         src/ui/batteryTab/BatteryTab.cpp src/ui/batteryTab/BatteryTab.h
         src/ui/hotkeys/HotkeysTab.cpp src/ui/hotkeys/HotkeysTab.h
         src/ui/powerPlans/PowerPlansTab.cpp src/ui/powerPlans/PowerPlansTab.h
-        src/ryzenadj/PowerProfile.cpp src/ryzenadj/PowerProfile.h
+        src/model/CpuProfile.cpp src/model/CpuProfile.h
         src/settings/PowerPlan.cpp src/settings/PowerPlan.h
         src/settings/PowerPlanSet.cpp src/settings/PowerPlanSet.h
         src/ui/notificationHelper/NotificationHelper.cpp src/ui/notificationHelper/NotificationHelper.h
         src/ui/hotkeys/HotkeyAction.cpp src/ui/hotkeys/HotkeyAction.h
         src/ui/hotkeys/HotkeysProfile.cpp src/ui/hotkeys/HotkeysProfile.h
-        src/ui/base/BaseTab.h src/ui/fansTab/fanCurveView/FanCurveView.cpp src/ui/fansTab/fanCurveView/FanCurveView.h src/ui/fansTab/fanCurveView/Node.cpp src/ui/fansTab/fanCurveView/Node.h src/ui/fansTab/fanCurveView/Edge.cpp src/ui/fansTab/fanCurveView/Edge.h src/atkacpi/FanCurve.cpp src/atkacpi/FanCurve.h src/atkacpi/ArmouryCratePlan.cpp src/atkacpi/ArmouryCratePlan.h src/atkacpi/FansProfile.cpp src/atkacpi/FansProfile.h)
+        src/ui/base/BaseTab.h
+        src/ui/fansTab/fanCurveView/FanCurveView.cpp src/ui/fansTab/fanCurveView/FanCurveView.h
+        src/ui/fansTab/fanCurveView/Node.cpp src/ui/fansTab/fanCurveView/Node.h
+        src/ui/fansTab/fanCurveView/Edge.cpp src/ui/fansTab/fanCurveView/Edge.h
+        src/model/FanCurve.cpp src/model/FanCurve.h
+        src/model/ArmouryCratePlan.cpp src/model/ArmouryCratePlan.h
+        src/model/FansProfile.cpp src/model/FansProfile.h
+        src/model/PowerPlan.cpp src/model/PowerPlan.h
+        src/model/FullPowerPlan.cpp src/model/FullPowerPlan.h)
 set(UI src/ui/MainWindow.ui src/ui/fansTab/FansTab.ui src/ui/cpuTab/CpuTab.ui src/ui/batteryTab/BatteryTab.ui src/ui/powerPlans/PowerPlansTab.ui )
 
 add_executable(G14ControlPP ${SOURCES} ${UI})

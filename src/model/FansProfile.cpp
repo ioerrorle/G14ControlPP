@@ -54,7 +54,7 @@ FansProfile FansProfile::fromQStringList(const QString &name, const QStringList 
     return FansProfile(name, FanCurve(cpuTemps, cpuSpeeds), FanCurve(gpuTemps, gpuSpeeds));
 }
 
-QStringList FansProfile::toQStringList() {
+const QStringList FansProfile::toQStringList() const {
     QStringList result;
     for (int i = 0; i < 8; i++) {
         result.append(QString::asprintf("%d:%d", cpu.getTemp()[i], cpu.getSpeed()[i]));
@@ -62,4 +62,9 @@ QStringList FansProfile::toQStringList() {
     for (int i = 0; i < 8; i++) {
         result.append(QString::asprintf("%d:%d", gpu.getTemp()[i], gpu.getSpeed()[i]));
     }
+    return result;
+}
+
+void FansProfile::setName(const QString &name) {
+    FansProfile::name = name;
 }

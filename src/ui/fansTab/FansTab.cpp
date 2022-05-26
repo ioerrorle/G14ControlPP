@@ -1,7 +1,6 @@
 #include "FansTab.h"
 #include "ui_FansTab.h"
 
-
 FansTab::FansTab(QWidget *parent) : QWidget(parent), ui(new Ui::FansTab) {
 
     ui->setupUi(this);
@@ -23,51 +22,10 @@ FansTab::FansTab(QWidget *parent) : QWidget(parent), ui(new Ui::FansTab) {
     ui->cpuRPM->setFixedWidth(250);
     ui->gpuRPM->setFixedWidth(250);
 
-//    cpuSliders[0] = ui->cpuSpeed_0;
-//    cpuSliders[1] = ui->cpuSpeed_1;
-//    cpuSliders[2] = ui->cpuSpeed_2;
-//    cpuSliders[3] = ui->cpuSpeed_3;
-//    cpuSliders[4] = ui->cpuSpeed_4;
-//    cpuSliders[5] = ui->cpuSpeed_5;
-//    cpuSliders[6] = ui->cpuSpeed_6;
-//    cpuSliders[7] = ui->cpuSpeed_7;
-//
-//    for (int i = 0; i < 8; i++) {
-//        auto *qSlider = cpuSliders[i];
-//        qSlider->setMaximum(100);
-//
-//        connect(qSlider, &QSlider::valueChanged, this, &FansTab::onSliderValueChanged);
-//        connect(qSlider, &QSlider::sliderMoved, this, [&](int value) {
-//            QToolTip::showText(QCursor::pos(), QString("%1").arg(value), nullptr);
-//        });
-//    }
-
     //GPU SECTION
 
     gpuFanEditor = new FanCurveView();
     dynamic_cast<QHBoxLayout *>(ui->gpuGroup->layout())->insertWidget(0, gpuFanEditor);
-    //dynamic_cast<QHBoxLayout *>(ui->gpuGroup->layout())->setStretch(1,1);
-
-    //ui->gpuRPM->setStyleSheet("QLabel { width : 9em }");
-
-//    gpuSliders[0] = ui->gpuSpeed_0;
-//    gpuSliders[1] = ui->gpuSpeed_1;
-//    gpuSliders[2] = ui->gpuSpeed_2;
-//    gpuSliders[3] = ui->gpuSpeed_3;
-//    gpuSliders[4] = ui->gpuSpeed_4;
-//    gpuSliders[5] = ui->gpuSpeed_5;
-//    gpuSliders[6] = ui->gpuSpeed_6;
-//    gpuSliders[7] = ui->gpuSpeed_7;
-//
-//    for (int i = 0; i < 8; i++) {
-//        auto *qSlider = gpuSliders[i];
-//        qSlider->setMaximum(100);
-//
-//        connect(qSlider, &QSlider::valueChanged, this, &FansTab::onSliderValueChanged);
-//        connect(qSlider, &QSlider::sliderMoved, this, [&](int value) {
-//            QToolTip::showText(QCursor::pos(), QString("%1").arg(value), nullptr);
-//        });
-//    }
 
     //BUTTONS SECTION
 
@@ -77,8 +35,8 @@ FansTab::FansTab(QWidget *parent) : QWidget(parent), ui(new Ui::FansTab) {
     //ADD ALL
 
     //fill combo boxes
-    for (ArmouryCratePlan &plan : ARMOURY_CRATE_PLANS) {
-        ui->arCrateProfileComboBox->addItem(plan.name, QVariant::fromValue(plan.id));
+    for (ArmouryCratePlan &plan : ArmouryCratePlan::plans()) {
+        ui->arCrateProfileComboBox->addItem(plan.getName(), QVariant::fromValue(plan.getId()));
     }
     loadSettings(false);
 
@@ -90,8 +48,8 @@ FansTab::FansTab(QWidget *parent) : QWidget(parent), ui(new Ui::FansTab) {
 void FansTab::onSliderValueChanged(int value) {
     this->curveChanged = true;
     FansProfile profile = createFansProfileFromCurrentSettings();
-    AcpiControlSingleton::fixFanCurve(FAN_CPU, profile.cpu);
-    AcpiControlSingleton::fixFanCurve(FAN_GPU, profile.gpu);
+    AcpiControlSingleton::fixFanCurve(FAN_CPU, profile.getCpu());
+    AcpiControlSingleton::fixFanCurve(FAN_GPU, profile.getGpu());
     selectFanProfile(profile, false);
 }
 
@@ -141,7 +99,7 @@ void FansTab::onSaveFanCurvesClicked(bool checked) {
 
 bool FansTab::saveFansProfile(QString &name, bool override) {
     FansProfile profile = createFansProfileFromCurrentSettings();
-    profile.name = name;
+    profile.setName(name);
 
     bool result = SETT.saveFansProfile(profile, override);
 
@@ -177,7 +135,7 @@ void FansTab::reloadFanCurves() {
         ui->fanCurveComboBox->setEnabled(true);
         auto profiles = SETT.getFansProfiles();
         for (FansProfile &profile : profiles) {
-            ui->fanCurveComboBox->addItem(profile.name, QVariant::fromValue(profile));
+            ui->fanCurveComboBox->addItem(profile.getName(), profile.toQStringList());
         }
     }
 }
@@ -198,7 +156,7 @@ void FansTab::selectFanProfile(FansProfile &profile, bool selectIndex) {
 
 void FansTab::onFanCurveIndexChanged(int index) {
     if (ui->fanCurveComboBox->isEnabled()) {
-        auto profile = ui->fanCurveComboBox->itemData(index).value<FansProfile>();
+        auto profile = FansProfile::fromQStringList(ui->fanCurveComboBox->currentText(), ui->fanCurveComboBox->itemData(index).value<QStringList>());
         selectFanProfile(profile);
         this->curveChanged = false;
     }
@@ -212,11 +170,11 @@ void FansTab::onApplyClicked(bool checked) {
     FansProfile fansProfile = createFansProfileFromCurrentSettings();
     SETT.setCurrentFanCurveProfile(fansProfile);
 
-    applySettings(ARMOURY_CRATE_PLANS[powerPlanId], ui->defaultFanCurves->isChecked(), fansProfile);
+    applySettings(ArmouryCratePlan::plans()[powerPlanId], ui->defaultFanCurves->isChecked(), fansProfile);
 }
 
 void FansTab::applySettings(ArmouryCratePlan &powerPlan, bool useDefaultFanCurves, FansProfile &fansProfile) {
-    AcpiControlSingleton::getInstance().setPowerPlan(powerPlan.asusPlanCode);
+    AcpiControlSingleton::getInstance().setPowerPlan(powerPlan.getAsusPlanCode());
     if (!useDefaultFanCurves) {
         AcpiControlSingleton::getInstance().setFanProfile(fansProfile);
     }
@@ -227,7 +185,7 @@ void FansTab::loadSettings(bool apply) {
     auto useDefaultFanCurves = SETT.getUseDefaultFanCurves();
     auto profile = SETT.getCurrentFanCurveProfile();
 
-    int ppIndex = ui->arCrateProfileComboBox->findText(powerPlan.name);
+    int ppIndex = ui->arCrateProfileComboBox->findText(powerPlan.getName());
     if (ppIndex != -1) {
         ui->arCrateProfileComboBox->setCurrentIndex(ppIndex);
     }
@@ -242,8 +200,8 @@ void FansTab::loadSettings(bool apply) {
 }
 
 void FansTab::onDeleteProfileClicked(bool checked) {
-    auto currentData = ui->fanCurveComboBox->currentData().value<FansProfile>();
-    SETT.deleteFansProfile(currentData);
+    auto currentData = FansProfile::fromQStringList(ui->fanCurveComboBox->currentText(), ui->fanCurveComboBox->currentData().value<QStringList>());
+    SETT.deleteFansProfile(currentData.getName());
     reloadFanCurves();
 }
 

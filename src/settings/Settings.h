@@ -39,13 +39,13 @@ public:
     void setCurrentFanCurveProfile(FansProfile &profile);
     FansProfile getCurrentFanCurveProfile();
 
-    bool savePowerProfile(PowerProfile &powerProfile, bool override = true);
-    void deletePowerProfile(QString &powerProfileName);
-    PowerProfile getPowerProfile(QString &name);
-    QList<PowerProfile> getPowerProfiles();
+    bool savePowerProfile(CpuProfile &powerProfile, bool override = true);
+    void deletePowerProfile(const QString &powerProfileName);
+    CpuProfile getPowerProfile(const QString &name);
+    QList<CpuProfile> getPowerProfiles();
 
-    void setCurrentPowerProfile(PowerProfile &powerProfile);
-    PowerProfile getCurrentPowerProfile();
+    void setCurrentPowerProfile(CpuProfile &powerProfile);
+    CpuProfile getCurrentPowerProfile();
 
     void putMaxBatteryCharge(const uchar value);
     uchar getMaxBatteryCharge();

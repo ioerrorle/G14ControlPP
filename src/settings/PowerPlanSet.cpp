@@ -70,6 +70,7 @@ QStringList PowerPlanSet::toQStringList() {
     result.append(dcPowerPlan.toQString());
     result.append(acPowerPlan.toQString());
     result.append(usbPowerPlan.toQString());
+    return result;
 }
 
 PowerPlanSet::PowerPlanSet() {

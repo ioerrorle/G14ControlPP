@@ -2,9 +2,9 @@
 #define G14CONTROLPP_POWERPLAN_H
 
 #include <QString>
-#include "src/atkacpi/ArmouryCratePlan.h"
-#include "src/atkacpi/FansProfile.h"
-#include "src/ryzenadj/PowerProfile.h"
+#include "src/model/ArmouryCratePlan.h"
+#include "src/model/FansProfile.h"
+#include "src/model/CpuProfile.h"
 
 class PowerPlan {
 
@@ -16,9 +16,9 @@ public:
     static PowerPlan fromQString(const QString &string);
     QString toQString();
 
-    ArmouryCratePlan getArmouryCratePlan();
-    FansProfile getFansProfile();
-    PowerProfile getPowerProfile();
+    const ArmouryCratePlan getArmouryCratePlan() const;
+    const FansProfile getFansProfile() const;
+    const CpuProfile getPowerProfile() const;
 
 private:
 

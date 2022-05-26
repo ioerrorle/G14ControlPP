@@ -25,3 +25,7 @@ const QString &ArmouryCratePlan::getName() const {
 ASUS_PLAN ArmouryCratePlan::getAsusPlanCode() const {
     return asusPlanCode;
 }
+
+ArmouryCratePlan::ArmouryCratePlan() {
+
+}

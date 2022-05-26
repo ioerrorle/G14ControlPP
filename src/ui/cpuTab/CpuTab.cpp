@@ -62,19 +62,19 @@ void CpuTab::onPowerProfileSelected(int index) {
         fillPowerProfileData(powerProfile);
     } else {
         powerProfileChanged = false;
-        auto powerProfile = ui->powerProfileDropdown->currentData().value<PowerProfile>();
+        auto powerProfile = CpuProfile::fromQStringList(ui->powerProfileDropdown->currentText(), ui->powerProfileDropdown->currentData().value<QStringList>());
         fillPowerProfileData(powerProfile);
     }
 }
 
-void CpuTab::fillPowerProfileData(PowerProfile &profile) {
+void CpuTab::fillPowerProfileData(CpuProfile &profile) {
     fromDropdown = true;
-    ui->stapmLimitSetting->setValue(profile.stapmLimit);
-    ui->stapmTimeSetting->setValue(profile.stapmTime);
-    ui->slowLimitSetting->setValue(profile.slowLimit);
-    ui->slowTimeSetting->setValue(profile.slowTime);
-    ui->fastLimitSetting->setValue(profile.fastLimit);
-    ui->modeSetting->setCurrentIndex(ui->modeSetting->findData(profile.mode));
+    ui->stapmLimitSetting->setValue(profile.getStapmLimit());
+    ui->stapmTimeSetting->setValue(profile.getStapmTime());
+    ui->slowLimitSetting->setValue(profile.getSlowLimit());
+    ui->slowTimeSetting->setValue(profile.getSlowTime());
+    ui->fastLimitSetting->setValue(profile.getFastLimit());
+    ui->modeSetting->setCurrentIndex(ui->modeSetting->findData(profile.getMode()));
     fromDropdown = false;
 }
 
@@ -83,20 +83,19 @@ void CpuTab::loadCurrentPowerProfile() {
     fillPowerProfileData(currentProfile);
 }
 
-PowerProfile CpuTab::createPowerProfileFromData() {
-    PowerProfile result = {};
-    result.fastLimit = ui->fastLimitSetting->value();
-    result.slowLimit = ui->slowLimitSetting->value();
-    result.slowTime = ui->slowTimeSetting->value();
-    result.stapmLimit = ui->stapmLimitSetting->value();
-    result.stapmTime = ui->stapmTimeSetting->value();
-    result.mode = ui->modeSetting->currentData().value<Setpoint>();
+CpuProfile CpuTab::createPowerProfileFromData() {
+    CpuProfile result((float)ui->fastLimitSetting->value(),
+                      (float)ui->slowLimitSetting->value(),
+                      (float)ui->slowTimeSetting->value(),
+                      (float)ui->stapmLimitSetting->value(),
+                      (float)ui->stapmTimeSetting->value(),
+            ui->modeSetting->currentData().value<Setpoint>());
     return result;
 }
 
 bool CpuTab::saveCurrentPowerProfile(QString &name, bool override) {
-    PowerProfile profile = createPowerProfileFromData();
-    profile.name = name;
+    CpuProfile profile = createPowerProfileFromData();
+    profile.setName(name);
 
     bool result = SETT.savePowerProfile(profile, override);
 
@@ -110,8 +109,8 @@ bool CpuTab::saveCurrentPowerProfile(QString &name, bool override) {
 
 void CpuTab::onDeleteProfileClicked(bool checked) {
     if (ui->powerProfileDropdown->currentData() != -1 && ui->powerProfileDropdown->currentData() != 0) {
-        auto currentData = ui->powerProfileDropdown->currentData().value<PowerProfile>();
-        SETT.deletePowerProfile(currentData);
+        auto currentData = CpuProfile::fromQStringList(ui->powerProfileDropdown->currentText(), ui->powerProfileDropdown->currentData().value<QStringList>());
+        SETT.deletePowerProfile(currentData.getName());
         reloadPowerProfiles();
         onPowerProfileSelected(ui->powerProfileDropdown->currentIndex());
     }
@@ -151,14 +150,14 @@ void CpuTab::reloadPowerProfiles() {
     ui->powerProfileDropdown->clear();
     auto profiles = SETT.getPowerProfiles();
     ui->powerProfileDropdown->addItem("Current profile", 0);
-    for (PowerProfile &profile : profiles) {
-        ui->powerProfileDropdown->addItem(profile.name, QVariant::fromValue(profile));
+    for (CpuProfile &profile : profiles) {
+        ui->powerProfileDropdown->addItem(profile.getName(), profile.toQStringList());
     }
 }
 
-void CpuTab::selectPowerProfile(PowerProfile &profile, bool selectIndex) {
+void CpuTab::selectPowerProfile(CpuProfile &profile, bool selectIndex) {
     if (selectIndex) {
-        int i = ui->powerProfileDropdown->findText(profile.name);
+        int i = ui->powerProfileDropdown->findText(profile.getName());
         if (i != -1) {
             ui->powerProfileDropdown->setCurrentIndex(i);
         }
@@ -189,13 +188,13 @@ void CpuTab::onPowerProfileChanged(int value) {
     }
 }
 
-PowerProfile CpuTab::createPowerProfileFromCurrentCpuState() {
-    PowerProfile powerProfile = {"",
-                                 RY.getStapmLimit(),
-                                 RY.getStapmTime(),
-                                 RY.getSlowLimit(),
-                                 RY.getSlowTime(),
-                                 RY.getFastLimit(),
+CpuProfile CpuTab::createPowerProfileFromCurrentCpuState() {
+    CpuProfile powerProfile = {"",
+                               RY.getStapmLimit(),
+                               RY.getStapmTime(),
+                               RY.getSlowLimit(),
+                               RY.getSlowTime(),
+                               RY.getFastLimit(),
                                  RY.getCclkSetpoint() == 95.0f ? SP_POWER_SAVING : SP_PERFORMANCE};
     return powerProfile;
 }

@@ -42,11 +42,17 @@ bool RyzenAdjSingleton::init(QString &error) {
         if (!(set_min_vcn_ptr = (set_min_vcn) lib.resolve("set_min_vcn"))) return false;
         if (!(set_max_lclk_ptr = (set_max_lclk) lib.resolve("set_max_lclk"))) return false;
         if (!(set_min_lclk_ptr = (set_min_lclk) lib.resolve("set_min_lclk"))) return false;
-        if (!(set_prochot_deassertion_ramp_ptr = (set_prochot_deassertion_ramp) lib.resolve("set_prochot_deassertion_ramp"))) return false;
-        if (!(set_apu_skin_temp_limit_ptr = (set_apu_skin_temp_limit) lib.resolve("set_apu_skin_temp_limit"))) return false;
-        if (!(set_dgpu_skin_temp_limit_ptr = (set_dgpu_skin_temp_limit) lib.resolve("set_dgpu_skin_temp_limit"))) return false;
+        if (!(set_prochot_deassertion_ramp_ptr = (set_prochot_deassertion_ramp) lib.resolve(
+                "set_prochot_deassertion_ramp")))
+            return false;
+        if (!(set_apu_skin_temp_limit_ptr = (set_apu_skin_temp_limit) lib.resolve("set_apu_skin_temp_limit")))
+            return false;
+        if (!(set_dgpu_skin_temp_limit_ptr = (set_dgpu_skin_temp_limit) lib.resolve("set_dgpu_skin_temp_limit")))
+            return false;
         if (!(set_apu_slow_limit_ptr = (set_apu_slow_limit) lib.resolve("set_apu_slow_limit"))) return false;
-        if (!(set_skin_temp_power_limit_ptr = (set_skin_temp_power_limit) lib.resolve("set_skin_temp_power_limit"))) return false;
+        if (!(set_skin_temp_power_limit_ptr = (set_skin_temp_power_limit) lib.resolve(
+                "set_skin_temp_power_limit")))
+            return false;
         if (!(set_power_saving_ptr = (set_power_saving) lib.resolve("set_power_saving"))) return false;
         if (!(set_max_performance_ptr = (set_max_performance) lib.resolve("set_max_performance"))) return false;
 
@@ -61,17 +67,25 @@ bool RyzenAdjSingleton::init(QString &error) {
         if (!(get_vrm_current_ptr = (get_vrm_current) lib.resolve("get_vrm_current"))) return false;
         if (!(get_vrm_current_value_ptr = (get_vrm_current_value) lib.resolve("get_vrm_current_value"))) return false;
         if (!(get_vrmsoc_current_ptr = (get_vrmsoc_current) lib.resolve("get_vrmsoc_current"))) return false;
-        if (!(get_vrmsoc_current_value_ptr = (get_vrmsoc_current_value) lib.resolve("get_vrmsoc_current_value"))) return false;
+        if (!(get_vrmsoc_current_value_ptr = (get_vrmsoc_current_value) lib.resolve("get_vrmsoc_current_value")))
+            return false;
         if (!(get_vrmmax_current_ptr = (get_vrmmax_current) lib.resolve("get_vrmmax_current"))) return false;
-        if (!(get_vrmmax_current_value_ptr = (get_vrmmax_current_value) lib.resolve("get_vrmmax_current_value"))) return false;
+        if (!(get_vrmmax_current_value_ptr = (get_vrmmax_current_value) lib.resolve("get_vrmmax_current_value")))
+            return false;
         if (!(get_vrmsocmax_current_ptr = (get_vrmsocmax_current) lib.resolve("get_vrmsocmax_current"))) return false;
-        if (!(get_vrmsocmax_current_value_ptr = (get_vrmsocmax_current_value) lib.resolve("get_vrmsocmax_current_value"))) return false;
+        if (!(get_vrmsocmax_current_value_ptr = (get_vrmsocmax_current_value) lib.resolve(
+                "get_vrmsocmax_current_value")))
+            return false;
         if (!(get_tctl_temp_ptr = (get_tctl_temp) lib.resolve("get_tctl_temp"))) return false;
         if (!(get_tctl_temp_value_ptr = (get_tctl_temp_value) lib.resolve("get_tctl_temp_value"))) return false;
-        if (!(get_apu_skin_temp_limit_ptr = (get_apu_skin_temp_limit) lib.resolve("get_apu_skin_temp_limit"))) return false;
-        if (!(get_apu_skin_temp_value_ptr = (get_apu_skin_temp_value) lib.resolve("get_apu_skin_temp_value"))) return false;
-        if (!(get_dgpu_skin_temp_limit_ptr = (get_dgpu_skin_temp_limit) lib.resolve("get_dgpu_skin_temp_limit"))) return false;
-        if (!(get_dgpu_skin_temp_value_ptr = (get_dgpu_skin_temp_value) lib.resolve("get_dgpu_skin_temp_value"))) return false;
+        if (!(get_apu_skin_temp_limit_ptr = (get_apu_skin_temp_limit) lib.resolve("get_apu_skin_temp_limit")))
+            return false;
+        if (!(get_apu_skin_temp_value_ptr = (get_apu_skin_temp_value) lib.resolve("get_apu_skin_temp_value")))
+            return false;
+        if (!(get_dgpu_skin_temp_limit_ptr = (get_dgpu_skin_temp_limit) lib.resolve("get_dgpu_skin_temp_limit")))
+            return false;
+        if (!(get_dgpu_skin_temp_value_ptr = (get_dgpu_skin_temp_value) lib.resolve("get_dgpu_skin_temp_value")))
+            return false;
         if (!(get_psi0_current_ptr = (get_psi0_current) lib.resolve("get_psi0_current"))) return false;
         if (!(get_psi0soc_current_ptr = (get_psi0soc_current) lib.resolve("get_psi0soc_current"))) return false;
         if (!(get_stapm_time_ptr = (get_stapm_time) lib.resolve("get_stapm_time"))) return false;
@@ -89,72 +103,139 @@ bool RyzenAdjSingleton::init(QString &error) {
     return false;
 }
 
-void RyzenAdjSingleton::cleanupRyzenadj() { return this->cleanup_ryzenadj_ptr(this->ry);  }
+void RyzenAdjSingleton::cleanupRyzenadj() { return this->cleanup_ryzenadj_ptr(this->ry); }
 
-int RyzenAdjSingleton::initTable() { return this->init_table_ptr(this->ry);  }
-uint32_t RyzenAdjSingleton::getTableVer() { return this->get_table_ver_ptr(this->ry);  }
-size_t RyzenAdjSingleton::getTableSize() { return this->get_table_size_ptr(this->ry);  }
-float* RyzenAdjSingleton::getTableValues() { return this->get_table_values_ptr(this->ry);  }
-int RyzenAdjSingleton::refreshTable() { return this->refresh_table_ptr(this->ry);  }
+int RyzenAdjSingleton::initTable() { return this->init_table_ptr(this->ry); }
 
-int RyzenAdjSingleton::setStapmLimit(uint32_t value) { return this->set_stapm_limit_ptr(this->ry, value);  }
-int RyzenAdjSingleton::setFastLimit(uint32_t value) { return this->set_fast_limit_ptr(this->ry, value);  }
-int RyzenAdjSingleton::setSlowLimit(uint32_t value) { return this->set_slow_limit_ptr(this->ry, value);  }
-int RyzenAdjSingleton::setSlowTime(uint32_t value) { return this->set_slow_time_ptr(this->ry, value);  }
-int RyzenAdjSingleton::setStapmTime(uint32_t value) { return this->set_stapm_time_ptr(this->ry, value);  }
-int RyzenAdjSingleton::setTctlTemp(uint32_t value) { return this->set_tctl_temp_ptr(this->ry, value);  }
-int RyzenAdjSingleton::setVrmCurrent(uint32_t value) { return this->set_vrm_current_ptr(this->ry, value);  }
-int RyzenAdjSingleton::setVrmsocCurrent(uint32_t value) { return this->set_vrmsoc_current_ptr(this->ry, value);  }
-int RyzenAdjSingleton::setVrmmaxCurrent(uint32_t value) { return this->set_vrmmax_current_ptr(this->ry, value);  }
-int RyzenAdjSingleton::setVrmsocmaxCurrent(uint32_t value) { return this->set_vrmsocmax_current_ptr(this->ry, value);  }
-int RyzenAdjSingleton::setPsi0Current(uint32_t value) { return this->set_psi0_current_ptr(this->ry, value);  }
-int RyzenAdjSingleton::setPsi0socCurrent(uint32_t value) { return this->set_psi0soc_current_ptr(this->ry, value);  }
-int RyzenAdjSingleton::setMaxGfxclkFreq(uint32_t value) { return this->set_max_gfxclk_freq_ptr(this->ry, value);  }
-int RyzenAdjSingleton::setMinGfxclkFreq(uint32_t value) { return this->set_min_gfxclk_freq_ptr(this->ry, value);  }
-int RyzenAdjSingleton::setMaxSocclkFreq(uint32_t value) { return this->set_max_socclk_freq_ptr(this->ry, value);  }
-int RyzenAdjSingleton::setMinSocclkFreq(uint32_t value) { return this->set_min_socclk_freq_ptr(this->ry, value);  }
-int RyzenAdjSingleton::setMaxFclkFreq(uint32_t value) { return this->set_max_fclk_freq_ptr(this->ry, value);  }
-int RyzenAdjSingleton::setMinFclkFreq(uint32_t value) { return this->set_min_fclk_freq_ptr(this->ry, value);  }
-int RyzenAdjSingleton::setMaxVcn(uint32_t value) { return this->set_max_vcn_ptr(this->ry, value);  }
-int RyzenAdjSingleton::setMinVcn(uint32_t value) { return this->set_min_vcn_ptr(this->ry, value);  }
-int RyzenAdjSingleton::setMaxLclk(uint32_t value) { return this->set_max_lclk_ptr(this->ry, value);  }
-int RyzenAdjSingleton::setMinLclk(uint32_t value) { return this->set_min_lclk_ptr(this->ry, value);  }
-int RyzenAdjSingleton::setProchotDeassertionRamp(uint32_t value) { return this->set_prochot_deassertion_ramp_ptr(this->ry, value);  }
-int RyzenAdjSingleton::setApuSkinTempLimit(uint32_t value) { return this->set_apu_skin_temp_limit_ptr(this->ry, value);  }
-int RyzenAdjSingleton::setDgpuSkinTempLimit(uint32_t value) { return this->set_dgpu_skin_temp_limit_ptr(this->ry, value);  }
-int RyzenAdjSingleton::setApuSlowLimit(uint32_t value) { return this->set_apu_slow_limit_ptr(this->ry, value);  }
-int RyzenAdjSingleton::setSkinTempPowerLimit(uint32_t value) { return this->set_skin_temp_power_limit_ptr(this->ry, value);  }
-int RyzenAdjSingleton::setPowerSaving() { return this->set_power_saving_ptr(this->ry);  }
-int RyzenAdjSingleton::setMaxPerformance() { return this->set_max_performance_ptr(this->ry);  }
+uint32_t RyzenAdjSingleton::getTableVer() { return this->get_table_ver_ptr(this->ry); }
 
-float RyzenAdjSingleton::getStapmLimit() { return this->get_stapm_limit_ptr(this->ry);  }
-float RyzenAdjSingleton::getStapmValue() { return this->get_stapm_value_ptr(this->ry);  }
-float RyzenAdjSingleton::getFastLimit() { return this->get_fast_limit_ptr(this->ry);  }
-float RyzenAdjSingleton::getFastValue() { return this->get_fast_value_ptr(this->ry);  }
-float RyzenAdjSingleton::getSlowLimit() { return this->get_slow_limit_ptr(this->ry);  }
-float RyzenAdjSingleton::getSlowValue() { return this->get_slow_value_ptr(this->ry);  }
-float RyzenAdjSingleton::getApuSlowLimit() { return this->get_apu_slow_limit_ptr(this->ry);  }
-float RyzenAdjSingleton::getApuSlowValue() { return this->get_apu_slow_value_ptr(this->ry);  }
-float RyzenAdjSingleton::getVrmCurrent() { return this->get_vrm_current_ptr(this->ry);  }
-float RyzenAdjSingleton::getVrmCurrentValue() { return this->get_vrm_current_value_ptr(this->ry);  }
-float RyzenAdjSingleton::getVrmsocCurrent() { return this->get_vrmsoc_current_ptr(this->ry);  }
-float RyzenAdjSingleton::getVrmsocCurrentValue() { return this->get_vrmsoc_current_value_ptr(this->ry);  }
-float RyzenAdjSingleton::getVrmmaxCurrent() { return this->get_vrmmax_current_ptr(this->ry);  }
-float RyzenAdjSingleton::getVrmmaxCurrentValue() { return this->get_vrmmax_current_value_ptr(this->ry);  }
-float RyzenAdjSingleton::getVrmsocmaxCurrent() { return this->get_vrmsocmax_current_ptr(this->ry);  }
-float RyzenAdjSingleton::getVrmsocmaxCurrentValue() { return this->get_vrmsocmax_current_value_ptr(this->ry);  }
-float RyzenAdjSingleton::getTctlTemp() { return this->get_tctl_temp_ptr(this->ry);  }
-float RyzenAdjSingleton::getTctlTempValue() { return this->get_tctl_temp_value_ptr(this->ry);  }
-float RyzenAdjSingleton::getApuSkinTempLimit() { return this->get_apu_skin_temp_limit_ptr(this->ry);  }
-float RyzenAdjSingleton::getApuSkinTempValue() { return this->get_apu_skin_temp_value_ptr(this->ry);  }
-float RyzenAdjSingleton::getDgpuSkinTempLimit() { return this->get_dgpu_skin_temp_limit_ptr(this->ry);  }
-float RyzenAdjSingleton::getDgpuSkinTempValue() { return this->get_dgpu_skin_temp_value_ptr(this->ry);  }
-float RyzenAdjSingleton::getPsi0Current() { return this->get_psi0_current_ptr(this->ry);  }
-float RyzenAdjSingleton::getPsi0socCurrent() { return this->get_psi0soc_current_ptr(this->ry);  }
-float RyzenAdjSingleton::getStapmTime() { return this->get_stapm_time_ptr(this->ry);  }
-float RyzenAdjSingleton::getSlowTime() { return this->get_slow_time_ptr(this->ry);  }
-float RyzenAdjSingleton::getCclkSetpoint() { return this->get_cclk_setpoint_ptr(this->ry);  }
-float RyzenAdjSingleton::getCclkBusyValue() { return this->get_cclk_busy_value_ptr(this->ry);  }
+size_t RyzenAdjSingleton::getTableSize() { return this->get_table_size_ptr(this->ry); }
+
+float *RyzenAdjSingleton::getTableValues() { return this->get_table_values_ptr(this->ry); }
+
+int RyzenAdjSingleton::refreshTable() { return this->refresh_table_ptr(this->ry); }
+
+int RyzenAdjSingleton::setStapmLimit(uint32_t value) { return this->set_stapm_limit_ptr(this->ry, value); }
+
+int RyzenAdjSingleton::setFastLimit(uint32_t value) { return this->set_fast_limit_ptr(this->ry, value); }
+
+int RyzenAdjSingleton::setSlowLimit(uint32_t value) { return this->set_slow_limit_ptr(this->ry, value); }
+
+int RyzenAdjSingleton::setSlowTime(uint32_t value) { return this->set_slow_time_ptr(this->ry, value); }
+
+int RyzenAdjSingleton::setStapmTime(uint32_t value) { return this->set_stapm_time_ptr(this->ry, value); }
+
+int RyzenAdjSingleton::setTctlTemp(uint32_t value) { return this->set_tctl_temp_ptr(this->ry, value); }
+
+int RyzenAdjSingleton::setVrmCurrent(uint32_t value) { return this->set_vrm_current_ptr(this->ry, value); }
+
+int RyzenAdjSingleton::setVrmsocCurrent(uint32_t value) { return this->set_vrmsoc_current_ptr(this->ry, value); }
+
+int RyzenAdjSingleton::setVrmmaxCurrent(uint32_t value) { return this->set_vrmmax_current_ptr(this->ry, value); }
+
+int RyzenAdjSingleton::setVrmsocmaxCurrent(uint32_t value) { return this->set_vrmsocmax_current_ptr(this->ry, value); }
+
+int RyzenAdjSingleton::setPsi0Current(uint32_t value) { return this->set_psi0_current_ptr(this->ry, value); }
+
+int RyzenAdjSingleton::setPsi0socCurrent(uint32_t value) { return this->set_psi0soc_current_ptr(this->ry, value); }
+
+int RyzenAdjSingleton::setMaxGfxclkFreq(uint32_t value) { return this->set_max_gfxclk_freq_ptr(this->ry, value); }
+
+int RyzenAdjSingleton::setMinGfxclkFreq(uint32_t value) { return this->set_min_gfxclk_freq_ptr(this->ry, value); }
+
+int RyzenAdjSingleton::setMaxSocclkFreq(uint32_t value) { return this->set_max_socclk_freq_ptr(this->ry, value); }
+
+int RyzenAdjSingleton::setMinSocclkFreq(uint32_t value) { return this->set_min_socclk_freq_ptr(this->ry, value); }
+
+int RyzenAdjSingleton::setMaxFclkFreq(uint32_t value) { return this->set_max_fclk_freq_ptr(this->ry, value); }
+
+int RyzenAdjSingleton::setMinFclkFreq(uint32_t value) { return this->set_min_fclk_freq_ptr(this->ry, value); }
+
+int RyzenAdjSingleton::setMaxVcn(uint32_t value) { return this->set_max_vcn_ptr(this->ry, value); }
+
+int RyzenAdjSingleton::setMinVcn(uint32_t value) { return this->set_min_vcn_ptr(this->ry, value); }
+
+int RyzenAdjSingleton::setMaxLclk(uint32_t value) { return this->set_max_lclk_ptr(this->ry, value); }
+
+int RyzenAdjSingleton::setMinLclk(uint32_t value) { return this->set_min_lclk_ptr(this->ry, value); }
+
+int RyzenAdjSingleton::setProchotDeassertionRamp(uint32_t value) {
+    return this->set_prochot_deassertion_ramp_ptr(this->ry, value);
+}
+
+int RyzenAdjSingleton::setApuSkinTempLimit(uint32_t value) {
+    return this->set_apu_skin_temp_limit_ptr(this->ry, value);
+}
+
+int RyzenAdjSingleton::setDgpuSkinTempLimit(uint32_t value) {
+    return this->set_dgpu_skin_temp_limit_ptr(this->ry, value);
+}
+
+int RyzenAdjSingleton::setApuSlowLimit(uint32_t value) { return this->set_apu_slow_limit_ptr(this->ry, value); }
+
+int RyzenAdjSingleton::setSkinTempPowerLimit(uint32_t value) {
+    return this->set_skin_temp_power_limit_ptr(this->ry, value);
+}
+
+int RyzenAdjSingleton::setPowerSaving() { return this->set_power_saving_ptr(this->ry); }
+
+int RyzenAdjSingleton::setMaxPerformance() { return this->set_max_performance_ptr(this->ry); }
+
+float RyzenAdjSingleton::getStapmLimit() { return this->get_stapm_limit_ptr(this->ry); }
+
+float RyzenAdjSingleton::getStapmValue() { return this->get_stapm_value_ptr(this->ry); }
+
+float RyzenAdjSingleton::getFastLimit() { return this->get_fast_limit_ptr(this->ry); }
+
+float RyzenAdjSingleton::getFastValue() { return this->get_fast_value_ptr(this->ry); }
+
+float RyzenAdjSingleton::getSlowLimit() { return this->get_slow_limit_ptr(this->ry); }
+
+float RyzenAdjSingleton::getSlowValue() { return this->get_slow_value_ptr(this->ry); }
+
+float RyzenAdjSingleton::getApuSlowLimit() { return this->get_apu_slow_limit_ptr(this->ry); }
+
+float RyzenAdjSingleton::getApuSlowValue() { return this->get_apu_slow_value_ptr(this->ry); }
+
+float RyzenAdjSingleton::getVrmCurrent() { return this->get_vrm_current_ptr(this->ry); }
+
+float RyzenAdjSingleton::getVrmCurrentValue() { return this->get_vrm_current_value_ptr(this->ry); }
+
+float RyzenAdjSingleton::getVrmsocCurrent() { return this->get_vrmsoc_current_ptr(this->ry); }
+
+float RyzenAdjSingleton::getVrmsocCurrentValue() { return this->get_vrmsoc_current_value_ptr(this->ry); }
+
+float RyzenAdjSingleton::getVrmmaxCurrent() { return this->get_vrmmax_current_ptr(this->ry); }
+
+float RyzenAdjSingleton::getVrmmaxCurrentValue() { return this->get_vrmmax_current_value_ptr(this->ry); }
+
+float RyzenAdjSingleton::getVrmsocmaxCurrent() { return this->get_vrmsocmax_current_ptr(this->ry); }
+
+float RyzenAdjSingleton::getVrmsocmaxCurrentValue() { return this->get_vrmsocmax_current_value_ptr(this->ry); }
+
+float RyzenAdjSingleton::getTctlTemp() { return this->get_tctl_temp_ptr(this->ry); }
+
+float RyzenAdjSingleton::getTctlTempValue() { return this->get_tctl_temp_value_ptr(this->ry); }
+
+float RyzenAdjSingleton::getApuSkinTempLimit() { return this->get_apu_skin_temp_limit_ptr(this->ry); }
+
+float RyzenAdjSingleton::getApuSkinTempValue() { return this->get_apu_skin_temp_value_ptr(this->ry); }
+
+float RyzenAdjSingleton::getDgpuSkinTempLimit() { return this->get_dgpu_skin_temp_limit_ptr(this->ry); }
+
+float RyzenAdjSingleton::getDgpuSkinTempValue() { return this->get_dgpu_skin_temp_value_ptr(this->ry); }
+
+float RyzenAdjSingleton::getPsi0Current() { return this->get_psi0_current_ptr(this->ry); }
+
+float RyzenAdjSingleton::getPsi0socCurrent() { return this->get_psi0soc_current_ptr(this->ry); }
+
+float RyzenAdjSingleton::getStapmTime() { return this->get_stapm_time_ptr(this->ry); }
+
+float RyzenAdjSingleton::getSlowTime() { return this->get_slow_time_ptr(this->ry); }
+
+float RyzenAdjSingleton::getCclkSetpoint() { return this->get_cclk_setpoint_ptr(this->ry); }
+
+float RyzenAdjSingleton::getCclkBusyValue() { return this->get_cclk_busy_value_ptr(this->ry); }
 
 float RyzenAdjSingleton::getValueByOffset(ushort offset) {
     return getTableValues()[offset / 4];
@@ -184,16 +265,16 @@ float RyzenAdjSingleton::getDGpuTemp() {
     return getValueByOffset(0x54);
 }
 
-void RyzenAdjSingleton::setPowerProfile(const PowerProfile &powerProfile) {
-    setStapmLimit((uint32_t)(powerProfile.stapmLimit * 1000));
-    setStapmTime((uint32_t)powerProfile.stapmTime);
-    setSlowLimit((uint32_t)(powerProfile.slowLimit*1000));
-    setSlowTime((uint32_t)powerProfile.slowTime);
-    setFastLimit((uint32_t)(powerProfile.fastLimit*1000));
-    if (powerProfile.mode == SP_PERFORMANCE) {
+void RyzenAdjSingleton::setPowerProfile(const CpuProfile &powerProfile) {
+    setStapmLimit((uint32_t) (powerProfile.getStapmLimit() * 1000));
+    setStapmTime((uint32_t) powerProfile.getStapmTime());
+    setSlowLimit((uint32_t) (powerProfile.getSlowLimit() * 1000));
+    setSlowTime((uint32_t) powerProfile.getSlowTime());
+    setFastLimit((uint32_t) (powerProfile.getFastLimit() * 1000));
+    if (powerProfile.getMode() == SP_PERFORMANCE) {
         setMaxPerformance();
     }
-    if (powerProfile.mode ==SP_POWER_SAVING) {
+    if (powerProfile.getMode() == SP_POWER_SAVING) {
         setPowerSaving();
     }
 }

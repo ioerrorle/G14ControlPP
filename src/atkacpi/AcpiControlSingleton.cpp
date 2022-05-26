@@ -188,7 +188,7 @@ void AcpiControlSingleton::setFanCurve(FAN_DEVICE fanDevice, const FanCurve &fan
         uchar minTemp = 30 + 10*i;
         uchar maxTemp = minTemp + 9;
 
-        if (fanCurve.temp[i] < minTemp || fanCurve.temp[i] > maxTemp) {
+        if (fanCurve.getTemp()[i] < minTemp || fanCurve.getTemp()[i] > maxTemp) {
             return;
         }
 
@@ -208,12 +208,12 @@ void AcpiControlSingleton::setFanCurve(FAN_DEVICE fanDevice, const FanCurve &fan
                 break;
         }
 
-        if (fanCurve.speed[i] < minSpeed || fanCurve.speed[i] > 100) {
+        if (fanCurve.getSpeed()[i] < minSpeed || fanCurve.getSpeed()[i] > 100) {
             return;
         }
 
-        input[12 + i] = fanCurve.temp[i];
-        input[12 + i + 8] = fanCurve.speed[i];
+        input[12 + i] = fanCurve.getTemp()[i];
+        input[12 + i + 8] = fanCurve.getSpeed()[i];
     }
 
     unsigned char outBuffer[1024];
@@ -221,41 +221,41 @@ void AcpiControlSingleton::setFanCurve(FAN_DEVICE fanDevice, const FanCurve &fan
     int bytesWritten = controlInternal(0x22240c, &input[0], 28, &outBuffer[0], 1024);
 }
 
-void AcpiControlSingleton::fixFanCurve(FAN_DEVICE fanDevice, FanCurve &fanCurve) {
-    for (int i = 0; i < 8; i++) {
-        //checking fan curve
-        uchar minTemp = 30 + 10*i;
-        uchar avgTemp = minTemp + 4;
-        uchar maxTemp = minTemp + 9;
-
-        if (fanCurve.temp[i] < minTemp || fanCurve.temp[i] > maxTemp) {
-            fanCurve.temp[i] = avgTemp;
-        }
-
-        uchar minSpeed = 0;
-        switch (i) {
-            case 4:
-                minSpeed = fanDevice == FAN_CPU ? 31 : 34;
-                break;
-            case 5:
-                minSpeed = fanDevice == FAN_CPU ? 49 : 51;
-                break;
-            case 6:
-            case 7:
-                minSpeed = fanDevice == FAN_CPU ? 56 : 61;
-                break;
-            default:
-                break;
-        }
-
-        if (fanCurve.speed[i] < minSpeed) {
-            fanCurve.speed[i] = minSpeed;
-        }
-
-        if (fanCurve.speed[i] > 100) {
-            fanCurve.speed[i] = 100;
-        }
-    }
+void AcpiControlSingleton::fixFanCurve(FAN_DEVICE fanDevice, const FanCurve &fanCurve) {
+//    for (int i = 0; i < 8; i++) {
+//        //checking fan curve
+//        uchar minTemp = 30 + 10*i;
+//        uchar avgTemp = minTemp + 4;
+//        uchar maxTemp = minTemp + 9;
+//
+//        if (fanCurve.getTemp()[i] < minTemp || fanCurve.getTemp()[i] > maxTemp) {
+//            fanCurve.getTemp()[i] = avgTemp;
+//        }
+//
+//        uchar minSpeed = 0;
+//        switch (i) {
+//            case 4:
+//                minSpeed = fanDevice == FAN_CPU ? 31 : 34;
+//                break;
+//            case 5:
+//                minSpeed = fanDevice == FAN_CPU ? 49 : 51;
+//                break;
+//            case 6:
+//            case 7:
+//                minSpeed = fanDevice == FAN_CPU ? 56 : 61;
+//                break;
+//            default:
+//                break;
+//        }
+//
+//        if (fanCurve.getSpeed()[i] < minSpeed) {
+//            fanCurve.getSpeed()[i] = minSpeed;
+//        }
+//
+//        if (fanCurve.getSpeed()[i] > 100) {
+//            fanCurve.getSpeed()[i] = 100;
+//        }
+//    }
 }
 
 void AcpiControlSingleton::setMaxBatteryPercentage(const uchar val) {
@@ -277,8 +277,8 @@ void AcpiControlSingleton::setMaxBatteryPercentage(const uchar val) {
 }
 
 void AcpiControlSingleton::setFanProfile(const FansProfile &fansProfile) {
-    setFanCurve(FAN_CPU, fansProfile.cpu);
-    setFanCurve(FAN_GPU, fansProfile.gpu);
+    setFanCurve(FAN_CPU, fansProfile.getCpu());
+    setFanCurve(FAN_GPU, fansProfile.getGpu());
 }
 
 PowerSourceType AcpiControlSingleton::getPowerSourceType() {

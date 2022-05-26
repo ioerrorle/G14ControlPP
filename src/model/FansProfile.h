@@ -2,7 +2,7 @@
 #define G14CONTROLPP_FANSPROFILE_H
 
 #include <QStringList>
-#include "FanCurve.h"
+#include "src/model/FanCurve.h"
 
 #define FAN_CPU 0x24
 #define FAN_GPU 0x25
@@ -27,7 +27,9 @@ public:
 
     static FansProfile fromQStringList(const QString &name, const QStringList &list);
 
-    QStringList toQStringList();
+    const QStringList toQStringList() const;
+
+    void setName(const QString &name);
 
 private:
     QString name;

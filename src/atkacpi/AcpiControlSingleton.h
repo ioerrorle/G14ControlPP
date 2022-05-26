@@ -6,8 +6,10 @@
 #include "windows.h"
 #include <QByteArray>
 #include <QtCore/QByteArray>
-#include "FanDef.h"
 #include <QDebug>
+#include <src/model/ArmouryCratePlan.h>
+#include <src/model/FanCurve.h>
+#include <src/model/FansProfile.h>
 
 typedef long PowerSourceType;
 
@@ -21,7 +23,7 @@ Q_OBJECT
 public:
     static AcpiControlSingleton &getInstance();
 
-    static void fixFanCurve(FAN_DEVICE fanDevice, FanCurve &fanCurve);
+    static void fixFanCurve(FAN_DEVICE fanDevice, const FanCurve &fanCurve);
 
 private:
     AcpiControlSingleton();

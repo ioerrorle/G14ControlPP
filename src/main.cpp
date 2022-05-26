@@ -4,30 +4,7 @@
 #include <src/ryzenadj/RyzenAdjSingleton.h>
 #include <src/events/GlobalEventDispatcher.h>
 
-int main(int argc, char *argv[]) {
-    QMetaType::registerComparators<FanCurve>();
-    QMetaType::registerComparators<FansProfile>();
-    QMetaType::registerComparators<PowerProfile>();
-    QMetaType::registerComparators<PowerPlan>();
-    QMetaType::registerComparators<PowerPlanSet>();
-    QMetaType::registerComparators<HotkeyAction>();
-    QMetaType::registerComparators<HotkeysProfile>();
-    qRegisterMetaTypeStreamOperators<FanCurve>("FanCurve");
-    qRegisterMetaTypeStreamOperators<FansProfile>("FansProfile");
-    qRegisterMetaTypeStreamOperators<PowerProfile>("PowerProfile");
-    qRegisterMetaTypeStreamOperators<PowerPlan>("PowerPlan");
-    qRegisterMetaTypeStreamOperators<PowerPlanSet>("PowerPlanSet");
-    qRegisterMetaTypeStreamOperators<HotkeyAction>("HotkeyAction");
-    qRegisterMetaTypeStreamOperators<HotkeysProfile>("HotkeysProfile");
-    qRegisterMetaTypeStreamOperators<QList<FanCurve>>("FanCurveList");
-    qRegisterMetaTypeStreamOperators<QList<FansProfile>>("FansProfileList");
-    qRegisterMetaTypeStreamOperators<QList<PowerProfile>>("PowerProfileList");
-    qRegisterMetaTypeStreamOperators<QList<PowerPlanSet>>("PowerPlanSetList");
-    //qRegisterMetaTypeStreamOperators<QMap<int, PowerPlan>>("PowerPlanMap");
-
-
-
-    QApplication a(argc, argv);
+int main(int argc, char *argv[]) {QApplication a(argc, argv);
 
     MainWindow mainWindow;
 
