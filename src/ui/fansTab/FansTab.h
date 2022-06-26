@@ -1,67 +1,77 @@
 #ifndef G14CONTROLPP_FANSTAB_H
 #define G14CONTROLPP_FANSTAB_H
 
-#include <QWidget>
-#include <QToolTip>
-#include <QTimer>
-#include <QSlider>
+#include "fanCurveView/FanCurveView.h"
+#include "src/controller/servicecontroller.h"
+#include "src/model/ArmouryCratePlan.h"
+#include "src/model/FansProfile.h"
+#include "src/storage/settingsstorage.h"
+#include "src/ui/base/BaseTab.h"
 #include <QInputDialog>
 #include <QMessageBox>
-#include "src/atkacpi/AcpiControlSingleton.h"
-#include "src/ryzenadj/RyzenAdjSingleton.h"
-#include "src/settings/Settings.h"
-#include "src/ui/base/BaseTab.h"
-#include "fanCurveView/FanCurveView.h"
+#include <QSlider>
+#include <QTimer>
+#include <QToolTip>
+#include <QWidget>
 
 namespace Ui {
-    class FansTab;
+class FansTab;
 }
 
 class FansTab : public QWidget, public BaseTab {
-Q_OBJECT
+    Q_OBJECT
 
 public:
-    explicit FansTab(QWidget *parent = nullptr);
+    FansTab(ServiceController *serviceController,
+            SettingsStorage *settingsStorage,
+            QWidget *parent = nullptr);
 
     void setSelected(bool selected) override;
 
 private:
+    ServiceController *serviceController;
+    SettingsStorage *settingsStorage;
+
     Ui::FansTab *ui;
     FanCurveView *cpuFanEditor;
     FanCurveView *gpuFanEditor;
     QTimer *qTimer;
-    bool curveChanged = false;
+    bool fanCurvesChanged = false;
 
-    void reloadFanCurves();
+    void loadSavedFansProfilesList();
 
-    void selectFanProfile(FansProfile &profile, bool selectIndex = false);
+    void setupFanCurveEditors(const FansProfile &profile);
 
-    bool saveFansProfile(QString &name, bool override);
+    void saveFansProfile(const QString &name);
 
-    FansProfile createFansProfileFromCurrentSettings();
+    FansProfile createFansProfileFromCurrentSettings(const QString &name) const;
 
-    void applySettings(ArmouryCratePlan &powerPlan, bool useDefaultFanCurves, FansProfile &fansProfile);
+    FansProfile getCurrentFansProfile() const;
 
-    void loadSettings(bool apply = false);
+    void setFanCurvesChanged();
 
-    void refresh();
+    void applySettings(const uchar powerPlanId, const FansProfile &fansProfile);
 
+    void loadCurrentSettings();
+
+    void setStatusText(float apuTemp, long cpuFanRpm, long gpuFanRpm);
+
+    bool checkIfFansProfileExists(const QString &fansProfileName);
+
+    void selectArCratePlan(const uchar powerPlanId);
+
+    void selectFansProfile(const FansProfile &fansProfile);
 public slots:
 
-    void defaultFanCurvesChange(int state);
+    void onSaveFansProfileClicked(bool checked);
 
-    void onSaveFanCurvesClicked(bool checked);
-
-    void onFanCurveIndexChanged(int index);
-
-    void onSliderValueChanged(int value);
+    void onFansProfileSelected(int index);
 
     void onApplyClicked(bool checked);
 
-    void onDeleteProfileClicked(bool checked = false);
+    void onDeleteFansProfileClicked(bool checked);
 
-
+    void update();
 };
-
 
 #endif //G14CONTROLPP_FANSTAB_H

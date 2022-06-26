@@ -1,15 +1,17 @@
 #include "FansProfile.h"
 
 FansProfile::FansProfile(const QString &name, const FanCurve &cpu, const FanCurve &gpu)
-        : name(name), cpu(cpu), gpu(gpu) {
+    : name(name)
+    , cpu(cpu)
+    , gpu(gpu)
+    , isDefault(false) {}
 
-}
-
-FansProfile::FansProfile() {
-    empty = true;
-}
+FansProfile::FansProfile() {}
 
 const QString &FansProfile::getName() const {
+    if (isDefault) {
+        return DefaultFansProfileName;
+    }
     return name;
 }
 
@@ -21,8 +23,8 @@ const FanCurve &FansProfile::getGpu() const {
     return gpu;
 }
 
-bool FansProfile::isEmpty() const {
-    return empty;
+bool FansProfile::getIsDefault() const {
+    return isDefault;
 }
 
 void FansProfile::getCpuAcpiData(uchar *result) {
@@ -35,6 +37,11 @@ void FansProfile::getGpuAcpiData(uchar *result) {
     uchar prefix[] = {FAN_GPU, 0x00, 0x11, 0x00};
     memcpy(result, prefix, 4);
     gpu.toAcpiData(&result[4]);
+}
+
+FansProfile FansProfile::withName(const QString &name) {
+    this->name = name;
+    return *this;
 }
 
 FansProfile FansProfile::fromQStringList(const QString &name, const QStringList &list) {
@@ -56,6 +63,10 @@ FansProfile FansProfile::fromQStringList(const QString &name, const QStringList 
 
 const QStringList FansProfile::toQStringList() const {
     QStringList result;
+    if (isDefault) {
+        result.append("default");
+        return result;
+    }
     for (int i = 0; i < 8; i++) {
         result.append(QString::asprintf("%d:%d", cpu.getTemp()[i], cpu.getSpeed()[i]));
     }
@@ -65,6 +76,7 @@ const QStringList FansProfile::toQStringList() const {
     return result;
 }
 
-void FansProfile::setName(const QString &name) {
-    FansProfile::name = name;
-}
+const FansProfile FansProfile::Default = FansProfile();
+
+const QString FansProfile::DefaultFansProfileName = "<Default>";
+const QString FansProfile::CurrentFansProfileName = "<Current>";

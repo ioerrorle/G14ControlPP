@@ -1,21 +1,16 @@
-#include <QtCore/QLibrary>
 #include "RyzenAdjTypes.h"
 
 #ifndef G14CONTROLPP_RYZENADJSINGLETON_H
 #define G14CONTROLPP_RYZENADJSINGLETON_H
 
-#define RY RyzenAdjSingleton::getInstance()
-
-#include <QLibrary>
 #include "src/model/CpuProfile.h"
 
-class RyzenAdjSingleton {
+class CpuController {
 public:
-    static RyzenAdjSingleton &getInstance();
+    CpuController();
 
 private:
-    RyzenAdjSingleton();
-    RyzenAccess *ry;
+    RyzenAccess *ry = NULL;
 
     init_ryzenadj init_ryzenadj_ptr = NULL;
     cleanup_ryzenadj cleanup_ryzenadj_ptr = NULL;
@@ -87,10 +82,6 @@ private:
     float getValueByOffset(ushort offset);
 
 public:
-    RyzenAdjSingleton(RyzenAdjSingleton const &) = delete;
-
-    void operator=(RyzenAdjSingleton const &) = delete;
-
     bool init(QString &error);
 
     void cleanupRyzenadj();
@@ -168,7 +159,7 @@ public:
     float getApuTemp();
     float getDGpuTemp();
 
-    void setPowerProfile(const CpuProfile &powerProfile);
+    void setCpuProfile(const CpuProfile &cpuProfile);
 };
 
 

@@ -6,13 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>696</width>
+    <width>784</width>
     <height>400</height>
    </rect>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,1,0">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0,0,0,0">
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0,0,0">
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
@@ -24,13 +24,6 @@
       <widget class="QComboBox" name="arCrateProfileComboBox">
        <property name="styleSheet">
         <string notr="true">width : 9em</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="defaultFanCurves">
-       <property name="text">
-        <string>Use default fan curves</string>
        </property>
       </widget>
      </item>

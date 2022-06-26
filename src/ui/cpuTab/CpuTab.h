@@ -1,61 +1,70 @@
 #ifndef G14CONTROLPP_CPUTAB_H
 #define G14CONTROLPP_CPUTAB_H
 
-#include <QWidget>
+#include "src/ui/base/BaseTab.h"
+#include <src/controller/servicecontroller.h>
+#include <src/storage/settingsstorage.h>
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QTimer>
-#include <src/ryzenadj/RyzenAdjSingleton.h>
-#include <src/settings/Settings.h>
-#include "src/ui/base/BaseTab.h"
+#include <QWidget>
+
+enum CpuPresets {
+    CPU_PRESET_DEFAULT = 0,
+    CPU_PRESET_CURRENT = 1
+};
 
 namespace Ui {
-    class CpuTab;
+class CpuTab;
 }
 
 class CpuTab : public QWidget, public BaseTab {
-Q_OBJECT
+    Q_OBJECT
 
 public:
-    explicit CpuTab(QWidget *parent = nullptr);
+    explicit CpuTab(ServiceController *serviceController,
+                    SettingsStorage *settingsStorage,
+                    QWidget *parent = nullptr);
 
     void setSelected(bool selected);
 
 public slots:
 
-    void onPowerProfileSelected(int index);
+    void onPowerProfileSelected(int);
 
-    void onDeleteProfileClicked(bool checked = false);
+    void onDeleteProfileClicked(bool);
 
-    void onSaveClicked(bool checked = false);
+    void onSaveClicked(bool);
 
-    void onApplyClicked(bool checked = false);
+    void onApplyClicked(bool);
 
-    void onPowerProfileChanged(int value);
+    void onPowerProfileChanged(int);
 
 private:
     Ui::CpuTab *ui;
+    ServiceController *serviceController;
+    SettingsStorage *settingsStorage;
     QTimer *qTimer;
-    bool powerProfileChanged;
+    bool cpuProfileChanged;
     bool fromDropdown = false;
 
-    void loadPowerProfiles();
+    void fillCpuModesList();
 
-    void fillPowerProfileData(CpuProfile &profile);
+    void fillCpuProfileData(const CpuProfile &profile);
 
-    void loadCurrentPowerProfile();
+    void loadCurrentCpuProfile();
 
-    CpuProfile createPowerProfileFromData();
+    CpuProfile createPowerProfileFromData(const QString &name);
 
-    bool saveCurrentPowerProfile(QString &name, bool override);
+    void saveCurrentCpuProfile(const QString &name);
 
-    void reloadPowerProfiles();
+    void loadCpuProfiles();
 
-    void selectPowerProfile(CpuProfile &profile, bool selectIndex);
-
-    void refresh();
+    void update();
 
     CpuProfile createPowerProfileFromCurrentCpuState();
+    void refreshCpuStatus(const CpuStatus &cpuStatus);
+    void setInputEnabled(bool enabled);
 };
 
 #endif //G14CONTROLPP_CPUTAB_H

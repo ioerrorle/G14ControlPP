@@ -7,11 +7,12 @@
 #include <QAction>
 #include <QTimer>
 #include <QStyle>
-#include <src/ui/powerPlans/PowerPlansTab.h>
-#include <src/ui/cpuTab/CpuTab.h>
-#include <src/ui/fansTab/FansTab.h>
-#include <src/ui/batteryTab/BatteryTab.h>
-#include <src/ui/hotkeys/HotkeysTab.h>
+//#include <src/ui/powerPlans/PowerPlansTab.h>
+#include "src/ui/cpuFansTab/cpufanstab.h"
+//#include <src/ui/cpuTab/CpuTab.h>
+//#include <src/ui/fansTab/FansTab.h>
+//#include <src/ui/batteryTab/BatteryTab.h>
+//#include <src/ui/hotkeys/HotkeysTab.h>
 #include <src/ui/notificationHelper/NotificationHelper.h>
 
 namespace Ui {
@@ -29,17 +30,20 @@ public:
 
 protected:
     void closeEvent(QCloseEvent *event) override;
-
     void showEvent(QShowEvent *event) override;
 
 private:
     Ui::MainWindow *ui;
+    ServiceController *mServiceController = new ServiceController();
+    SettingsStorage *mSettingsStorage = new SettingsStorage();
+
     QSystemTrayIcon *trayIcon;
-    PowerPlansTab *powerPlansTab;
-    CpuTab *cpuTab;
-    FansTab *fansTab;
-    HotkeysTab *hotkeysTab;
-    BatteryTab *batteryTab;
+    //PowerPlansTab *powerPlansTab;
+    CpuFansTab *cpuFansTab;
+    //CpuTab *cpuTab;
+    //FansTab *fansTab;
+    //HotkeysTab *hotkeysTab;
+    //BatteryTab *batteryTab;
 
     bool closeActionTriggered = false;
 

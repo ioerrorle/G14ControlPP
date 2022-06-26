@@ -6,9 +6,7 @@ FanCurve::FanCurve(unsigned char *temp, unsigned char *speed) {
     memcpy(this->speed, speed, 8);
 }
 
-FanCurve::FanCurve() {
-
-}
+FanCurve::FanCurve() {}
 
 const unsigned char *FanCurve::getTemp() const {
     return temp;
@@ -25,4 +23,16 @@ FanCurve FanCurve::fromAcpiData(unsigned char *data) {
 void FanCurve::toAcpiData(unsigned char *result) {
     memcpy(result, this->temp, 8);
     memcpy(&result[8], this->speed, 8);
+}
+
+bool FanCurve::operator==(const FanCurve &rhs) const {
+    int result = memcmp(this->temp, rhs.temp, 8);
+    if (result != 0) {
+        return false;
+    }
+    result = memcmp(this->speed, rhs.speed, 8);
+    if (result != 0) {
+        return false;
+    }
+    return true;
 }

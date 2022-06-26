@@ -1,12 +1,8 @@
-#include "AcpiControlSingleton.h"
+#include "acpicontroller.h"
+#include "src/controller/acpi/acpilistenerthread.h"
 
-AcpiControlSingleton &AcpiControlSingleton::getInstance() {
-    static AcpiControlSingleton instance;
-    return instance;
-}
-
-AcpiControlSingleton::AcpiControlSingleton() : mutex() {
-    ATKACPIhandle = CreateFile("\\\\.\\ATKACPI",
+AcpiController::AcpiController() : mutex() {
+    ATKACPIhandle = CreateFileA("\\\\.\\ATKACPI",
                                GENERIC_READ | GENERIC_WRITE,
                                FILE_SHARE_READ | FILE_SHARE_WRITE,
                                NULL,
@@ -15,7 +11,7 @@ AcpiControlSingleton::AcpiControlSingleton() : mutex() {
                                NULL);
 }
 
-bool AcpiControlSingleton::init(QString &error) {
+bool AcpiController::init(QString &error) {
     //todo check if handle was created
     if (!ATKACPIhandle) {
         return false;
@@ -49,30 +45,30 @@ bool AcpiControlSingleton::init(QString &error) {
 
 
     //creating listener thread
-
+    AcpiListenerThread *thread = new AcpiListenerThread();
+    connect(thread, &AcpiListenerThread::requestAtkAcpiCommand, this, &AcpiController::onAtkAcpiCommandRequested);
+    connect(thread, &AcpiListenerThread::acpiEvent, this, &AcpiController::onAcpiEvent);
 
     return true;
 }
 
-int AcpiControlSingleton::dispose() {
+bool AcpiController::dispose(QString &error) {
     int result = CloseHandle(ATKACPIhandle);
     if (result != 0) {
-        return 1;
+        return true;
     }
+    error = QString::number(GetLastError());
     //some error
-    return 0;
+    return false;
 }
 
-unsigned long AcpiControlSingleton::controlInternal(unsigned long controlCode,
+unsigned long AcpiController::executeAcpiCommand(unsigned long controlCode,
                                                     unsigned char *inBuffer,
                                                     int inBufferSize,
                                                     unsigned char *outBuffer,
                                                     int outBufferSize) {
-    //QMutexLocker locker(&mutex);
-    //return 0l;
     unsigned long bytesReturned;
 
-    //qDebug() << "start deviceiocontrol";
     mutex.lock();
     WINBOOL result = DeviceIoControl(ATKACPIhandle,
                                      controlCode, //0x22240c
@@ -88,19 +84,23 @@ unsigned long AcpiControlSingleton::controlInternal(unsigned long controlCode,
     if (result != FALSE) {
         return bytesReturned;
     }
-    //some error
+//    //some error
     return 0;
 }
 
+void AcpiController::onAcpiEvent(const unsigned long acpiCode) {
+    emit acpiEvent(acpiCode);
+}
 
-long AcpiControlSingleton::getCpuFanSpeed() {
+
+long AcpiController::getCpuFanSpeed() {
     unsigned char input[12] = {0x44, 0x53, 0x54, 0x53, 0x04, 0x00, 0x00, 0x00, /*prefix*/
                                0x13, 0x00, 0x11, 0x00 /* data */
     };
 
     unsigned char outBuffer[8];
 
-    int bytesWritten = controlInternal(0x22240c, &input[0], 12, &outBuffer[0], 8);
+    int bytesWritten = executeAcpiCommand(0x22240c, &input[0], 12, &outBuffer[0], 8);
 
     if (bytesWritten == 0) {
         return 0;
@@ -111,14 +111,14 @@ long AcpiControlSingleton::getCpuFanSpeed() {
     return result;
 }
 
-long AcpiControlSingleton::getGpuFanSpeed() {
+long AcpiController::getGpuFanSpeed() {
     unsigned char input[12] = {0x44, 0x53, 0x54, 0x53, 0x04, 0x00, 0x00, 0x00, /*prefix*/
                                0x14, 0x00, 0x11, 0x00 /* data */
     };
 
     unsigned char outBuffer[8];
 
-    int bytesWritten = controlInternal(0x22240c, &input[0], 12, &outBuffer[0], 8);
+    int bytesWritten = executeAcpiCommand(0x22240c, &input[0], 12, &outBuffer[0], 8);
 
     if (bytesWritten == 0) {
         return 0;
@@ -129,7 +129,7 @@ long AcpiControlSingleton::getGpuFanSpeed() {
     return result;
 }
 
-void AcpiControlSingleton::lcdLightChange(bool increase) {
+void AcpiController::lcdLightChange(bool increase) {
     unsigned char byte = 0x10;
     if (!increase) {
         byte += 0x10;
@@ -143,11 +143,11 @@ void AcpiControlSingleton::lcdLightChange(bool increase) {
 
     unsigned char outBuffer[8];
 
-    int bytesWritten = controlInternal(0x22240c, &input[0], 16, &outBuffer[0], 8);
+    int bytesWritten = executeAcpiCommand(0x22240c, &input[0], 16, &outBuffer[0], 8);
     //todo handle result/error
 }
 
-void AcpiControlSingleton::setPowerPlan(ASUS_PLAN plan) {
+void AcpiController::setPowerPlan(ASUS_PLAN plan) {
     unsigned char input[16] = {0x44, 0x45, 0x56, 0x53,
                                0x08, 0x00, 0x00, 0x00,
                                0x75, 0x00, 0x12, 0x00,
@@ -155,10 +155,10 @@ void AcpiControlSingleton::setPowerPlan(ASUS_PLAN plan) {
 
     unsigned char outBuffer[1024];
 
-    int bytesWritten = controlInternal(0x22240c, &input[0], 16, &outBuffer[0], 1024);
+    int bytesWritten = executeAcpiCommand(0x22240c, &input[0], 16, &outBuffer[0], 1024);
 }
 
-void AcpiControlSingleton::setFanCurve(FAN_DEVICE fanDevice, const FanCurve &fanCurve) {
+void AcpiController::setFanCurve(FAN_DEVICE fanDevice, const FanCurve &fanCurve) {
     unsigned char input[28] = {0x44, 0x45, 0x56, 0x53,
                                0x14, 0x00, 0x00, 0x00,
                           fanDevice, 0x00, 0x11, 0x00,
@@ -166,22 +166,6 @@ void AcpiControlSingleton::setFanCurve(FAN_DEVICE fanDevice, const FanCurve &fan
                                0xFF, 0xFF, 0xFF, 0xFF,
                                0xFF, 0xFF, 0xFF, 0xFF,
                                0xFF, 0xFF, 0xFF, 0xFF};
-
-    //checking fan curve
-
-
-    /*4 => match device {
-                FanCurveDevice::Cpu => 31,
-                FanCurveDevice::Gpu => 34,
-            },
-            5 => match device {
-                FanCurveDevice::Cpu => 49,
-                FanCurveDevice::Gpu => 51,
-            },
-            6 | 7 => match device {
-                FanCurveDevice::Cpu => 56,
-                FanCurveDevice::Gpu => 61,
-            },*/
 
     for (int i = 0; i < 8; i++) {
         //checking fan curve
@@ -218,47 +202,10 @@ void AcpiControlSingleton::setFanCurve(FAN_DEVICE fanDevice, const FanCurve &fan
 
     unsigned char outBuffer[1024];
 
-    int bytesWritten = controlInternal(0x22240c, &input[0], 28, &outBuffer[0], 1024);
+    int bytesWritten = executeAcpiCommand(0x22240c, &input[0], 28, &outBuffer[0], 1024);
 }
 
-void AcpiControlSingleton::fixFanCurve(FAN_DEVICE fanDevice, const FanCurve &fanCurve) {
-//    for (int i = 0; i < 8; i++) {
-//        //checking fan curve
-//        uchar minTemp = 30 + 10*i;
-//        uchar avgTemp = minTemp + 4;
-//        uchar maxTemp = minTemp + 9;
-//
-//        if (fanCurve.getTemp()[i] < minTemp || fanCurve.getTemp()[i] > maxTemp) {
-//            fanCurve.getTemp()[i] = avgTemp;
-//        }
-//
-//        uchar minSpeed = 0;
-//        switch (i) {
-//            case 4:
-//                minSpeed = fanDevice == FAN_CPU ? 31 : 34;
-//                break;
-//            case 5:
-//                minSpeed = fanDevice == FAN_CPU ? 49 : 51;
-//                break;
-//            case 6:
-//            case 7:
-//                minSpeed = fanDevice == FAN_CPU ? 56 : 61;
-//                break;
-//            default:
-//                break;
-//        }
-//
-//        if (fanCurve.getSpeed()[i] < minSpeed) {
-//            fanCurve.getSpeed()[i] = minSpeed;
-//        }
-//
-//        if (fanCurve.getSpeed()[i] > 100) {
-//            fanCurve.getSpeed()[i] = 100;
-//        }
-//    }
-}
-
-void AcpiControlSingleton::setMaxBatteryPercentage(const uchar val) {
+void AcpiController::setMaxBatteryPercentage(const uchar val) {
     uchar value = 100;
     if (val < 100) {
         value = val;
@@ -272,23 +219,23 @@ void AcpiControlSingleton::setMaxBatteryPercentage(const uchar val) {
 
     unsigned char outBuffer[8];
 
-    int bytesWritten = controlInternal(0x22240c, &input[0], 16, &outBuffer[0], 8);
+    int bytesWritten = executeAcpiCommand(0x22240c, &input[0], 16, &outBuffer[0], 8);
     //todo handle result/error
 }
 
-void AcpiControlSingleton::setFanProfile(const FansProfile &fansProfile) {
+void AcpiController::setFanProfile(const FansProfile &fansProfile) {
     setFanCurve(FAN_CPU, fansProfile.getCpu());
     setFanCurve(FAN_GPU, fansProfile.getGpu());
 }
 
-PowerSourceType AcpiControlSingleton::getPowerSourceType() {
+PowerSourceType AcpiController::getPowerSourceType() {
     unsigned char input[12] = {0x44, 0x53, 0x54, 0x53, 0x04, 0x00, 0x00, 0x00, /*prefix*/
                                0x6c, 0x00, 0x12, 0x00 /* data */
     };
 
     unsigned char outBuffer[4];
 
-    int bytesWritten = controlInternal(0x22240c, &input[0], 12, &outBuffer[0], 4);
+    int bytesWritten = executeAcpiCommand(0x22240c, &input[0], 12, &outBuffer[0], 4);
 
     if (bytesWritten == 0) {
         return 0;
@@ -299,7 +246,7 @@ PowerSourceType AcpiControlSingleton::getPowerSourceType() {
     return result;
 }
 
-void AcpiControlSingleton::sendSleepCommand() {
+void AcpiController::sendSleepCommand() {
     unsigned char input[16] = {0x44, 0x45, 0x56, 0x53,
                                0x08, 0x00, 0x00, 0x00, /*prefix*/
                                0x21, 0x00, 0x10, 0x00,
@@ -308,10 +255,10 @@ void AcpiControlSingleton::sendSleepCommand() {
 
     unsigned char outBuffer[8];
 
-    int bytesWritten = controlInternal(0x22240c, &input[0], 16, &outBuffer[0], 8);
+    int bytesWritten = executeAcpiCommand(0x22240c, &input[0], 16, &outBuffer[0], 8);
 }
 
-void AcpiControlSingleton::sendRfKillCommand() {
+void AcpiController::sendRfKillCommand() {
     unsigned char input[16] = {0x44, 0x45, 0x56, 0x53,
                                0x08, 0x00, 0x00, 0x00, /*prefix*/
                                0x21, 0x00, 0x10, 0x00,
@@ -320,10 +267,10 @@ void AcpiControlSingleton::sendRfKillCommand() {
 
     unsigned char outBuffer[8];
 
-    int bytesWritten = controlInternal(0x22240c, &input[0], 16, &outBuffer[0], 8);
+    int bytesWritten = executeAcpiCommand(0x22240c, &input[0], 16, &outBuffer[0], 8);
 }
 
-void AcpiControlSingleton::getFanCurves(FAN_DEVICE device, unsigned char plan) {
+void AcpiController::getFanCurves(FAN_DEVICE device, unsigned char plan) {
     unsigned char input[16] = {0x44, 0x53, 0x54, 0x53,
                                0x08, 0x00, 0x00, 0x00,
                                device, 0x00, 0x11, 0x00,
@@ -331,7 +278,7 @@ void AcpiControlSingleton::getFanCurves(FAN_DEVICE device, unsigned char plan) {
 
     unsigned char outBuffer[16];
 
-    int bytesWritten = controlInternal(0x22240c, &input[0], 16, &outBuffer[0], 16);
+    int bytesWritten = executeAcpiCommand(0x22240c, &input[0], 16, &outBuffer[0], 16);
 
     auto deb = qDebug();
     for(int i = 0; i < 16; i++) {
@@ -339,3 +286,7 @@ void AcpiControlSingleton::getFanCurves(FAN_DEVICE device, unsigned char plan) {
     }
 }
 
+void AcpiController::onAtkAcpiCommandRequested(unsigned long controlCode, unsigned char *inBuffer, int inBufferSize, unsigned char *outBuffer, int outBufferSize)
+{
+    executeAcpiCommand(controlCode, inBuffer, inBufferSize, outBuffer,outBufferSize);
+}

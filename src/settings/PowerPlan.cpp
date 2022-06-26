@@ -1,33 +1,33 @@
 #include "PowerPlan.h"
 #include "src/settings/Settings.h"
 
-PowerPlan::PowerPlan(uchar armouryCratePlanId, const QString &fansProfileName, const QString &powerProfileName)
+HwProfile::HwProfile(uchar armouryCratePlanId, const QString &fansProfileName, const QString &powerProfileName)
         : armouryCratePlanId(armouryCratePlanId), fansProfileName(fansProfileName),
           powerProfileName(powerProfileName) {
 
 }
 
-const ArmouryCratePlan PowerPlan::getArmouryCratePlan() const {
+const ArmouryCratePlan HwProfile::getArmouryCratePlan() const {
     return ArmouryCratePlan::plans()[armouryCratePlanId];
 }
 
-const FansProfile PowerPlan::getFansProfile() const {
+const FansProfile HwProfile::getFansProfile() const {
     return Settings::getInstance().getFansProfile(fansProfileName);
 }
 
-const CpuProfile PowerPlan::getPowerProfile() const {
+const CpuProfile HwProfile::getPowerProfile() const {
     return Settings::getInstance().getPowerProfile(powerProfileName);
 }
 
-PowerPlan PowerPlan::fromQString(const QString &string) {
+HwProfile HwProfile::fromQString(const QString &string) {
     QStringList list = string.split(",");
-    return PowerPlan(list[0].toInt(), list[1], list[2]);
+    return HwProfile(list[0].toInt(), list[1], list[2]);
 }
 
-QString PowerPlan::toQString() {
+QString HwProfile::toQString() {
     return QString::asprintf("%d,%s,%s", armouryCratePlanId, fansProfileName.toLocal8Bit().data(), powerProfileName.toLocal8Bit().data());
 }
 
-PowerPlan::PowerPlan() {
+HwProfile::HwProfile() {
 
 }

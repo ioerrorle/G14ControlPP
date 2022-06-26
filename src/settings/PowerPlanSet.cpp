@@ -39,8 +39,8 @@
 //    return is;
 //}
 
-PowerPlanSet::PowerPlanSet(const QString &name, const PowerPlan &dcPowerPlan, const PowerPlan &acPowerPlan,
-                           const PowerPlan &usbPowerPlan) : name(name), dcPowerPlan(dcPowerPlan),
+PowerPlanSet::PowerPlanSet(const QString &name, const HwProfile &dcPowerPlan, const HwProfile &acPowerPlan,
+                           const HwProfile &usbPowerPlan) : name(name), dcPowerPlan(dcPowerPlan),
                                                             acPowerPlan(acPowerPlan), usbPowerPlan(usbPowerPlan) {
 
 }
@@ -49,20 +49,20 @@ const QString &PowerPlanSet::getName() const {
     return name;
 }
 
-const PowerPlan &PowerPlanSet::getDcPowerPlan() const {
+const HwProfile &PowerPlanSet::getDcPowerPlan() const {
     return dcPowerPlan;
 }
 
-const PowerPlan &PowerPlanSet::getAcPowerPlan() const {
+const HwProfile &PowerPlanSet::getAcPowerPlan() const {
     return acPowerPlan;
 }
 
-const PowerPlan &PowerPlanSet::getUsbPowerPlan() const {
+const HwProfile &PowerPlanSet::getUsbPowerPlan() const {
     return usbPowerPlan;
 }
 
 PowerPlanSet PowerPlanSet::fromQStringList(const QString &name, const QStringList &data) {
-    return PowerPlanSet(name, PowerPlan::fromQString(data[0]), PowerPlan::fromQString(data[1]), PowerPlan::fromQString(data[2]));
+    return PowerPlanSet(name, HwProfile::fromQString(data[0]), HwProfile::fromQString(data[1]), HwProfile::fromQString(data[2]));
 }
 
 QStringList PowerPlanSet::toQStringList() {

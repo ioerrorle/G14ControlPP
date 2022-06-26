@@ -7,8 +7,8 @@
 
 class PowerPlanSet {
 public:
-    PowerPlanSet(const QString &name, const PowerPlan &dcPowerPlan, const PowerPlan &acPowerPlan,
-                 const PowerPlan &usbPowerPlan);
+    PowerPlanSet(const QString &name, const HwProfile &dcPowerPlan, const HwProfile &acPowerPlan,
+                 const HwProfile &usbPowerPlan);
 
     PowerPlanSet();
 
@@ -18,19 +18,19 @@ public:
 
     const QString &getName() const;
 
-    const PowerPlan &getDcPowerPlan() const;
+    const HwProfile &getDcPowerPlan() const;
 
-    const PowerPlan &getAcPowerPlan() const;
+    const HwProfile &getAcPowerPlan() const;
 
-    const PowerPlan &getUsbPowerPlan() const;
+    const HwProfile &getUsbPowerPlan() const;
 
     bool isEmpty() const;
 
 private:
     QString name;
-    PowerPlan dcPowerPlan;
-    PowerPlan acPowerPlan;
-    PowerPlan usbPowerPlan;
+    HwProfile dcPowerPlan;
+    HwProfile acPowerPlan;
+    HwProfile usbPowerPlan;
     bool empty = false;
 };
 //typedef struct {

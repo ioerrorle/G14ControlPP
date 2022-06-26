@@ -1,73 +1,130 @@
 #include "CpuTab.h"
 #include "ui_CpuTab.h"
 
-CpuTab::CpuTab(QWidget *parent)
-        : QWidget(parent), ui(new Ui::CpuTab) {
+CpuTab::CpuTab(ServiceController *serviceController,
+               SettingsStorage *settingsStorage,
+               QWidget *parent)
+    : QWidget(parent)
+    , ui(new Ui::CpuTab)
+    , serviceController(serviceController)
+    , settingsStorage(settingsStorage) {
     ui->setupUi(this);
 
     ui->deleteProfile->setIcon(this->style()->standardIcon(QStyle::SP_TrashIcon));
     ui->save->setIcon(this->style()->standardIcon(QStyle::SP_DialogSaveButton));
 
-    connect(ui->powerProfileDropdown, QOverload<int>::of(&QComboBox::activated), this, &CpuTab::onPowerProfileSelected);
+    connect(ui->cpuProfileDropdown,
+            QOverload<int>::of(&QComboBox::activated),
+            this,
+            &CpuTab::onPowerProfileSelected);
     connect(ui->deleteProfile, &QPushButton::clicked, this, &CpuTab::onDeleteProfileClicked);
     connect(ui->save, &QPushButton::clicked, this, &CpuTab::onSaveClicked);
     connect(ui->apply, &QPushButton::clicked, this, &CpuTab::onApplyClicked);
 
-    loadPowerProfiles();
-    loadCurrentPowerProfile();
+    fillCpuModesList();
+    loadCpuProfiles();
+    loadCurrentCpuProfile();
 
-    connect(ui->stapmLimitSetting, QOverload<int>::of(&QSpinBox::valueChanged), this, &CpuTab::onPowerProfileChanged);
-    connect(ui->stapmTimeSetting, QOverload<int>::of(&QSpinBox::valueChanged), this, &CpuTab::onPowerProfileChanged);
-    connect(ui->slowLimitSetting, QOverload<int>::of(&QSpinBox::valueChanged), this, &CpuTab::onPowerProfileChanged);
-    connect(ui->slowTimeSetting, QOverload<int>::of(&QSpinBox::valueChanged), this, &CpuTab::onPowerProfileChanged);
-    connect(ui->fastLimitSetting, QOverload<int>::of(&QSpinBox::valueChanged), this, &CpuTab::onPowerProfileChanged);
-    connect(ui->modeSetting, QOverload<int>::of(&QComboBox::activated), this, &CpuTab::onPowerProfileChanged);
+    connect(ui->stapmLimitSetting,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &CpuTab::onPowerProfileChanged);
+    connect(ui->stapmTimeSetting,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &CpuTab::onPowerProfileChanged);
+    connect(ui->slowLimitSetting,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &CpuTab::onPowerProfileChanged);
+    connect(ui->slowTimeSetting,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &CpuTab::onPowerProfileChanged);
+    connect(ui->fastLimitSetting,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &CpuTab::onPowerProfileChanged);
+    connect(ui->modeSetting,
+            QOverload<int>::of(&QComboBox::activated),
+            this,
+            &CpuTab::onPowerProfileChanged);
 
     qTimer = new QTimer(this);
     qTimer->setInterval(250);
-    connect(qTimer, &QTimer::timeout, this, &CpuTab::refresh);
+    connect(qTimer, &QTimer::timeout, this, &CpuTab::update);
 }
 
-void CpuTab::refresh() {
-    RY.refreshTable();
-    ui->stapmLimit->setText(QString::asprintf("%.1f (%.1f)", RY.getStapmLimit(), RY.getStapmValue()));
-    ui->stapmTime->setText(QString::asprintf("%.0f", RY.getStapmTime()));
-    ui->fastLimit->setText(QString::asprintf("%.1f (%.1f)", RY.getFastLimit(), RY.getFastValue()));
-    ui->slowLimit->setText(QString::asprintf("%.1f (%.1f)", RY.getSlowLimit(), RY.getSlowValue()));
-    ui->slowTime->setText(QString::asprintf("%.0f", RY.getSlowTime()));
-
-    ui->coreTemp->setText(QString::asprintf("%.1f (%.1f)", RY.getCoreTempLimit(), RY.getCoreTemp()));
-    ui->apuTemp->setText(QString::asprintf("%.1f (%.1f)", RY.getApuTempLimit(), RY.getApuTemp()));
-    ui->dGpuTemp->setText(QString::asprintf("%.1f (%.1f)", RY.getDGpuTempLimit(), RY.getDGpuTemp()));
-    ui->mode->setText(RY.getCclkSetpoint() == 95.0f ? "Power saving" : "Performance");
+void CpuTab::update() {
+    CpuStatus currentCpuStatus;
+    serviceController->getCpuStatus(currentCpuStatus);
+    refreshCpuStatus(currentCpuStatus);
 }
 
-void CpuTab::loadPowerProfiles() {
+void CpuTab::refreshCpuStatus(const CpuStatus &cpuStatus) {
+    ui->stapmLimit->setText(
+        QString::asprintf("%.1f (%.1f)", cpuStatus.stapmLimit, cpuStatus.stapmValue));
+    ui->stapmTime->setText(QString::asprintf("%.0f", cpuStatus.stapmTime));
+    ui->fastLimit->setText(
+        QString::asprintf("%.1f (%.1f)", cpuStatus.fastLimit, cpuStatus.fastValue));
+    ui->slowLimit->setText(
+        QString::asprintf("%.1f (%.1f)", cpuStatus.slowLimit, cpuStatus.slowValue));
+    ui->slowTime->setText(QString::asprintf("%.0f", cpuStatus.slowTime));
+
+    ui->coreTemp->setText(
+        QString::asprintf("%.1f (%.1f)", cpuStatus.coreTempLimit, cpuStatus.coreTempValue));
+    ui->apuTemp->setText(
+        QString::asprintf("%.1f (%.1f)", cpuStatus.apuTempLimit, cpuStatus.apuTempValue));
+    ui->dGpuTemp->setText(
+        QString::asprintf("%.1f (%.1f)", cpuStatus.dgpuTempLimit, cpuStatus.dgpuTempValue));
+    ui->mode->setText(cpuStatus.setPoint == 95.0f ? "Power saving" : "Performance");
+}
+
+void CpuTab::fillCpuModesList() {
     ui->modeSetting->addItem("Performance", SP_PERFORMANCE);
     ui->modeSetting->addItem("Power saving", SP_POWER_SAVING);
     ui->modeSetting->addItem("Default", SP_DEFAULT);
-
-    reloadPowerProfiles();
 }
 
-void CpuTab::onPowerProfileSelected(int index) {
-    if (ui->powerProfileDropdown->currentData() != -1) {
-        int noname = ui->powerProfileDropdown->findData(-1);
-        if (noname != -1) {
-            ui->powerProfileDropdown->removeItem(noname);
-        }
+void CpuTab::loadCpuProfiles() {
+    ui->cpuProfileDropdown->clear();
+
+    ui->cpuProfileDropdown->addItem("<Default>", CPU_PRESET_DEFAULT);
+    ui->cpuProfileDropdown->addItem("<Current>", CPU_PRESET_CURRENT);
+
+    auto profiles = settingsStorage->getCpuProfiles();
+    for (CpuProfile &profile : profiles) {
+        ui->cpuProfileDropdown->addItem(profile.getName(), QVariant::fromValue(profile));
     }
-    if (ui->powerProfileDropdown->currentData() == 0) {
-        auto powerProfile = createPowerProfileFromCurrentCpuState();
-        fillPowerProfileData(powerProfile);
+}
+
+void CpuTab::onPowerProfileSelected(int) {
+    if (ui->cpuProfileDropdown->currentData() != CPU_PRESET_DEFAULT) {
+        setInputEnabled(false);
+        cpuProfileChanged = false;
     } else {
-        powerProfileChanged = false;
-        auto powerProfile = CpuProfile::fromQStringList(ui->powerProfileDropdown->currentText(), ui->powerProfileDropdown->currentData().value<QStringList>());
-        fillPowerProfileData(powerProfile);
+        setInputEnabled(true);
+    }
+    if (ui->cpuProfileDropdown->currentData() == CPU_PRESET_CURRENT) {
+        auto cpuProfile = createPowerProfileFromCurrentCpuState();
+        fillCpuProfileData(cpuProfile);
+    } else {
+        cpuProfileChanged = false;
+        auto cpuProfile = ui->cpuProfileDropdown->currentData().value<CpuProfile>();
+        fillCpuProfileData(cpuProfile);
     }
 }
 
-void CpuTab::fillPowerProfileData(CpuProfile &profile) {
+void CpuTab::setInputEnabled(bool enabled) {
+    ui->stapmLimitSetting->setEnabled(enabled);
+    ui->stapmTimeSetting->setEnabled(enabled);
+    ui->slowLimitSetting->setEnabled(enabled);
+    ui->slowTimeSetting->setEnabled(enabled);
+    ui->fastLimitSetting->setEnabled(enabled);
+    ui->modeSetting->setEnabled(enabled);
+}
+
+void CpuTab::fillCpuProfileData(const CpuProfile &profile) {
     fromDropdown = true;
     ui->stapmLimitSetting->setValue(profile.getStapmLimit());
     ui->stapmTimeSetting->setValue(profile.getStapmTime());
@@ -78,91 +135,78 @@ void CpuTab::fillPowerProfileData(CpuProfile &profile) {
     fromDropdown = false;
 }
 
-void CpuTab::loadCurrentPowerProfile() {
-    auto currentProfile = SETT.getCurrentPowerProfile();
-    fillPowerProfileData(currentProfile);
+void CpuTab::loadCurrentCpuProfile() {
+    fillCpuProfileData(createPowerProfileFromCurrentCpuState());
 }
 
-CpuProfile CpuTab::createPowerProfileFromData() {
-    CpuProfile result((float)ui->fastLimitSetting->value(),
-                      (float)ui->slowLimitSetting->value(),
-                      (float)ui->slowTimeSetting->value(),
-                      (float)ui->stapmLimitSetting->value(),
-                      (float)ui->stapmTimeSetting->value(),
-            ui->modeSetting->currentData().value<Setpoint>());
+CpuProfile CpuTab::createPowerProfileFromData(const QString &name) {
+    CpuProfile result(name,
+                      (float) ui->fastLimitSetting->value(),
+                      (float) ui->slowLimitSetting->value(),
+                      (float) ui->slowTimeSetting->value(),
+                      (float) ui->stapmLimitSetting->value(),
+                      (float) ui->stapmTimeSetting->value(),
+                      ui->modeSetting->currentData().value<SetPoint>());
     return result;
 }
 
-bool CpuTab::saveCurrentPowerProfile(QString &name, bool override) {
-    CpuProfile profile = createPowerProfileFromData();
-    profile.setName(name);
+void CpuTab::saveCurrentCpuProfile(const QString &name) {
+    CpuProfile profile = createPowerProfileFromData(name);
+    //profile.setName(name);
 
-    bool result = SETT.savePowerProfile(profile, override);
+    settingsStorage->saveCpuProfile(profile);
 
-    if (!result)
-        return false;
+    loadCpuProfiles();
 
-    reloadPowerProfiles();
-    selectPowerProfile(profile, true);
-    return true;
+    int index = ui->cpuProfileDropdown->findText(name);
+    ui->cpuProfileDropdown->setCurrentIndex(index);
 }
 
-void CpuTab::onDeleteProfileClicked(bool checked) {
-    if (ui->powerProfileDropdown->currentData() != -1 && ui->powerProfileDropdown->currentData() != 0) {
-        auto currentData = CpuProfile::fromQStringList(ui->powerProfileDropdown->currentText(), ui->powerProfileDropdown->currentData().value<QStringList>());
-        SETT.deletePowerProfile(currentData.getName());
-        reloadPowerProfiles();
-        onPowerProfileSelected(ui->powerProfileDropdown->currentIndex());
-    }
+void CpuTab::onDeleteProfileClicked(bool) {
+//    if (ui->cpuProfileDropdown->currentData() != -1 && ui->cpuProfileDropdown->currentData() != 0) {
+//        auto currentData = CpuProfile::fromQStringList(ui->cpuProfileDropdown->currentText(),
+//                                                       ui->cpuProfileDropdown->currentData()
+//                                                           .value<QStringList>());
+//        SETT.deletePowerProfile(currentData.getName());
+//        loadCpuProfiles();
+//        onPowerProfileSelected(ui->cpuProfileDropdown->currentIndex());
+//    }
 }
 
-void CpuTab::onSaveClicked(bool checked) {
-    bool ok;
-    QString text = QInputDialog::getText(this, tr("Save curves"),
-                                         tr("Curve name:"), QLineEdit::Normal,
-                                         nullptr, &ok);
-    if (ok && !text.isEmpty()) {
-        bool result = saveCurrentPowerProfile(text, false);
-        if (!result) {
-            QMessageBox msgBox;
-            msgBox.setText("Power plan with this name already exists");
-            msgBox.setInformativeText("Do you want to override it?");
-            msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-            msgBox.setDefaultButton(QMessageBox::Ok);
-            int ret = msgBox.exec();
+void CpuTab::onSaveClicked(bool) {
+    bool profileNameOk;
+    QString profileName = QInputDialog::getText(this,
+                                                tr("Save CPU profile"),
+                                                tr("Profile name:"),
+                                                QLineEdit::Normal,
+                                                nullptr,
+                                                &profileNameOk);
+    if (profileNameOk && !profileName.isEmpty()) {
+        bool profileExists = settingsStorage->cpuProfileExists(profileName);
+        if (profileExists) {
+            QMessageBox confirmOverride;
+            confirmOverride.setText("CPU profile with this name already exists");
+            confirmOverride.setInformativeText("Do you want to override it?");
+            confirmOverride.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+            confirmOverride.setDefaultButton(QMessageBox::Ok);
+            int confirmOverrideResult = confirmOverride.exec();
 
-            if (ret == QMessageBox::Ok) {
-                bool result = saveCurrentPowerProfile(text, true);
-            } else {
-                //it's either cancel or something strange
+            if (confirmOverrideResult == QMessageBox::Ok) {
+                saveCurrentCpuProfile(profileName);
             }
-        }
-
-    }
-}
-
-void CpuTab::onApplyClicked(bool checked) {
-    auto powerProfile = createPowerProfileFromData();
-    RY.setPowerProfile(powerProfile);
-}
-
-void CpuTab::reloadPowerProfiles() {
-    ui->powerProfileDropdown->clear();
-    auto profiles = SETT.getPowerProfiles();
-    ui->powerProfileDropdown->addItem("Current profile", 0);
-    for (CpuProfile &profile : profiles) {
-        ui->powerProfileDropdown->addItem(profile.getName(), profile.toQStringList());
-    }
-}
-
-void CpuTab::selectPowerProfile(CpuProfile &profile, bool selectIndex) {
-    if (selectIndex) {
-        int i = ui->powerProfileDropdown->findText(profile.getName());
-        if (i != -1) {
-            ui->powerProfileDropdown->setCurrentIndex(i);
+        } else {
+            saveCurrentCpuProfile(profileName);
         }
     }
-    fillPowerProfileData(profile);
+}
+
+void CpuTab::onApplyClicked(bool) {
+    if (ui->cpuProfileDropdown->currentData() == CPU_PRESET_DEFAULT) {
+        serviceController->reapplyArCratePlan();
+    } else {
+        auto cpuProfile = createPowerProfileFromData("");
+        serviceController->applyCpuProfile(cpuProfile);
+    }
 }
 
 void CpuTab::setSelected(bool selected) {
@@ -173,28 +217,20 @@ void CpuTab::setSelected(bool selected) {
     }
 }
 
-void CpuTab::onPowerProfileChanged(int value) {
-    if (fromDropdown) {
-        return;
-    }
-    powerProfileChanged = true;
-    if (ui->powerProfileDropdown->currentData() != -1) {
-        if (ui->powerProfileDropdown->findText("<noname>") != -1) {
-            ui->powerProfileDropdown->setCurrentText("<noname>");
-        } else {
-            ui->powerProfileDropdown->insertItem(0, "<noname>", -1);
-            ui->powerProfileDropdown->setCurrentIndex(0);
-        }
-    }
+void CpuTab::onPowerProfileChanged(int) {
+
 }
 
 CpuProfile CpuTab::createPowerProfileFromCurrentCpuState() {
-    CpuProfile powerProfile = {"",
-                               RY.getStapmLimit(),
-                               RY.getStapmTime(),
-                               RY.getSlowLimit(),
-                               RY.getSlowTime(),
-                               RY.getFastLimit(),
-                                 RY.getCclkSetpoint() == 95.0f ? SP_POWER_SAVING : SP_PERFORMANCE};
-    return powerProfile;
+    CpuStatus currentCpuStatus;
+    serviceController->getCpuStatus(currentCpuStatus);
+    CpuProfile currentCpuProfile("",
+                              currentCpuStatus.stapmLimit,
+                              currentCpuStatus.stapmTime,
+                              currentCpuStatus.slowLimit,
+                              currentCpuStatus.slowTime,
+                              currentCpuStatus.fastLimit,
+                              currentCpuStatus.setPoint == 95.0f ? SP_POWER_SAVING : SP_PERFORMANCE
+                              );
+    return currentCpuProfile;
 }

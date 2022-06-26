@@ -6,14 +6,14 @@
 #include "src/model/FansProfile.h"
 #include "src/model/CpuProfile.h"
 
-class PowerPlan {
+class HwProfile {
 
 public:
-    PowerPlan(uchar armouryCratePlanId, const QString &fansProfileName, const QString &powerProfileName);
+    HwProfile(uchar armouryCratePlanId, const QString &fansProfileName, const QString &powerProfileName);
 
-    PowerPlan();
+    HwProfile();
 
-    static PowerPlan fromQString(const QString &string);
+    static HwProfile fromQString(const QString &string);
     QString toQString();
 
     const ArmouryCratePlan getArmouryCratePlan() const;

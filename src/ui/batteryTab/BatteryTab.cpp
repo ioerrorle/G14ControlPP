@@ -18,13 +18,13 @@ void BatteryTab::onSliderMoved(int value) {
 
 void BatteryTab::onApplyClicked(bool checked) {
     Settings::getInstance().putMaxBatteryCharge(ui->batterySlider->value());
-    AcpiControlSingleton::getInstance().setMaxBatteryPercentage(ui->batterySlider->value());
+    AcpiController::getInstance().setMaxBatteryPercentage(ui->batterySlider->value());
 }
 
 void BatteryTab::loadSettings() {
     uchar maxBatteryCharge = Settings::getInstance().getMaxBatteryCharge();
     ui->batterySlider->setValue(maxBatteryCharge);
-    AcpiControlSingleton::getInstance().setMaxBatteryPercentage(ui->batterySlider->value());
+    AcpiController::getInstance().setMaxBatteryPercentage(ui->batterySlider->value());
 }
 
 void BatteryTab::setSelected(bool selected) {

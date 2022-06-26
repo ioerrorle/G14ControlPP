@@ -60,10 +60,10 @@ void PowerPlansTab::loadProfiles() {
     ui->acPowerProfile->addItem("Default", 0);
     ui->usbPowerProfile->addItem("Default", 0);
     auto powerProfiles = SETT.getPowerProfiles();
-    for (CpuProfile &profile : powerProfiles) {
-        ui->dcPowerProfile->addItem(profile.getName(), profile.toQStringList());
-        ui->acPowerProfile->addItem(profile.getName(), profile.toQStringList());
-        ui->usbPowerProfile->addItem(profile.getName(), profile.toQStringList());
+    for (const CpuProfile &profile : powerProfiles) {
+        ui->dcPowerProfile->addItem(profile.getName(), QVariant::fromValue(profile));
+        ui->acPowerProfile->addItem(profile.getName(), QVariant::fromValue(profile));
+        ui->usbPowerProfile->addItem(profile.getName(), QVariant::fromValue(profile));
     }
 
     ui->dcFanProfile->addItem("Default", 0);
@@ -71,19 +71,19 @@ void PowerPlansTab::loadProfiles() {
     ui->usbFanProfile->addItem("Default", 0);
     auto fanProfiles = SETT.getFansProfiles();
     for (FansProfile &profile : fanProfiles) {
-        ui->dcFanProfile->addItem(profile.getName(), profile.toQStringList());
-        ui->acFanProfile->addItem(profile.getName(), profile.toQStringList());
-        ui->usbFanProfile->addItem(profile.getName(), profile.toQStringList());
+        ui->dcFanProfile->addItem(profile.getName(), QVariant::fromValue(profile));
+        ui->acFanProfile->addItem(profile.getName(), QVariant::fromValue(profile));
+        ui->usbFanProfile->addItem(profile.getName(), QVariant::fromValue(profile));
     }
 
-    for (ArmouryCratePlan &plan : ArmouryCratePlan::plans()) {
+    for (const ArmouryCratePlan &plan : ArmouryCratePlan::Plans) {
         ui->dcPlan->addItem(plan.getName(), plan.getId());
         ui->acPlan->addItem(plan.getName(), plan.getId());
         ui->usbPlan->addItem(plan.getName(), plan.getId());
     }
 }
 
-PowerPlan PowerPlansTab::createPowerPlan(PowerSourceType powerSourceType) {
+HwProfile PowerPlansTab::createPowerPlan(PowerSourceType powerSourceType) {
     QComboBox *arcPlan;
     QComboBox *fanProfile;
     QComboBox *powerProfile;
@@ -111,20 +111,20 @@ PowerPlan PowerPlansTab::createPowerPlan(PowerSourceType powerSourceType) {
     if (fanProfile->currentData() == 0) {
         fansProfile = FansProfile();
     } else {
-        fansProfile = FansProfile::fromQStringList(fanProfile->currentText(), fanProfile->currentData().value<QStringList>());
+        fansProfile = fanProfile->currentData().value<FansProfile>();
     }
 
     CpuProfile cpuProfile;
     if (powerProfile->currentData() == 0) {
         cpuProfile = CpuProfile();
     } else {
-        cpuProfile = CpuProfile::fromQStringList(powerProfile->currentText(), powerProfile->currentData().value<QStringList>());
+        cpuProfile = powerProfile->currentData().value<CpuProfile>();
     }
 
     return plan;
 }
 
-void PowerPlansTab::onSavePowerPlanSetClicked(bool checked) {
+void PowerPlansTab::onSavePowerPlanSetClicked(bool) {
     bool ok;
     QString text = QInputDialog::getText(this, tr("Save power plan"),
                                          tr("Power plan name:"), QLineEdit::Normal,
@@ -185,7 +185,7 @@ void PowerPlansTab::setSelected(bool selected) {
     }
 }
 
-void PowerPlansTab::powerPlanSetSelected(int index) {
+void PowerPlansTab::powerPlanSetSelected(int) {
     if (ui->powerPlan->currentData() != -1) {
         int noname = ui->powerPlan->findData(-1);
         if (noname != -1) {
@@ -199,7 +199,7 @@ void PowerPlansTab::powerPlanSetSelected(int index) {
     }
 }
 
-void PowerPlansTab::loadSettings(PowerSourceType powerSourceType, const PowerPlan &powerPlan) {
+void PowerPlansTab::loadSettings(PowerSourceType powerSourceType, const HwProfile &powerPlan) {
     QComboBox *arcPlan;
     QComboBox *fanProfile;
     QComboBox *powerProfile;
@@ -227,7 +227,7 @@ void PowerPlansTab::loadSettings(PowerSourceType powerSourceType, const PowerPla
         arcPlan->setCurrentIndex(index);
     }
 
-    if (powerPlan.getFansProfile().isEmpty()) {
+    if (powerPlan.getFansProfile().isDefault()) {
         fanProfile->setCurrentIndex(fanProfile->findData(0));
     } else {
         index = fanProfile->findData(powerPlan.getFansProfile().toQStringList());
@@ -236,7 +236,7 @@ void PowerPlansTab::loadSettings(PowerSourceType powerSourceType, const PowerPla
         }
     }
 
-    if (powerPlan.getPowerProfile().isEmpty()) {
+    if (powerPlan.getPowerProfile().isDefault()) {
         powerProfile->setCurrentIndex(fanProfile->findData(0));
     } else {
         index = powerProfile->findData(powerPlan.getPowerProfile().toQStringList());
@@ -246,13 +246,13 @@ void PowerPlansTab::loadSettings(PowerSourceType powerSourceType, const PowerPla
     }
 }
 
-void PowerPlansTab::deleteSelectedPlanSet(bool checked) {
+void PowerPlansTab::deleteSelectedPlanSet(bool) {
     auto selectedPowerPlanSet = ui->powerPlan->currentData().value<PowerPlanSet>();
     SETT.deletePowerPlanSet(selectedPowerPlanSet.getName());
     loadPowerPlans();
 }
 
-void PowerPlansTab::addPowerPlanToUsed(bool checked) {
+void PowerPlansTab::addPowerPlanToUsed(bool) {
     auto selectedItems = ui->unusedPowerPlans->selectedItems();
     for (QListWidgetItem *item : selectedItems) {
         int row = ui->unusedPowerPlans->row(item);
@@ -263,7 +263,7 @@ void PowerPlansTab::addPowerPlanToUsed(bool checked) {
     }
 }
 
-void PowerPlansTab::removePowerPlanFromUsed(bool checked) {
+void PowerPlansTab::removePowerPlanFromUsed(bool) {
     auto selectedItems = ui->usedPowerPlans->selectedItems();
     for (QListWidgetItem *item : selectedItems) {
         int row = ui->usedPowerPlans->row(item);
@@ -274,7 +274,7 @@ void PowerPlansTab::removePowerPlanFromUsed(bool checked) {
     }
 }
 
-void PowerPlansTab::onApplyAndSaveClicked(bool checked) {
+void PowerPlansTab::onApplyAndSaveClicked(bool) {
     if (ui->powerPlan->currentData() != -1) {
         int count = ui->usedPowerPlans->count();
         //if (count > 0) {

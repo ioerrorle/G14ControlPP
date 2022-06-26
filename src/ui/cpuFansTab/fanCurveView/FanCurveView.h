@@ -31,8 +31,9 @@ public:
 
     QPointF calcPosition(uchar temp, uchar speed) const;
 
-    void setFanCurve(uchar * values);
+    void setFanCurve(const uchar *temps, const uchar *speeds);
 
+    void getFanCurve(uchar *temps, uchar *speeds);
 protected:
     void resizeEvent(QResizeEvent *event) override;
 
@@ -42,8 +43,8 @@ protected:
 private:
     int minTemp = 20;
     int maxTemp = 105;
-    int speedStep = 10;
-    int tempStep = 5;
+    int maxSpeedStep = 10;
+    int maxTempStep = 5;
     int xAxisMargin = 2;
     int yAxisMargin = 2;
 
@@ -56,7 +57,8 @@ private:
     qreal pixelPerPercent;
     qreal pixelsPerDegree;
 
-    uchar values[];
+    uchar temps[8];
+    uchar speeds[8];
 
     void setNodesInPlace();
 

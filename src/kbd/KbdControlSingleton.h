@@ -7,7 +7,6 @@
 #include <initguid.h>
 #include <hidclass.h>
 #include <cfgmgr32.h>
-#include "KbdListenerThread.h"
 
 typedef WINBOOL (*HidD_SetFeature_Fn)(void*, void*, unsigned long);
 

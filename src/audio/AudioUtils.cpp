@@ -10,7 +10,7 @@ void AudioUtils::toggleMute(WINBOOL &mute, QString &error) {
     HRESULT hr = CoInitializeEx(NULL, COINIT_MULTITHREADED);
     if (FAILED(hr)) {
 
-        error = QString::asprintf("Unable to initialize COM: %x\n", hr);
+        error = QString::asprintf("Unable to initialize COM: %lx\n", hr);
         goto Exit;
     }
 
@@ -18,20 +18,20 @@ void AudioUtils::toggleMute(WINBOOL &mute, QString &error) {
     hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_INPROC_SERVER,
                           IID_PPV_ARGS(&deviceEnumerator));
     if (FAILED(hr)) {
-        error = QString::asprintf("Unable to instantiate device enumerator: %x\n", hr);
+        error = QString::asprintf("Unable to instantiate device enumerator: %lx\n", hr);
         goto Exit;
     }
 
     hr = deviceEnumerator->EnumAudioEndpoints(eCapture, DEVICE_STATE_ACTIVE,
                                               &deviceCollection);
     if (FAILED(hr)) {
-        error = QString::asprintf("Unable to retrieve device collection: %x\n", hr);
+        error = QString::asprintf("Unable to retrieve device collection: %lx\n", hr);
         goto Exit;
     }
 
     hr = deviceCollection->GetCount(&deviceCount);
     if (FAILED(hr)) {
-        error = QString::asprintf("Unable to get device collection length: %x\n", hr);
+        error = QString::asprintf("Unable to get device collection length: %lx\n", hr);
         goto Exit;
     }
 
@@ -40,7 +40,8 @@ void AudioUtils::toggleMute(WINBOOL &mute, QString &error) {
         hr = deviceCollection->Item(i, &device);
         devices[i] = device;
         if (FAILED(hr)) {
-            error = QString::asprintf("Unable to retrieve device %d: %x\n", i, hr);
+            endpointVolumes[i] = NULL;
+            error = QString::asprintf("Unable to retrieve device %d: %lx\n", i, hr);
             continue;
         }
 
@@ -50,12 +51,13 @@ void AudioUtils::toggleMute(WINBOOL &mute, QString &error) {
                               reinterpret_cast<void **>(&endpointVolume));
         endpointVolumes[i] = endpointVolume;
         if (FAILED(hr)) {
-            error = QString::asprintf("Unable to activate endpoint volume on output device: %x\n", hr);
+            endpointVolumes[i] = NULL;
+            error = QString::asprintf("Unable to activate endpoint volume on output device: %lx\n", hr);
             continue;
         }
     }
 
-    for (int j = 0; j < deviceCount; j++) {
+    for (UINT j = 0; j < deviceCount; j++) {
         IAudioEndpointVolume *endpointVolume = endpointVolumes[j];
         if (endpointVolume == NULL) {
             continue;
@@ -63,7 +65,7 @@ void AudioUtils::toggleMute(WINBOOL &mute, QString &error) {
 
         hr = endpointVolume->GetMute(&mute); //Try to mute endpoint here
         if (FAILED(hr)) {
-            error = QString::asprintf("Unable to set mute state on endpoint: %x\n", hr);
+            error = QString::asprintf("Unable to set mute state on endpoint: %lx\n", hr);
         } else {
             break;
         }
@@ -75,7 +77,7 @@ void AudioUtils::toggleMute(WINBOOL &mute, QString &error) {
         mute = TRUE;
     }
 
-    for (int j = 0; j < deviceCount; j++) {
+    for (UINT j = 0; j < deviceCount; j++) {
         IAudioEndpointVolume *endpointVolume = endpointVolumes[j];
         if (endpointVolume == NULL) {
             continue;
@@ -83,11 +85,11 @@ void AudioUtils::toggleMute(WINBOOL &mute, QString &error) {
 
         hr = endpointVolume->SetMute(mute, NULL); //Try to mute endpoint here
         if (FAILED(hr)) {
-            error = QString::asprintf("Unable to set mute state on endpoint: %x\n", hr);
+            error = QString::asprintf("Unable to set mute state on endpoint: %lx\n", hr);
         }
     }
     Exit:
-    for (int i = 0; i < deviceCount; i++) {
+    for (UINT i = 0; i < deviceCount; i++) {
         SafeRelease(&devices[i]);
         SafeRelease(&endpointVolumes[i]);
     }

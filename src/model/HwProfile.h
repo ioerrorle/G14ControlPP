@@ -5,10 +5,10 @@
 #include "FansProfile.h"
 #include "CpuProfile.h"
 
-class PowerPlan {
+class HwProfile {
 
 public:
-    PowerPlan(const ArmouryCratePlan &armouryCratePlan, const FansProfile &fansProfile, const CpuProfile &cpuProfile);
+    HwProfile(const ArmouryCratePlan &armouryCratePlan, const FansProfile &fansProfile, const CpuProfile &cpuProfile);
 
 private:
     ArmouryCratePlan armouryCratePlan;
@@ -20,6 +20,8 @@ public:
     const FansProfile &getFansProfile() const;
 
     const CpuProfile &getCpuProfile() const;
+
+    static const HwProfile Default;
 };
 
 

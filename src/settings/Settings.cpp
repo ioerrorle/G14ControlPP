@@ -80,7 +80,7 @@ bool Settings::getUseDefaultFanCurves() {
 }
 
 void Settings::setCurrentFanCurveProfile(FansProfile &profile) {
-    if (!profile.isEmpty()) {
+    if (!profile.getIsDefault()) {
         qSettings->setValue("current_fan_profile_name", profile.getName());
     } else {
         qSettings->remove("current_fan_profile_name");
@@ -139,7 +139,7 @@ QList<CpuProfile> Settings::getPowerProfiles() {
 }
 
 void Settings::setCurrentPowerProfile(CpuProfile &powerProfile) {
-    if (powerProfile.isEmpty()) {
+    if (powerProfile.getIsDefault()) {
         qSettings->setValue("current_power_profile_name", powerProfile.getName());
     } else {
         qSettings->remove("current_power_profile_name");

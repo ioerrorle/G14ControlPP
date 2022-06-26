@@ -2,54 +2,69 @@
 #define G14CONTROLPP_CPUPROFILE_H
 
 #include <QStringList>
+#include <QMetaType>
 
-typedef uchar Setpoint;
-static Setpoint SP_PERFORMANCE = 0;
-static Setpoint SP_POWER_SAVING = 1;
-static Setpoint SP_DEFAULT = 2;
+enum CpuMode
+{
+    SP_PERFORMANCE = 0,
+    SP_POWER_SAVING = 1,
+    SP_DEFAULT = 2
+};
+
+struct NamedCpuMode {
+    CpuMode setPoint;
+    QString name;
+};
+
+enum CpuProfileType {
+    CPU_PROFILE_DEFAULT = 0,
+    CPU_PROFILE_CURRENT = 1,
+    CPU_PROFILE_USER_DEFINED = 2
+};
 
 class CpuProfile {
 public:
-    static CpuProfile Default();
+    CpuProfile(const QString &name,
+               float stapmLimit,
+               float stapmTime,
+               float slowLimit,
+               float slowTime,
+               float fastLimit,
+               CpuMode mode);
+
+    CpuProfile(CpuProfileType type = CPU_PROFILE_DEFAULT);
+
+    const QString &name() const;
+    float stapmLimit() const;
+    float stapmTime() const;
+    float slowLimit() const;
+    float slowTime() const;
+    float fastLimit() const;
+    CpuMode mode() const;
+    CpuProfileType type() const;
+
+    static const CpuProfile Default;
+    static const CpuProfile Current;
+
+    static const QList<NamedCpuMode> CpuModes;
+
     static CpuProfile fromQStringList(const QString &name, const QStringList &list);
-
-public:
-    CpuProfile(const QString &name, float stapmLimit, float stapmTime, float slowLimit, float slowTime,
-               float fastLimit, Setpoint mode);
-
-    CpuProfile();
-
-    void setName(const QString &name);
-
-    CpuProfile(float stapmLimit, float stapmTime, float slowLimit, float slowTime, float fastLimit, Setpoint mode);
-
-    const QString &getName() const;
-
-    float getStapmLimit() const;
-
-    float getStapmTime() const;
-
-    float getSlowLimit() const;
-
-    float getSlowTime() const;
-
-    float getFastLimit() const;
-
-    Setpoint getMode() const;
-
     QStringList toQStringList() const;
 
-    bool isEmpty() const;
-
 private:
-    QString name;
-    float stapmLimit;
-    float stapmTime;
-    float slowLimit;
-    float slowTime;
-    float fastLimit;
-    Setpoint mode;
-    bool empty = false;
+    QString m_name;
+    float m_stapmLimit;
+    float m_stapmTime;
+    float m_slowLimit;
+    float m_slowTime;
+    float m_fastLimit;
+    CpuMode m_mode;
+    CpuProfileType m_type = CPU_PROFILE_DEFAULT;
+
+    static const QString DefaultName;
+    static const QString CurrentName;
 };
+
+Q_DECLARE_METATYPE(CpuProfile)
 
 #endif //G14CONTROLPP_CPUPROFILE_H

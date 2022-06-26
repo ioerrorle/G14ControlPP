@@ -1,4 +1,6 @@
 #include "MainWindow.h"
+#include "src/ui/base/BaseTab.h"
+
 #include "ui_MainWindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -8,17 +10,19 @@ MainWindow::MainWindow(QWidget *parent)
 
     setWindowIcon(this->style()->standardIcon(QStyle::SP_ComputerIcon));
 
-    this->powerPlansTab = new PowerPlansTab();
-    this->cpuTab = new CpuTab();
-    this->fansTab = new FansTab();
-    this->hotkeysTab = new HotkeysTab();
-    this->batteryTab = new BatteryTab();
+//    this->powerPlansTab = new PowerPlansTab();
+    this->cpuFansTab = new CpuFansTab(mServiceController, mSettingsStorage);
+//    this->cpuTab = new CpuTab();
+//    this->fansTab = new FansTab();
+//    this->hotkeysTab = new HotkeysTab();
+//    this->batteryTab = new BatteryTab();
 
-    ui->centralwidget->addTab(powerPlansTab, tr("Power plans"));
-    ui->centralwidget->addTab(cpuTab, tr("CPU"));
-    ui->centralwidget->addTab(fansTab, tr("Fans"));
-    ui->centralwidget->addTab(hotkeysTab, tr("Hotkeys"));
-    ui->centralwidget->addTab(batteryTab, tr("Battery"));
+    //ui->centralwidget->addTab(powerPlansTab, tr("Power plans"));
+    //ui->centralwidget->addTab(cpuTab, tr("CPU"));
+    //ui->centralwidget->addTab(fansTab, tr("Fans"));
+    ui->centralwidget->addTab(cpuFansTab, tr("CPU && Fans"));
+//    ui->centralwidget->addTab(hotkeysTab, tr("Hotkeys"));
+//    ui->centralwidget->addTab(batteryTab, tr("Battery"));
 
     connect(ui->centralwidget, &QTabWidget::currentChanged, this, &MainWindow::onIndexChanged);
 
@@ -32,8 +36,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     NotificationHelper::getInstance().init(trayIcon);
 
-    connect(viewWindow, SIGNAL(triggered()), this, SLOT(show()));
-    connect(quitAction, SIGNAL(triggered()), this, SLOT(closeTrayAction()));
+    connect(viewWindow, &QAction::triggered, this, &MainWindow::show);
+    connect(quitAction, &QAction::triggered, this, &MainWindow::closeTrayAction);
 
     menu->addAction(viewWindow);
     menu->addAction(quitAction);

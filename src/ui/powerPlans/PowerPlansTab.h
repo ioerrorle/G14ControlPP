@@ -5,10 +5,9 @@
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QTimer>
+#include "src/atkacpi/AcpiControlSingleton.h"
 #include "src/settings/Settings.h"
 #include "src/ui/base/BaseTab.h"
-#include "src/ryzenadj/RyzenAdjSingleton.h"
-#include "src/events/GlobalEventDispatcher.h"
 
 namespace Ui {
     class PowerPlansTab;
@@ -28,11 +27,9 @@ private:
 
     void loadProfiles();
 
-    void loadSettings(PowerSourceType powerSourceType, const PowerPlan &powerPlan);
-//
-//    void loadSettings();
+    void loadSettings(PowerSourceType powerSourceType, const HwProfile &powerPlan);
 
-    PowerPlan createPowerPlan(PowerSourceType powerSourceType);
+    HwProfile createPowerPlan(PowerSourceType powerSourceType);
 
     void selectSavedPowerPlan(QString &text);
 

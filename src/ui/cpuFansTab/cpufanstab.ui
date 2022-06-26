@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CpuFansTab</class>
+ <widget class="QWidget" name="CpuFansTab">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>788</width>
+    <height>534</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QGroupBox" name="arCrateGroupBox">
+     <property name="title">
+      <string>Armoury Crate plan</string>
+     </property>
+     <layout class="QGridLayout" name="arCrateGridLayout">
+      <item row="2" column="0">
+       <widget class="QComboBox" name="arCrateDropdown"/>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLabel" name="currentArCratePlan">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="textFormat">
+         <enum>Qt::AutoText</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="_curArCratePlanLb">
+        <property name="text">
+         <string>Current Armoury Crate plan:</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="_cpuGroupBox">
+     <property name="title">
+      <string>CPU</string>
+     </property>
+     <layout class="QGridLayout" name="cpuGridLayout">
+      <item row="5" column="0">
+       <widget class="QLabel" name="_slowLimitLb">
+        <property name="text">
+         <string>Slow limit, W:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="_stapmLimitLb">
+        <property name="text">
+         <string>STAPM Limit, W:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="0">
+       <widget class="QLabel" name="_modeLb">
+        <property name="text">
+         <string>Mode:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="_stapmTimeLb">
+        <property name="text">
+         <string>STAPM time, s:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1">
+       <widget class="QSpinBox" name="cpuSlowTimeInput"/>
+      </item>
+      <item row="6" column="2">
+       <widget class="QLabel" name="currentCpuSlowTime">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="2">
+       <widget class="QLabel" name="currentCpuFastLimit">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QSpinBox" name="cpuStapmTimeInput"/>
+      </item>
+      <item row="7" column="0">
+       <widget class="QLabel" name="_fastLimitLb">
+        <property name="text">
+         <string>Fast limit, W:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QSpinBox" name="cpuStapmLimitInput"/>
+      </item>
+      <item row="2" column="2">
+       <widget class="QLabel" name="currentCpuStapmLimit">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1">
+       <widget class="QSpinBox" name="cpuFastLimitInput"/>
+      </item>
+      <item row="8" column="2">
+       <widget class="QLabel" name="currentCpuMode">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="2">
+       <widget class="QLabel" name="currentCpuSlowLimit">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="2">
+       <widget class="QLabel" name="currentCpuStapmTime">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="_slowTimeLb">
+        <property name="text">
+         <string>Slow time, s:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QSpinBox" name="cpuSlowLimitInput"/>
+      </item>
+      <item row="8" column="1">
+       <widget class="QComboBox" name="cpuModeDropdown"/>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLabel" name="_currentCpuValsLb">
+        <property name="text">
+         <string>Current value:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0" colspan="3">
+       <layout class="QHBoxLayout" name="cpuProfileUI">
+        <item>
+         <widget class="QLabel" name="_cpuProfileLb">
+          <property name="text">
+           <string>CPU Profile:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="cpuProfileDropdown">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>150</width>
+            <height>0</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="cpuProfileSave">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="cpuProfileDelete">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="_hspcr">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="fansGroupBox">
+     <property name="title">
+      <string>Fans</string>
+     </property>
+     <layout class="QGridLayout" name="fansGridLayout">
+      <item row="0" column="0" colspan="2">
+       <layout class="QHBoxLayout" name="fansProfileUI">
+        <item>
+         <widget class="QLabel" name="_fansProfileLb">
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="text">
+           <string>Fans profile:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="fansProfileDropdown"/>
+        </item>
+        <item>
+         <widget class="QPushButton" name="fansProfileSave">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="fansProfileDelete">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="_hspcr_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <spacer name="_vspcr">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item alignment="Qt::AlignRight">
+    <widget class="QPushButton" name="applyButton">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Apply</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

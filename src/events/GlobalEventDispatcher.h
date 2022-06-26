@@ -29,7 +29,7 @@ private:
 private:
     GlobalEventDispatcher();
 
-    INPUT *pressedKey;
+
     AcpiListenerThread *acpiListenerThread;
 
     void handlePowerCfgChange(POWERBROADCAST_SETTING *settings);
@@ -51,7 +51,7 @@ public:
 
     //bool eventFilter(QObject *watched, QEvent *event) override;
 
-    bool nativeEventFilter(const QByteArray &eventType, void *message, long *) Q_DECL_OVERRIDE;
+    bool nativeEventFilter(const QByteArray &eventType, void *message, qintptr *) Q_DECL_OVERRIDE;
 
     void switchToNextPowerPlanSet();
 
