@@ -67,7 +67,7 @@ public:
                               uchar *cpuSpeeds,
                               uchar *gpuTemps,
                               uchar *gpuSpeeds);
-    void applyPowerPlanAndFansProfile(const uchar powerPlanId, const FanCurve &cpuFanCurve, const FanCurve &gpuFanCurve);
+    //void applyPowerPlanAndFansProfile(const uchar powerPlanId, const FanCurve &cpuFanCurve, const FanCurve &gpuFanCurve);
 
     uchar getCurrentArCratePlanId();
 

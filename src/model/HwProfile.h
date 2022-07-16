@@ -5,21 +5,17 @@
 #include "FansProfile.h"
 #include "CpuProfile.h"
 
-class HwProfile {
+struct HwProfile {
 
 public:
-    HwProfile(const ArCrate::Plan &armouryCratePlan, const FansProfile &fansProfile, const Ryzen::Profile &cpuProfile);
+    HwProfile(const ArCrate::Plan &arCratePlan, const Fans::Profile &fansProfile, const Ryzen::Profile &cpuProfile)
+        : arCratePlan(arCratePlan)
+        , fansProfile(fansProfile)
+        , cpuProfile(cpuProfile) { }
 
-private:
-    ArCrate::Plan armouryCratePlan;
-    FansProfile fansProfile;
+    ArCrate::Plan arCratePlan;
+    Fans::Profile fansProfile;
     Ryzen::Profile cpuProfile;
-public:
-    const ArCrate::Plan &getArmouryCratePlan() const;
-
-    const FansProfile &getFansProfile() const;
-
-    const Ryzen::Profile &getCpuProfile() const;
 
     static const HwProfile Default;
 };

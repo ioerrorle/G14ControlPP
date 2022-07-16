@@ -17,6 +17,7 @@ SOURCES += \
         src/controller/cpu/cpucontroller.cpp \
         src/main.cpp \
 #        src/ryzenadj/RyzenAdjSingleton.cpp \
+    src/model/collections.cpp \
         src/storage/settingsstorage.cpp \
         src/ui/MainWindow.cpp \
         src/ui/cpuFansTab/cpufanstab.cpp \
@@ -37,11 +38,7 @@ SOURCES += \
 #        src/ui/hotkeys/HotkeysProfile.cpp \
         src/ui/cpuFansTab/fanCurveView/FanCurveView.cpp \
         src/ui/cpuFansTab/fanCurveView/Node.cpp \
-        src/ui/cpuFansTab/fanCurveView/Edge.cpp \
-        src/model/HwProfile.cpp \
-        src/model/PowerProfile.cpp \
-        src/model/FanCurve.cpp \
-        src/model/FansProfile.cpp
+        src/ui/cpuFansTab/fanCurveView/Edge.cpp
 
 HEADERS += \
 #        src/controller/acpi/acpicontroller.h \

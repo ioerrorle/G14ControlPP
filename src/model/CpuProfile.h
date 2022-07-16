@@ -9,7 +9,7 @@ namespace Ryzen
 {
 struct Mode
 {
-    //Q_DECLARE_TR_FUNCTIONS("Ryzen");
+    Q_DECLARE_TR_FUNCTIONS(Ryzen::Mode);
 public:
     static const QList<Mode> Modes;
 
@@ -50,19 +50,9 @@ public:
     }
 };
 
-const QList<Mode> Mode::Modes = QList<Mode>({
-                                                Mode(Id::Performance),
-                                                Mode(Id::PowerSaving),
-                                                Mode(Id::Default)});
-
-const QStringList Mode::Names = QStringList({
-                                                ("Performance"),
-                                                ("Power saving"),
-                                                ("Default")});
-
 struct Profile
 {
-    //Q_DECLARE_TR_FUNCTIONS(Profile);
+    Q_DECLARE_TR_FUNCTIONS(Ryzen::Profile);
 public:
     enum class Type {
         Default = 0,
@@ -149,29 +139,7 @@ public:
                << QString::number(m_mode);
         return result;
     }
-
-    Profile& operator =(const QStringList &stringList) {
-        if (stringList.size() < 6 || stringList[0] == "default") {
-            this->m_type = Type::Default;
-            return *this;
-        }
-
-        stapmLimit = stringList[0].toFloat();
-        stapmTime = stringList[1].toFloat();
-        slowLimit = stringList[2].toFloat();
-        slowTime = stringList[3].toFloat();
-        fastLimit = stringList[4].toFloat();
-        m_mode = stringList[5].toInt();
-        m_type = Type::UserDefined;
-        return *this;
-    }
 };
-
-const QString Profile::DefaultName = ("<Default>");
-const QString Profile::CurrentName = ("<Current>");
-
-const Profile Profile::Default = Profile();
-const Profile Profile::Current = Profile(Type::Current);
 
 }
 

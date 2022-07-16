@@ -8,7 +8,7 @@ namespace ArCrate
 {
 
 struct Plan {
-    //Q_DECLARE_TR_FUNCTIONS(Plan);
+    Q_DECLARE_TR_FUNCTIONS(ArCrate::Plan);
 
 public:
     enum class Code {
@@ -38,16 +38,6 @@ public:
         return Names[static_cast<int>(id)];
     }*/
 };
-
-const QStringList Plan::Names = QStringList({
-    ("Windows/Performance"),
-    ("Turbo/Manual"),
-    ("Silent")});
-
-const QList<Plan> Plan::List = QList<Plan>({
-    Plan(Code::PerformanceWindows),
-    Plan(Code::TurboManual),
-    Plan(Code::Silent)});
 }
 
 

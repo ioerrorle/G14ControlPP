@@ -3,30 +3,31 @@
 
 #include "HwProfile.h"
 
-class PowerProfile {
-
+struct PowerProfile {
+    Q_DECLARE_TR_FUNCTIONS(PowerProfile);
 public:
-    PowerProfile(const QString &name, const HwProfile &dc, const HwProfile &usb, const HwProfile &ac);
-
-    PowerProfile();
-
-    const QString &getName() const;
-
-    const HwProfile &getDc() const;
-
-    const HwProfile &getUsb() const;
-
-    const HwProfile &getAc() const;
-
-    const HwProfile &getHwProfile(uchar powerSourceId) const;
-
-    static const PowerProfile Default;
-
-private:
     QString name;
     HwProfile dc;
     HwProfile usb;
     HwProfile ac;
+
+    PowerProfile(const QString &name, const HwProfile &dc, const HwProfile &usb, const HwProfile &ac)
+        : name(name)
+        , dc(dc)
+        , usb(usb)
+        , ac(ac) {}
+
+    PowerProfile()
+        : name(DefaultName)
+        , dc(HwProfile::Default)
+        , usb(HwProfile::Default)
+        , ac(HwProfile::Default) {
+
+    }
+    const HwProfile &getHwProfile(uchar powerSourceId) const;
+
+    static const PowerProfile Default;
+    static const QString DefaultName;
 };
 
 

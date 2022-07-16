@@ -15,9 +15,9 @@ void ServiceController::loadDefaultFanCurves(uchar *cpuTemps,
                                              uchar *gpuTemps,
                                              uchar *gpuSpeeds) {}
 
-void ServiceController::applyPowerPlanAndFansProfile(const uchar powerPlanId,
-                                                     const FanCurve &cpuFanCurve,
-                                                     const FanCurve &gpuFanCurve) {}
+//void ServiceController::applyPowerPlanAndFansProfile(const uchar powerPlanId,
+//                                                     const FanCurve &cpuFanCurve,
+//                                                     const FanCurve &gpuFanCurve) {}
 
 uchar ServiceController::getCurrentArCratePlanId() {
     return 0;

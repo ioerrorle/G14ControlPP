@@ -12,17 +12,17 @@ public:
     SettingsStorage();
 
     bool fansProfileExists(const QString &name) const;
-    void saveFansProfile(const FansProfile &fansProfile);
-    QList<FansProfile> getFansProfiles() const;
-    FansProfile getCurrentFansProfile(uchar currentPowerSourceId) const;
-    FansProfile getFansProfileByName(const QString &name) const;
+    void saveFansProfile(const Fans::Profile &fansProfile);
+    QList<Fans::Profile> getFansProfiles() const;
+    //Fans::Profile getCurrentFansProfile(uchar currentPowerSourceId) const;
+    //Fans::Profile getFansProfileByName(const QString &name) const;
     void deleteFansProfile(const QString &name);
 
     bool cpuProfileExists(const QString &name) const;
     void saveCpuProfile(const Ryzen::Profile &cpuProfile) const;
     QList<Ryzen::Profile> getCpuProfiles() const;
-    Ryzen::Profile getCurrentCpuProfile(uchar currentPowerSourceId) const;
-    Ryzen::Profile getCpuProfileByName(const QString &name) const;
+    //Ryzen::Profile getCurrentCpuProfile(uchar currentPowerSourceId) const;
+    //Ryzen::Profile getCpuProfileByName(const QString &name) const;
     void deleteCpuProfile(const QString &name) const;
 
     bool currentPowerProfileExists() const;

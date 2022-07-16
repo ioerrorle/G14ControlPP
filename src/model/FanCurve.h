@@ -3,28 +3,52 @@
 
 #include <QMetaType>
 
-class FanCurve {
+namespace Fans
+{
+
+struct Curve {
 
 public:
-    FanCurve(unsigned char *temp, unsigned char *speed);
-    FanCurve();
+    uchar temp[8];
+    uchar speed[8];
 
-    const unsigned char *getTemp() const;
+    Curve(unsigned char *temp, unsigned char *speed) {
+        memcpy(this->temp, temp, 8);
+        memcpy(this->speed, speed, 8);
+    };
 
-    const unsigned char *getSpeed() const;
+    Curve() {
+        memset(temp, 0, 8);
+        memset(speed, 0, 8);
+    }
 
-    static FanCurve fromAcpiData(unsigned char *data);
+    void toAcpiData(uchar *result) const {
+        memcpy(result, this->temp, 8);
+        memcpy(&result[8], this->speed, 8);
+    };
 
-    void toAcpiData(unsigned char *result);
+    Curve& operator =(const uchar *data) {
+        memcpy(temp, data, 8);
+        memcpy(speed, &data[8], 8);
+        return *this;
+    }
 
-    bool operator==(FanCurve const& rhs) const;
-
-private:
-    unsigned char temp[8];
-    unsigned char speed[8];
+    bool operator==(Curve const& rhs) const {
+        int result = memcmp(this->temp, rhs.temp, 8);
+        if (result != 0) {
+            return false;
+        }
+        result = memcmp(this->speed, rhs.speed, 8);
+        if (result != 0) {
+            return false;
+        }
+        return true;
+    }
 };
 
-Q_DECLARE_METATYPE(FanCurve)
+}
+
+Q_DECLARE_METATYPE(Fans::Curve)
 
 
 #endif //G14CONTROLPP_FANCURVE_H
