@@ -30,7 +30,6 @@ SOURCES += \
 #        src/ui/batteryTab/BatteryTab.cpp \
 #        src/ui/hotkeys/HotkeysTab.cpp \
 #        src/ui/powerPlans/PowerPlansTab.cpp \
-        src/model/CpuProfile.cpp \
 #        src/settings/PowerPlan.cpp \
 #        src/settings/PowerPlanSet.cpp \
         src/ui/notificationHelper/NotificationHelper.cpp \
@@ -42,7 +41,6 @@ SOURCES += \
         src/model/HwProfile.cpp \
         src/model/PowerProfile.cpp \
         src/model/FanCurve.cpp \
-        src/model/ArmouryCratePlan.cpp \
         src/model/FansProfile.cpp
 
 HEADERS += \

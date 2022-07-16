@@ -185,18 +185,18 @@ float CpuController::getDGpuTemp() {
     return getValueByOffset(0x54);
 }
 
-void CpuController::setCpuProfile(const CpuProfile &cpuProfile) {
-    setStapmLimit((uint32_t)(cpuProfile.stapmLimit() * 1000));
-    setStapmTime((uint32_t)cpuProfile.stapmTime());
-    setSlowLimit((uint32_t)(cpuProfile.slowLimit()*1000));
-    setSlowTime((uint32_t)cpuProfile.slowTime());
-    setFastLimit((uint32_t)(cpuProfile.fastLimit()*1000));
-    if (cpuProfile.mode() == SP_PERFORMANCE) {
-        setMaxPerformance();
-    }
-    if (cpuProfile.mode() ==SP_POWER_SAVING) {
-        setPowerSaving();
-    }
+void CpuController::setCpuProfile(const Ryzen::Profile &cpuProfile) {
+//    setStapmLimit((uint32_t)(cpuProfile.stapmLimit() * 1000));
+//    setStapmTime((uint32_t)cpuProfile.stapmTime());
+//    setSlowLimit((uint32_t)(cpuProfile.slowLimit()*1000));
+//    setSlowTime((uint32_t)cpuProfile.slowTime());
+//    setFastLimit((uint32_t)(cpuProfile.fastLimit()*1000));
+//    if (cpuProfile.mode() == SP_PERFORMANCE) {
+//        setMaxPerformance();
+//    }
+//    if (cpuProfile.mode() ==SP_POWER_SAVING) {
+//        setPowerSaving();
+//    }
 }
 
 

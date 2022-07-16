@@ -1,8 +1,7 @@
-#include "RyzenAdjTypes.h"
-
 #ifndef G14CONTROLPP_RYZENADJSINGLETON_H
 #define G14CONTROLPP_RYZENADJSINGLETON_H
 
+#include "RyzenAdjTypes.h"
 #include "src/model/CpuProfile.h"
 
 class CpuController {
@@ -159,7 +158,7 @@ public:
     float getApuTemp();
     float getDGpuTemp();
 
-    void setCpuProfile(const CpuProfile &cpuProfile);
+    void setCpuProfile(const Ryzen::Profile &cpuProfile);
 };
 
 

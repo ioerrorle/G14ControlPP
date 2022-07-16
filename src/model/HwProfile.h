@@ -8,18 +8,18 @@
 class HwProfile {
 
 public:
-    HwProfile(const ArmouryCratePlan &armouryCratePlan, const FansProfile &fansProfile, const CpuProfile &cpuProfile);
+    HwProfile(const ArCrate::Plan &armouryCratePlan, const FansProfile &fansProfile, const Ryzen::Profile &cpuProfile);
 
 private:
-    ArmouryCratePlan armouryCratePlan;
+    ArCrate::Plan armouryCratePlan;
     FansProfile fansProfile;
-    CpuProfile cpuProfile;
+    Ryzen::Profile cpuProfile;
 public:
-    const ArmouryCratePlan &getArmouryCratePlan() const;
+    const ArCrate::Plan &getArmouryCratePlan() const;
 
     const FansProfile &getFansProfile() const;
 
-    const CpuProfile &getCpuProfile() const;
+    const Ryzen::Profile &getCpuProfile() const;
 
     static const HwProfile Default;
 };

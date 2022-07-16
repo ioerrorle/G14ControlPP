@@ -3,11 +3,11 @@
 
 ServiceController::ServiceController() {
     QString error;
-    bool result = mCpuController->init(error);
-    if (!result) {
-        qDebug() << "Init failed" << error;
-        mCpuController = nullptr;
-    }
+    //bool result = mCpuController->init(error);
+    //if (!result) {
+    //    qDebug() << "Init failed" << error;
+    //    mCpuController = nullptr;
+    //}
 }
 
 void ServiceController::loadDefaultFanCurves(uchar *cpuTemps,
@@ -42,24 +42,29 @@ float dgpuTempValue;
 
 float setPoint;*/
 
-CpuStatus ServiceController::getCpuStatus() const {
-    if (mCpuController == nullptr) {
-        return {0,0,0,0,0,0,0,0,0,0,0,0,0,0,95};
-    }
-    mCpuController->refreshTable();
-    return {mCpuController->getStapmLimit(),
-                mCpuController->getStapmValue(),
-                mCpuController->getStapmTime(),
-                mCpuController->getFastLimit(),
-                mCpuController->getFastValue(),
-                mCpuController->getSlowLimit(),
-                mCpuController->getSlowValue(),
-                mCpuController->getSlowTime(),
-                mCpuController->getCoreTempLimit(),
-                mCpuController->getCoreTemp(),
-                mCpuController->getApuTempLimit(),
-                mCpuController->getApuTemp(),
-                mCpuController->getDGpuTempLimit(),
-                mCpuController->getDGpuTemp(),
-                mCpuController->getCclkSetpoint()};
+Ryzen::Status ServiceController::getCpuStatus() const {
+    //if (mCpuController == nullptr) {
+    return Ryzen::Status(0,0,0,0,0,2,0,0,0,0,0,0,0,0,0);
+    //}
+//    mCpuController->refreshTable();
+//    return {mCpuController->getStapmLimit(),
+//                mCpuController->getStapmValue(),
+//                mCpuController->getStapmTime(),
+//                mCpuController->getFastLimit(),
+//                mCpuController->getFastValue(),
+//                mCpuController->getSlowLimit(),
+//                mCpuController->getSlowValue(),
+//                mCpuController->getSlowTime(),
+//                mCpuController->getCoreTempLimit(),
+//                mCpuController->getCoreTemp(),
+//                mCpuController->getApuTempLimit(),
+//                mCpuController->getApuTemp(),
+//                mCpuController->getDGpuTempLimit(),
+//                mCpuController->getDGpuTemp(),
+        //                mCpuController->getCclkSetpoint()};
+}
+
+void ServiceController::applyCpuProfile(const Ryzen::Profile &cpuProfile)
+{
+
 }

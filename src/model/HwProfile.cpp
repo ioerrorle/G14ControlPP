@@ -1,12 +1,12 @@
 #include "HwProfile.h"
 
-HwProfile::HwProfile(const ArmouryCratePlan &armouryCratePlan, const FansProfile &fansProfile,
-                     const CpuProfile &cpuProfile) : armouryCratePlan(armouryCratePlan), fansProfile(fansProfile),
+HwProfile::HwProfile(const ArCrate::Plan &armouryCratePlan, const FansProfile &fansProfile,
+                     const Ryzen::Profile &cpuProfile) : armouryCratePlan(armouryCratePlan), fansProfile(fansProfile),
                                                      cpuProfile(cpuProfile) {
 
 }
 
-const ArmouryCratePlan &HwProfile::getArmouryCratePlan() const {
+const ArCrate::Plan &HwProfile::getArmouryCratePlan() const {
     return armouryCratePlan;
 }
 
@@ -14,8 +14,8 @@ const FansProfile &HwProfile::getFansProfile() const {
     return fansProfile;
 }
 
-const CpuProfile &HwProfile::getCpuProfile() const {
+const Ryzen::Profile &HwProfile::getCpuProfile() const {
     return cpuProfile;
 }
 
-const HwProfile HwProfile::Default = HwProfile(ArmouryCratePlan::Plans[0], FansProfile::Default, CpuProfile::Default);
+const HwProfile HwProfile::Default = HwProfile(ArCrate::Plan(), FansProfile::Default, Ryzen::Profile::Default);

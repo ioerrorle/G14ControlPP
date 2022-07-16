@@ -39,9 +39,9 @@ private:
 
     void setCpuSettingsEnabled(bool enabled);
     void setCpuSettingsFromCurrentValues();
-    void setCpuSettingsFromCpuProfile(const CpuProfile &profile);
+    void setCpuSettingsFromCpuProfile(const Ryzen::Profile &profile);
 
-    CpuProfile saveCurrentCpuProfile(const QString &name) const;
+    Ryzen::Profile saveCurrentCpuProfile(const QString &name) const;
 
 private slots:
     void onCpuProfileDropdownSelected(int index);

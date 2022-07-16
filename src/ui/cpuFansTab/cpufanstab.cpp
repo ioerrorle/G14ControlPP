@@ -58,24 +58,24 @@ void CpuFansTab::cleanCpuProfileChangesIfAny() {
 }
 
 void CpuFansTab::loadCpuModes() {
-    for (const NamedCpuMode &namedSetPoint : CpuProfile::CpuModes) {
-        ui->cpuModeDropdown->addItem(namedSetPoint.name, namedSetPoint.setPoint);
+    for (const Ryzen::Mode &cpuMode : Ryzen::Mode::Modes) {
+        ui->cpuModeDropdown->addItem(cpuMode.name(), (int)cpuMode);
     }
 }
 
 void CpuFansTab::loadArCratePlans() {
-    for (const ArmouryCratePlan &plan : ArmouryCratePlan::Plans) {
-        ui->arCrateDropdown->addItem(plan.getName(), plan.getId());
+    for (const ArCrate::Plan &plan : ArCrate::Plan::List) {
+        ui->arCrateDropdown->addItem(plan.name(), (int)plan);
     }
 }
 
 void CpuFansTab::loadCpuProfiles() {
     ui->cpuProfileDropdown->clear();
 
-    ui->cpuProfileDropdown->addItem(CpuProfile::Current.name(), CpuProfileType::CPU_PROFILE_CURRENT);
-    ui->cpuProfileDropdown->addItem(CpuProfile::Default.name(), CpuProfileType::CPU_PROFILE_DEFAULT);
+    ui->cpuProfileDropdown->addItem(Ryzen::Profile::Current.name(), (int)Ryzen::Profile::Current.type());
+    ui->cpuProfileDropdown->addItem(Ryzen::Profile::Default.name(), (int)Ryzen::Profile::Default.type());
     auto cpuProfiles = m_settingsStorage->getCpuProfiles();
-    for (const CpuProfile &cpuProfile : cpuProfiles) {
+    for (const Ryzen::Profile &cpuProfile : cpuProfiles) {
         ui->cpuProfileDropdown->addItem(cpuProfile.name(), QVariant::fromValue(cpuProfile));
     }
 }
@@ -99,28 +99,28 @@ void CpuFansTab::setCpuSettingsEnabled(bool enabled) {
 }
 
 void CpuFansTab::setCpuSettingsFromCurrentValues() {
-    CpuStatus currentCpuStatus = m_serviceController->getCpuStatus();
-    setCpuSettingsFromCpuProfile(currentCpuStatus.createCpuProfile());
+    Ryzen::Status currentCpuStatus = m_serviceController->getCpuStatus();
+    setCpuSettingsFromCpuProfile(currentCpuStatus);
 }
 
-void CpuFansTab::setCpuSettingsFromCpuProfile(const CpuProfile &profile) {
-    ui->cpuStapmLimitInput->setValue(profile.stapmLimit());
-    ui->cpuStapmTimeInput->setValue(profile.stapmTime());
-    ui->cpuSlowLimitInput->setValue(profile.slowLimit());
-    ui->cpuSlowTimeInput->setValue(profile.slowTime());
-    ui->cpuFastLimitInput->setValue(profile.fastLimit());
-    ui->cpuModeDropdown->setCurrentIndex(profile.mode());
+void CpuFansTab::setCpuSettingsFromCpuProfile(const Ryzen::Profile &profile) {
+    ui->cpuStapmLimitInput->setValue(profile.stapmLimit);
+    ui->cpuStapmTimeInput->setValue(profile.stapmTime);
+    ui->cpuSlowLimitInput->setValue(profile.slowLimit);
+    ui->cpuSlowTimeInput->setValue(profile.slowTime);
+    ui->cpuFastLimitInput->setValue(profile.fastLimit);
+    ui->cpuModeDropdown->setCurrentIndex((int)profile.mode());
 }
 
-CpuProfile CpuFansTab::saveCurrentCpuProfile(const QString &name) const
+Ryzen::Profile CpuFansTab::saveCurrentCpuProfile(const QString &name) const
 {
-    CpuProfile currentCpuProfile(name,
+    Ryzen::Profile currentCpuProfile(name,
                                  ui->cpuStapmLimitInput->value(),
                                  ui->cpuStapmTimeInput->value(),
                                  ui->cpuSlowLimitInput->value(),
                                  ui->cpuSlowTimeInput->value(),
                                  ui->cpuFastLimitInput->value(),
-                                 ui->cpuModeDropdown->currentData().value<CpuMode>());
+                                 ui->cpuModeDropdown->currentData().value<int>());
 
     m_settingsStorage->saveCpuProfile(currentCpuProfile);
     return currentCpuProfile;
@@ -136,10 +136,10 @@ void CpuFansTab::onCpuProfileDropdownSelected(int index) {
     if (currentData.canConvert<int>()) {
         ui->cpuProfileDelete->setEnabled(false);
         //means it's either "current" or "default"
-        if (currentData.value<int>() == CpuProfileType::CPU_PROFILE_DEFAULT) {
+        if (currentData.value<int>() == (int)Ryzen::Profile::Type::Default) {
             ui->cpuProfileSave->setEnabled(false);
             setCpuSettingsEnabled(false);
-        } else if (currentData.value<int>() == CpuProfileType::CPU_PROFILE_CURRENT) {
+        } else if (currentData.value<int>() == (int)Ryzen::Profile::Type::Current) {
             ui->cpuProfileSave->setEnabled(true);
             setCpuSettingsEnabled(true);
             setCpuSettingsFromCurrentValues();
@@ -148,7 +148,7 @@ void CpuFansTab::onCpuProfileDropdownSelected(int index) {
         //it's user defined, getting cpu profile from qvariant
         ui->cpuProfileDelete->setEnabled(true);
         ui->cpuProfileSave->setEnabled(true);
-        const CpuProfile &selectedCpuProfile = currentData.value<CpuProfile>();
+        const Ryzen::Profile &selectedCpuProfile = currentData.value<Ryzen::Profile>();
         setCpuSettingsEnabled(true);
         setCpuSettingsFromCpuProfile(selectedCpuProfile);
     }
@@ -206,8 +206,8 @@ void CpuFansTab::onSaveCpuProfileClicked(bool)
 void CpuFansTab::onDeleteCpuProfileClicked(bool)
 {
     int currentIndex = ui->cpuProfileDropdown->currentIndex();
-    CpuProfile currentProfile = ui->cpuProfileDropdown->currentData().value<CpuProfile>();
-    Q_ASSERT(currentProfile.type() == CPU_PROFILE_USER_DEFINED);
+    Ryzen::Profile currentProfile = ui->cpuProfileDropdown->currentData().value<Ryzen::Profile>();
+    Q_ASSERT(currentProfile.type() == Ryzen::Profile::Type::UserDefined);
     bool confirmDelete = QMessageBox::Yes == (QMessageBox::question(this,
                           tr("Confirm deleting CPU profile"),
                           tr("Do you want to delete profile %1%2?")
@@ -217,7 +217,7 @@ void CpuFansTab::onDeleteCpuProfileClicked(bool)
         return;
 
     m_settingsStorage->deleteCpuProfile(currentProfile.name());
-    int defaultProfileIndex = ui->cpuProfileDropdown->findData(CPU_PROFILE_DEFAULT);
+    int defaultProfileIndex = ui->cpuProfileDropdown->findData((int)Ryzen::Profile::Type::Default);
     ui->cpuProfileDropdown->setCurrentIndex(defaultProfileIndex);
     onCpuProfileDropdownSelected(defaultProfileIndex);
     ui->cpuProfileDropdown->removeItem(currentIndex);

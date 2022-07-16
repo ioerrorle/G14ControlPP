@@ -39,27 +39,27 @@ bool SettingsStorage::cpuProfileExists(const QString &name) const
     return result;
 }
 
-void SettingsStorage::saveCpuProfile(const CpuProfile &cpuProfile) const
+void SettingsStorage::saveCpuProfile(const Ryzen::Profile &cpuProfile) const
 {
     qSettings->beginGroup("CpuProfiles");
     qSettings->setValue(cpuProfile.name(), cpuProfile.toQStringList());
     qSettings->endGroup();
 }
 
-QList<CpuProfile> SettingsStorage::getCpuProfiles() const
+QList<Ryzen::Profile> SettingsStorage::getCpuProfiles() const
 {
     qSettings->beginGroup("CpuProfiles");
-    QList<CpuProfile> result;
+    QList<Ryzen::Profile> result;
     for (const QString &key : qSettings->allKeys()) {
-        result.append(CpuProfile::fromQStringList(key, qSettings->value(key).toStringList()));
+        result.append(Ryzen::Profile(key, qSettings->value(key).toStringList()));
     }
     qSettings->endGroup();
     return result;
 }
 
-CpuProfile SettingsStorage::getCpuProfileByName(const QString &name) const
+Ryzen::Profile SettingsStorage::getCpuProfileByName(const QString &name) const
 {
-    return CpuProfile::Default;
+    return Ryzen::Profile::Default;
 }
 
 void SettingsStorage::deleteCpuProfile(const QString &name) const

@@ -19,10 +19,10 @@ public:
     void deleteFansProfile(const QString &name);
 
     bool cpuProfileExists(const QString &name) const;
-    void saveCpuProfile(const CpuProfile &cpuProfile) const;
-    QList<CpuProfile> getCpuProfiles() const;
-    CpuProfile getCurrentCpuProfile(uchar currentPowerSourceId) const;
-    CpuProfile getCpuProfileByName(const QString &name) const;
+    void saveCpuProfile(const Ryzen::Profile &cpuProfile) const;
+    QList<Ryzen::Profile> getCpuProfiles() const;
+    Ryzen::Profile getCurrentCpuProfile(uchar currentPowerSourceId) const;
+    Ryzen::Profile getCpuProfileByName(const QString &name) const;
     void deleteCpuProfile(const QString &name) const;
 
     bool currentPowerProfileExists() const;
