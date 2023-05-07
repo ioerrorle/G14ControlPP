@@ -1,7 +1,7 @@
 #include "rpcservercontroller.h"
 
 #include <QCoreApplication>
-#include <QDebug>
+//#include <QDebug>
 
 int main(int argc, char *argv[])
 {
@@ -13,6 +13,8 @@ int main(int argc, char *argv[])
     RpcServerController ctrl;
     QString error;
     ctrl.init(error);
+
+
 
     return a.exec();
 }

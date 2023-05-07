@@ -3,8 +3,10 @@
 
 #include <QObject>
 #include <QTimer>
-#include "ryzenadj.h"
 #include "CpuProfile/cpuprofile.h"
+
+#include <ryzenadj.h>
+
 
 class RyzenController : public QObject
 {

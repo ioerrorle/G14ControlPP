@@ -1,2 +1,6 @@
 build-*
 *.pro.user
+*.mc
+*.rc
+*.res
+*.bin

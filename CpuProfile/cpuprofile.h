@@ -14,15 +14,21 @@ enum class CpuMode
     //first_ = 0
 };
 
+struct A
+{
+    A();
+};
+
 struct CpuProfile
 {
-    CpuProfile();
+    CpuProfile() = default;
     CpuProfile(float stapmLimit,
                float stapmTime,
                float slowLimit,
                float slowTime,
                float fastLimit,
                CpuMode mode);
+    void foo();
 
     float stapmLimit;
     float stapmTime;
@@ -32,10 +38,12 @@ struct CpuProfile
     CpuMode mode;
 };
 
-Q_DECLARE_METATYPE(CpuProfile)
+//Q_DECLARE_METATYPE(CpuProfile)
 
 struct CpuState : public CpuProfile
 {
+    CpuState();
+
     float coreTempLimit;
     float coreTemp;
     float apuTempLimit;
@@ -44,6 +52,6 @@ struct CpuState : public CpuProfile
     float dGpuTemp;
 };
 
-Q_DECLARE_METATYPE(CpuState)
+//Q_DECLARE_METATYPE(CpuState)
 
 #endif // CPUPROFILE_H

@@ -2,8 +2,8 @@
 
 namespace Json {
     template<>
-    CpuMode asAny<CpuMode>(const Value& value) {
-        return CpuMode(value.asInt());
+    CpuMode asAny<CpuMode>(const QJsonValue& value) {
+        return CpuMode(value.toInt());
     }
 }
 

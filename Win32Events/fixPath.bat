@@ -1,0 +1,1 @@
+PATH=%PATH%;d:\Software\VisualStudio\VC\Tools\MSVC\14.35.32215\bin\Hostx64\x64;"c:\Program Files (x86)\Windows Kits\10\bin\10.0.20348.0\x64"

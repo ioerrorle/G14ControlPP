@@ -1,7 +1,8 @@
 #ifndef JSONHELPER_H
 #define JSONHELPER_H
 
-#include <json/json.h>
+#include <QJsonObject>
+#include <QJsonValue>
 #include <utility>
 /* usage
  * struct Hair {
@@ -46,7 +47,8 @@
 #define JSONPROP(CLASS, MEMBER) property(&CLASS::MEMBER, #MEMBER)
 
 namespace Json {
-    template<typename T> T asAny(const Value&);
+    template<typename T>
+    T asAny(const QJsonValue&);
 }
 
 template<typename Class, typename T>
@@ -76,7 +78,7 @@ constexpr void for_sequence(std::integer_sequence<T, S...>, F&& f) {
 }
 
 template<typename T>
-T fromJson(const Json::Value& data) {
+T fromJson(const QJsonValue& data) {
     T object;
 
     // We first get the number of properties
@@ -104,7 +106,7 @@ T fromJson(const Json::Value& data) {
 }
 
 template<typename T>
-Json::Value toJson(const T& object) {
+QJsonValue toJson(const T& object) {
     constexpr auto propsCount = std::tuple_size<decltype(Props<T>::properties)>::value;
 
     if constexpr (std::is_enum_v<T>) {
@@ -113,7 +115,7 @@ Json::Value toJson(const T& object) {
     } else if constexpr (propsCount == 0) {
         return object;
     } else {
-        Json::Value data;
+        QJsonObject data;
 
         for_sequence(std::make_index_sequence<propsCount>{}, [&](auto i) {
             // get the property

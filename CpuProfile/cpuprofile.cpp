@@ -1,10 +1,5 @@
 #include "cpuprofile.h"
 
-CpuProfile::CpuProfile()
-{
-
-}
-
 CpuProfile::CpuProfile(float stapmLimit, float stapmTime, float slowLimit, float slowTime, float fastLimit, CpuMode mode)
     : stapmLimit(stapmLimit)
     , stapmTime(stapmTime)
@@ -12,6 +7,22 @@ CpuProfile::CpuProfile(float stapmLimit, float stapmTime, float slowLimit, float
     , slowTime(slowTime)
     , fastLimit(fastLimit)
     , mode(mode)
+{
+
+}
+
+void CpuProfile::foo()
+{
+
+}
+
+CpuState::CpuState()
+    : CpuProfile()
+{
+
+}
+
+A::A()
 {
 
 }

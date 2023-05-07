@@ -2,8 +2,8 @@
 #define SERVICECONTROLLER_H
 
 #include <QObject>
+#include <G14AcpiController/g14acpicontroller.h>
 #include "appState/appstate.h"
-#include "RyzenController/ryzencontroller.cpp"
 
 class ServiceController : public QObject
 {
@@ -12,11 +12,12 @@ public:
     explicit ServiceController(QObject *parent = nullptr);
     ~ServiceController();
 
+    bool init(QString &error);
+
 private:
     AppState *m_appState = nullptr;
 
-    RyzenController *m_RyzenController = nullptr;
-signals:
+    G14AcpiController *m_acpiController = nullptr;
 
 };
 

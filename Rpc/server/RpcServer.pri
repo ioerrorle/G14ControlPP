@@ -1,9 +1,7 @@
-!RPCSERVER_PRI
-{
+!RPCSERVER_PRI{
 CONFIG += RPCSERVER_PRI
 
 include($$PWD/../proto/RpcProtocol.pri)
-}
 
 HEADERS += \
     $$PWD/rpcserver.h \
@@ -12,3 +10,6 @@ HEADERS += \
 SOURCES += \
     $$PWD/rpcserver.cpp \
     $$PWD/rpcservercontroller.cpp
+
+}
+

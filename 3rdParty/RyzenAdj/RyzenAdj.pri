@@ -1,5 +1,4 @@
-!RYZENADJ_PRI
-{
+!RYZENADJ_PRI{
     CONFIG += RYZENADJ_PRI
 
     win32 {

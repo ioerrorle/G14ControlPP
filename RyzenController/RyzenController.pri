@@ -1,5 +1,4 @@
-!RYZENCONTROLLER_PRI
-{
+!RYZENCONTROLLER_PRI{
     CONFIG += RYZENCONTROLLER_PRI
 
     include($$PWD/../CpuProfile/CpuProfile.pri)

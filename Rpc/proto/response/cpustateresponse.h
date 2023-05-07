@@ -1,7 +1,7 @@
 #ifndef G14RPC_CPUSTATERESPONSE_H
 #define G14RPC_CPUSTATERESPONSE_H
 
-#include <CpuProfile/cpuprofile.h>
+#include "CpuProfile/cpuprofile.h"
 
 #include "baseresponse.h"
 

@@ -1,8 +1,14 @@
 #include "g14acpicontroller.h"
-#include "G14Acpi/controlcodes.h"
+
+#include <G14Acpi/controlcodes.h>
 
 G14AcpiController::G14AcpiController(QObject *parent)
     : QObject{parent}
+{
+
+}
+
+G14AcpiController::~G14AcpiController()
 {
 
 }
@@ -19,6 +25,8 @@ bool G14AcpiController::init(QString &error)
     m_cpuController = new RyzenController(this);
     if (!m_cpuController->init(error))
         return false;
+
+    return true;
 }
 
 bool G14AcpiController::setArmouryCratePlan(const G14ArmouryCratePlan plan, QString &error)

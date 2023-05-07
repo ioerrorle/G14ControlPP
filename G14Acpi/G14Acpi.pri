@@ -1,5 +1,4 @@
-!G14ACPI_PRI
-{
+!G14ACPI_PRI{
 CONFIG += G14ACPI_PRI
 
 include($$PWD/../Win32Utils/Win32Utils.pri)

@@ -3,8 +3,10 @@
 
 #include <QTcpSocket>
 #include <QHostAddress>
+#include <QJsonDocument>
 
 #include <Rpc/proto/request/baserequest.h>
+#include <Rpc/proto/request/cpustaterequest.h>
 
 int main(int argc, char *argv[])
 {
@@ -36,11 +38,11 @@ int main(int argc, char *argv[])
         socket->flush();
 
         //end testing chunks
-        Json::FastWriter b;
-        auto request1 = g14rpc::BaseRequest();
+        auto request1 = g14rpc::CpuStateRequest();
         auto jsonRequest1 = toJson(request1);
-        auto strRequest1 = b.write(jsonRequest1);
-        qDebug() << QString::fromStdString(strRequest1);
+        auto doc = QJsonDocument(jsonRequest1.toObject());
+        auto strRequest1 = doc.toJson();
+        qDebug() << QString::fromUtf8(strRequest1);
         socket->write(strRequest1.data(), strRequest1.length() + 1);
         socket->flush();
 

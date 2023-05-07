@@ -1,18 +1,19 @@
 #include "jsonhelper.h"
 
-namespace Json {
+namespace Json
+{
     template<>
-    int asAny<int>(const Value& value) {
-        return value.asInt();
+    int asAny<int>(const QJsonValue& value) {
+        return value.toInt();
     }
 
     template<>
-    float asAny<float>(const Value& value) {
-        return value.asFloat();
+    float asAny<float>(const QJsonValue& value) {
+        return value.toDouble();
     }
 
     template<>
-    std::string asAny<std::string>(const Value& value) {
-        return value.asString();
+    QString asAny<QString>(const QJsonValue& value) {
+        return value.toString();
     }
 }

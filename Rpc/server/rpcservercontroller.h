@@ -12,6 +12,7 @@ class RpcServerController : public QObject
     Q_OBJECT
 public:
     explicit RpcServerController(QObject *parent = nullptr);
+    ~RpcServerController();
     bool init(QString &error);
 
 private:
@@ -19,6 +20,7 @@ private:
 
     QByteArray m_buffer;
     QTcpSocket *m_tcpSocket = nullptr;
+
     qintptr m_socketDescriptor;
     void processBuffer();
 

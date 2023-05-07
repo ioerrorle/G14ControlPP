@@ -2,8 +2,15 @@
 
 #include <Rpc/proto/request/baserequest.h>
 
+#include <QJsonDocument>
+
 RpcServerController::RpcServerController(QObject *parent)
     : QObject{parent}
+{
+
+}
+
+RpcServerController::~RpcServerController()
 {
 
 }
@@ -17,37 +24,29 @@ bool RpcServerController::init(QString &error)
     if (!isListening)
         qDebug() << "error" << m_tcpServer->errorString();
     qDebug() << isListening;
+    return true;
 }
 
 void RpcServerController::processBuffer()
 {
     //trying to parse it as json
-    Json::CharReaderBuilder r;
-    auto * reader = r.newCharReader();
-    try {
-        Json::Value val;
-        Json::String errs;
-        const char *start = m_buffer.constData();
-        const char *end = &m_buffer.constData()[m_buffer.size() - 1];
-        bool ok = reader->parse(start, end, &val, &errs);
-        if (ok) {
-            g14rpc::BaseRequest baseRequest = fromJson<g14rpc::BaseRequest>(val);
-            qDebug() << "messageType" << (int)baseRequest.type;
+    QJsonParseError error;
+    QJsonDocument a = QJsonDocument::fromJson(m_buffer, &error);
+    if (error.error == QJsonParseError::NoError) {
+        if (!a.isObject()) {
+            qDebug() << "Doc is not an object";
         } else {
-            qDebug() << "couldn't parse message";
+            g14rpc::BaseRequest baseRequest = fromJson<g14rpc::BaseRequest>(a.object());
         }
-    } catch (Json::Exception e) {
-        qDebug() << "error parsing message" << e.what();
+    } else {
+        qDebug() << "couldn't parse message" << error.errorString();
     }
+
     m_buffer.clear();
-    delete reader;
 }
 
 void RpcServerController::onNewTcpConnection()
 {
-//    if (m_tcpSocket != nullptr) {
-//        m_tcpSocket->close();
-//    }
     m_buffer.clear();
     m_tcpSocket = m_tcpServer->nextPendingConnection();
     m_socketDescriptor = m_tcpSocket->socketDescriptor();
@@ -65,12 +64,12 @@ void RpcServerController::onSocketReadyRead()
     int nullIndex = -1;
     QByteArray socketData = socket->readAll();
     while ((nullIndex = socketData.indexOf((char)0x0)) != -1) {
-        QByteArray messageChunk = socketData.mid(0, nullIndex + 1);
+        QByteArray messageChunk = socketData.mid(0, nullIndex);
         socketData.remove(0, nullIndex + 1);
         if (messageChunk.size() == 0 || messageChunk.at(0) == 0)
             continue;
         m_buffer.append(messageChunk);
-        m_buffer.append((char)0x0);
+        //m_buffer.append((char)0x0);
         processBuffer();
     }
     m_buffer.append(socketData);

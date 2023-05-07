@@ -1,5 +1,4 @@
-!RPCPROTOCOL_PRI
-{
+!RPCPROTOCOL_PRI{
 CONFIG += RPCPROTOCOL_PRI
 
 include($$PWD/../../JsonHelper/JsonHelper.pri)
