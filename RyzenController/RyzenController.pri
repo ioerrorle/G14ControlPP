@@ -7,6 +7,11 @@
     HEADERS += \
         $$PWD/ryzencontroller.h
 
-    SOURCES += \
-        $$PWD/ryzencontroller.cpp
+    !DEVELOPING{
+        SOURCES += \
+            $$PWD/ryzencontroller.cpp
+    } else {
+        SOURCES += \
+            $$PWD/ryzencontroller_emu.cpp
+    }
 }

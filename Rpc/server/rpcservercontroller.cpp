@@ -1,4 +1,5 @@
 #include "rpcservercontroller.h"
+#include "socketworker.h"
 
 #include <Rpc/proto/request/baserequest.h>
 
@@ -21,56 +22,65 @@ bool RpcServerController::init(QString &error)
     connect(m_tcpServer, &QTcpServer::newConnection, this, &RpcServerController::onNewTcpConnection);
 
     bool isListening = m_tcpServer->listen(QHostAddress::LocalHost, 50022);
-    if (!isListening)
-        qDebug() << "error" << m_tcpServer->errorString();
-    qDebug() << isListening;
+    if (!isListening) {
+        error = m_tcpServer->errorString();
+        return false;
+    }
     return true;
 }
 
-void RpcServerController::processBuffer()
+QByteArray RpcServerController::processRequest(const g14rpc::MessageType type, const QByteArray &request)
 {
-    //trying to parse it as json
-    QJsonParseError error;
-    QJsonDocument a = QJsonDocument::fromJson(m_buffer, &error);
-    if (error.error == QJsonParseError::NoError) {
-        if (!a.isObject()) {
-            qDebug() << "Doc is not an object";
-        } else {
-            g14rpc::BaseRequest baseRequest = fromJson<g14rpc::BaseRequest>(a.object());
+    switch (type) {
+        case g14rpc::MessageType::APP_STATE:
+            return appStateResponse();
+            break;
+        default:
+            return baseErrorResponse(g14rpc::ErrorCode::NOT_IMPLEMENTED, "Command is not implemented");
+            break;
         }
-    } else {
-        qDebug() << "couldn't parse message" << error.errorString();
-    }
+}
 
-    m_buffer.clear();
+QByteArray RpcServerController::baseErrorResponse(g14rpc::ErrorCode code, QString message) {
+    g14rpc::BaseResponse response;
+    response.error.code = code;
+    response.error.message = message;
+
+    return toJson(response).toString().toUtf8();
+}
+
+QByteArray RpcServerController::appStateResponse()
+{
+    g14rpc::AppStateResponse response;
+    emit appStateRequested(&response);
+
+    return toJson(response).toString().toUtf8();
 }
 
 void RpcServerController::onNewTcpConnection()
 {
-    m_buffer.clear();
-    m_tcpSocket = m_tcpServer->nextPendingConnection();
-    m_socketDescriptor = m_tcpSocket->socketDescriptor();
-    connect(m_tcpSocket, &QTcpSocket::readyRead, this, &RpcServerController::onSocketReadyRead);
+    auto *tcpSocket = m_tcpServer->nextPendingConnection();
+    auto *socketWorker = new SocketWorker(tcpSocket);
+    QThread *thread = tcpSocket->thread();
+    socketWorker->moveToThread(thread);
+    connect(thread, &QThread::finished, socketWorker, &SocketWorker::deleteLater);
+    connect(socketWorker, &SocketWorker::newRequest, this, &RpcServerController::onNewSocketRequest, Qt::BlockingQueuedConnection);
 }
 
-void RpcServerController::onSocketReadyRead()
+QByteArray RpcServerController::onNewSocketRequest(const QByteArray request)
 {
-    QTcpSocket *socket = dynamic_cast<QTcpSocket*>(sender());
-    if (socket == nullptr)
-        return;
-    if (socket->socketDescriptor() != m_socketDescriptor)
-        return;
-
-    int nullIndex = -1;
-    QByteArray socketData = socket->readAll();
-    while ((nullIndex = socketData.indexOf((char)0x0)) != -1) {
-        QByteArray messageChunk = socketData.mid(0, nullIndex);
-        socketData.remove(0, nullIndex + 1);
-        if (messageChunk.size() == 0 || messageChunk.at(0) == 0)
-            continue;
-        m_buffer.append(messageChunk);
-        //m_buffer.append((char)0x0);
-        processBuffer();
+    QJsonParseError error;
+    QJsonDocument a = QJsonDocument::fromJson(request, &error);
+    if (error.error == QJsonParseError::NoError) {
+        if (!a.isObject()) {
+            qDebug() << "Doc is not an object";
+            return baseErrorResponse(g14rpc::ErrorCode::NOT_IMPLEMENTED, "JSON is not an object");
+        } else {
+            g14rpc::BaseRequest baseRequest = fromJson<g14rpc::BaseRequest>(a.object());
+            return processRequest(baseRequest.type, request);
+        }
+    } else {
+        qDebug() << "couldn't parse message" << error.errorString();
+        return baseErrorResponse(g14rpc::ErrorCode::NOT_IMPLEMENTED, "Coldn't parse message: " + error.errorString());
     }
-    m_buffer.append(socketData);
 }

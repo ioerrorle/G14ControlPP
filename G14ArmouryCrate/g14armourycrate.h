@@ -3,7 +3,7 @@
 
 #include <QMetaType>
 
-enum class G14ArmouryCratePlan : uint64_t
+enum class G14ArmouryCratePlan
 {
     WindowsPerfomance = 0,
     TurboManual = 1,

@@ -5,6 +5,7 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 
+#include "Rpc/proto/response/appstateresponse.h"
 #include "rpcserver.h"
 
 class RpcServerController : public QObject
@@ -18,17 +19,21 @@ public:
 private:
     RpcServer *m_tcpServer = nullptr;
 
-    QByteArray m_buffer;
-    QTcpSocket *m_tcpSocket = nullptr;
+    QByteArray processRequest(const g14rpc::MessageType type, const QByteArray &request);
 
-    qintptr m_socketDescriptor;
-    void processBuffer();
+    QByteArray baseErrorResponse(g14rpc::ErrorCode, QString message);
+    QByteArray appStateResponse();
 
 private slots:
     void onNewTcpConnection();
-    void onSocketReadyRead();
+
+    QByteArray onNewSocketRequest(const QByteArray request);
 
 signals:
+    void socketWriteRequested(const QByteArray data);
+
+    void appStateRequested(g14rpc::AppStateResponse *response);
+
 
 };
 

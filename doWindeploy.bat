@@ -1,2 +1,2 @@
 set PATH=%PATH%;d:\Software\Qt\5.15.2\mingw81_64\bin;d:\Software\Qt\Tools\mingw810_64\bin
-windeployqt --dir deploy d:\Cpp_Dev\G14ControlPP_modules\build-G14ControlService-Desktop_Qt_5_15_2_MinGW_64_bit-Release\release\G14ControlService.exe
+windeployqt --dir deploy d:\Cpp_Dev\G14ControlPP_modules\build-G14ControlService-Desktop_Qt_5_15_2_MinGW_64_bit-Release\release\G14ControlService.exe 

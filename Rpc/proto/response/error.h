@@ -11,6 +11,8 @@ enum class ErrorCode
 {
     OK = 0,
     SEND_FAILED = 1,
+    NOT_IMPLEMENTED = 100,
+    INVALID_REQUEST = 101
 };
 
 struct RpcError

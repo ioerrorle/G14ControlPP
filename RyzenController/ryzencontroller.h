@@ -7,7 +7,6 @@
 
 #include <ryzenadj.h>
 
-
 class RyzenController : public QObject
 {
     Q_OBJECT
@@ -18,7 +17,7 @@ public:
     void startWatching();
     void stopWatching();
 
-    bool getCpuState(CpuState &cpuState, QString &error);
+    bool getCpuState(CpuState &cpuState, QString &error, const bool refresh = true);
     bool setCpuProfile(const CpuProfile &cpuProfile, QString &error);
 
 signals:
@@ -33,6 +32,7 @@ private:
 
     ryzen_access m_ryzenAccess;
     bool m_init = false;
+    CpuState m_cpuState;
 
     QTimer *m_timer = nullptr;
 

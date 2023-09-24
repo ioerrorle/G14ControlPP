@@ -1,38 +1,30 @@
 #ifndef RPCCLIENT_H
 #define RPCCLIENT_H
 
-#include <QMutex>
-#include <QObject>
-#include <QTcpSocket>
-#include <QThread>
+#include "Rpc/proto/response/appstateresponse.h"
+#include "tcpclient.h"
 
-#include <Rpc/proto/response/error.h>
+#include <QObject>
 
 class RpcClient : public QObject
 {
     Q_OBJECT
 public:
-    explicit RpcClient(QObject *parent = nullptr);
-    bool connectToHost(const QHostAddress &address, quint16 port, QString error);
-    void sendCommand(const QByteArray &request);
+    RpcClient(QObject *parent = nullptr);
+
+    void requestAppState();
 
 private:
-    QTcpSocket *m_socket = nullptr;
-    QThread *m_thread = nullptr;
+    TcpClient *m_tcpClient = nullptr;
 
-    QByteArray m_buffer;
-
-    void processBuffer();
+    void processResponse(const g14rpc::MessageType type, const QJsonObject &response);
 
 private slots:
-    void onSocketBytesWritten(qint64 bytes);
-    void onSocketStateChanged(QAbstractSocket::SocketState socketState);
-    void onSocketErrorOccured(QAbstractSocket::SocketError socketError);
-    void onSocketReadyRead();
+    void onCommandResponse(const QByteArray response);
+    void onCommandError(const g14rpc::RpcError &error);
 
 signals:
-    void commandErrorOccured(const g14rpc::RpcError &error);
-
+    void appStateResponse(const AppState response);
 };
 
 #endif // RPCCLIENT_H

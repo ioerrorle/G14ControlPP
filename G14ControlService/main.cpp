@@ -15,6 +15,9 @@ public:
     G14ControlPpService(int argc, char **argv)
     : QtService<QCoreApplication>(argc, argv, "G14ControlPP service")
     {
+        qRegisterMetaType<QAbstractSocket::SocketState>("QAbstractSocket::SocketState");
+        qRegisterMetaType<QAbstractSocket::SocketError>("QAbstractSocket::SocketError");
+
         setServiceDescription("Controls power profiles of G14 laptop");
         setServiceFlags(QtServiceBase::CanBeSuspended);
     }
@@ -23,6 +26,7 @@ protected:
     void start()
     {
         QCoreApplication *app = application();
+
         QString error;
         Win32EventController* eventController = new Win32EventController();
         if (!eventController->init(error)) {
@@ -51,29 +55,18 @@ protected:
             qDebug() << "RPC controller started";
         }
 
-//        const QStringList arguments = QCoreApplication::arguments();
-//        quint16 port = (arguments.size() > 1) ?
-//                arguments.at(1).toUShort() : 8080;
-//        daemon = new HttpDaemon(port, app);
-
-//        if (!daemon->isListening()) {
-//            logMessage(QString("Failed to bind to port %1").arg(daemon->serverPort()), QtServiceBase::Error);
-//            app->quit();
-//        }
+        QObject::connect(rpcController, &RpcServerController::appStateRequested, serviceController, &ServiceController::onAppStateRequested, Qt::DirectConnection);
     }
 
     void pause()
     {
-    //daemon->pause();
+
     }
 
     void resume()
     {
-    //daemon->resume();
-    }
 
-//private:
-    //HttpDaemon *daemon;
+    }
 };
 
 //#include "main.moc"

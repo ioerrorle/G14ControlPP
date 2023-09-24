@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ArmouryCrateWidget</class>
+ <widget class="QWidget" name="ArmouryCrateWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>584</width>
+    <height>64</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout" columnstretch="0,1,0">
+   <item row="0" column="0">
+    <widget class="QLabel" name="_lbCurrentPlan">
+     <property name="text">
+      <string>Current plan:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="_lbSelectedPlan">
+     <property name="text">
+      <string>Selected plan:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QComboBox" name="plansDropdown"/>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLabel" name="currentPlanLb">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="2">
+    <widget class="QToolButton" name="applyPlan">
+     <property name="text">
+      <string>Apply plan</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

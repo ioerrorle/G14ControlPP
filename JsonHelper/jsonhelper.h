@@ -1,6 +1,7 @@
 #ifndef JSONHELPER_H
 #define JSONHELPER_H
 
+#include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
 #include <utility>

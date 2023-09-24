@@ -3,9 +3,9 @@
 
 #include <QObject>
 
-#include <G14Acpi/g14acpi.h>
-#include <G14ArmouryCrate/g14armourycrate.h>
-#include <RyzenController/ryzencontroller.h>
+#include "G14Acpi/g14acpi.h"
+#include "G14ArmouryCrate/g14armourycrate.h"
+#include "RyzenController/ryzencontroller.h"
 
 class G14AcpiController : public QObject
 {

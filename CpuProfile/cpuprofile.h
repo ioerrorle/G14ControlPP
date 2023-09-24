@@ -36,6 +36,9 @@ struct CpuProfile
     float slowTime;
     float fastLimit;
     CpuMode mode;
+
+    bool operator==(const CpuProfile &other);
+    bool operator!=(const CpuProfile &other);
 };
 
 //Q_DECLARE_METATYPE(CpuProfile)
@@ -43,13 +46,18 @@ struct CpuProfile
 struct CpuState : public CpuProfile
 {
     CpuState();
+    CpuState(const CpuProfile &profile);
 
-    float coreTempLimit;
-    float coreTemp;
-    float apuTempLimit;
-    float apuTemp;
-    float dGpuTempLimit;
-    float dGpuTemp;
+    float coreTempLimit = 0;
+    float coreTemp = 0;
+    float apuTempLimit = 0;
+    float apuTemp = 0;
+    float dGpuTempLimit = 0;
+    float dGpuTemp = 0;
+
+    bool operator==(const CpuState &other);
+    bool operator!=(const CpuState &other);
+
 };
 
 //Q_DECLARE_METATYPE(CpuState)

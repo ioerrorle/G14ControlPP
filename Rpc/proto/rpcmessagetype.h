@@ -8,8 +8,7 @@ enum class MessageType
 {
     UNKNOWN,
     BASE,
-    GET_CPU_STATE,
-    SET_CPU_PROFILE
+    APP_STATE
 };
 
 }

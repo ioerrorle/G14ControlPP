@@ -11,21 +11,21 @@ RpcServer::RpcServer(QObject *parent)
 void RpcServer::incomingConnection(qintptr socketDescriptor)
 {
     //making thread for socket
-    qDebug() << "Creating socket and thread" << socketDescriptor;
+    //qDebug() << "Creating socket and thread" << socketDescriptor;
     QThread *thread = new QThread();
     QTcpSocket *socket = new QTcpSocket();
     socket->setSocketDescriptor(socketDescriptor);
     socket->moveToThread(thread);
 
     connect(socket, &QTcpSocket::disconnected, socket, &QTcpSocket::deleteLater);
-    connect(socket, &QTcpSocket::destroyed, this, [=]() {
-        qDebug() << "Socket destroyed" << socketDescriptor;
-    });
+    //connect(socket, &QTcpSocket::destroyed, this, [=]() {
+    //    qDebug() << "Socket destroyed" << socketDescriptor;
+    //});
     connect(socket, &QTcpSocket::disconnected, thread, &QThread::quit);
     connect(thread, &QThread::finished, thread, &QThread::deleteLater);
-    connect(thread, &QThread::destroyed, this, [=]() {
-        qDebug() << "Thread destroyed" << socketDescriptor;
-    });
+    //connect(thread, &QThread::destroyed, this, [=]() {
+    //    qDebug() << "Thread destroyed" << socketDescriptor;
+    //});
 
     connect(socket, &QTcpSocket::stateChanged, this, &RpcServer::onSocketStateChanged);
     connect(socket, &QTcpSocket::errorOccurred, this, &RpcServer::onSocketErrorOccured);

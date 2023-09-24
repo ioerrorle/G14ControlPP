@@ -47,32 +47,40 @@ void RyzenController::stopWatching()
     m_timer->stop();
 }
 
-bool RyzenController::getCpuState(CpuState &cpuState, QString &error)
+bool RyzenController::getCpuState(CpuState &cpuState, QString &error, const bool refresh)
 {
     if (!m_init) {
         error = tr("RyzenAdj is not initialized");
         return false;
     }
 
-    int err = refresh_table(m_ryzenAccess);
+    int err = 0;
+    if (refresh) {
+        err = refresh_table(m_ryzenAccess);
+    } else {
+        cpuState = m_cpuState;
+        return true;
+    }
 
     if (err) {
         error = tr("Unable to refresh power metric table: table: %1").arg(err);
         return false;
     }
 
-    cpuState.stapmLimit = get_stapm_limit(m_ryzenAccess);
-    cpuState.stapmTime = get_stapm_time(m_ryzenAccess);
-    cpuState.slowLimit = get_slow_limit(m_ryzenAccess);
-    cpuState.slowTime = get_slow_time(m_ryzenAccess);
-    cpuState.fastLimit = get_fast_limit(m_ryzenAccess);
-    cpuState.mode = get_cclk_setpoint(m_ryzenAccess) == 95.0 ? CpuMode::PowerSaving : CpuMode::Performance;
-    cpuState.coreTempLimit = getCoreTempLimit(m_ryzenAccess);
-    cpuState.coreTemp = getCoreTemp(m_ryzenAccess);
-    cpuState.apuTempLimit = getApuTempLimit(m_ryzenAccess);
-    cpuState.apuTemp = getApuTemp(m_ryzenAccess);
-    cpuState.dGpuTempLimit = getDGpuTempLimit(m_ryzenAccess);
-    cpuState.dGpuTemp = getDGpuTemp(m_ryzenAccess);
+    m_cpuState.stapmLimit = get_stapm_limit(m_ryzenAccess);
+    m_cpuState.stapmTime = get_stapm_time(m_ryzenAccess);
+    m_cpuState.slowLimit = get_slow_limit(m_ryzenAccess);
+    m_cpuState.slowTime = get_slow_time(m_ryzenAccess);
+    m_cpuState.fastLimit = get_fast_limit(m_ryzenAccess);
+    m_cpuState.mode = get_cclk_setpoint(m_ryzenAccess) == 95.0 ? CpuMode::PowerSaving : CpuMode::Performance;
+    m_cpuState.coreTempLimit = getCoreTempLimit(m_ryzenAccess);
+    m_cpuState.coreTemp = getCoreTemp(m_ryzenAccess);
+    m_cpuState.apuTempLimit = getApuTempLimit(m_ryzenAccess);
+    m_cpuState.apuTemp = getApuTemp(m_ryzenAccess);
+    m_cpuState.dGpuTempLimit = getDGpuTempLimit(m_ryzenAccess);
+    m_cpuState.dGpuTemp = getDGpuTemp(m_ryzenAccess);
+
+    cpuState = m_cpuState;
 
     return true;
 }
@@ -125,11 +133,19 @@ void RyzenController::onTimerTimeout()
 {
     CpuState cpuState;
     QString err;
-    if (!getCpuState(cpuState, err)) {
+    if (!getCpuState(cpuState, err, true)) {
         emit onCpuStateError(tr("Unable to get CPU state: %1").arg(err));
         return;
     }
-    emit onCpuStateChanged(cpuState);
+    if (cpuState != m_cpuState) {
+        m_cpuState = cpuState;
+        emit onCpuStateChanged(cpuState);
+    }
+}
+
+void RyzenController::fillCpuState()
+{
+
 }
 
 float RyzenController::getValueByOffset(ryzen_access ry, ushort offset) {

@@ -2,13 +2,14 @@
 
 ServiceController::ServiceController(QObject *parent)
     : QObject{parent}
+    , m_appState(new AppState)
 {
-
+    m_appState->arCratePlan = G14ArmouryCratePlan::WindowsPerfomance;
 }
 
 ServiceController::~ServiceController()
 {
-
+    delete m_appState;
 }
 
 bool ServiceController::init(QString &error)
@@ -19,4 +20,9 @@ bool ServiceController::init(QString &error)
     }
 
     return true;
+}
+
+void ServiceController::onAppStateRequested(g14rpc::AppStateResponse *appStateResponse)
+{
+    appStateResponse->appState = *m_appState;
 }

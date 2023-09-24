@@ -1,95 +1,56 @@
 #include "rpcclient.h"
+#include "Rpc/proto/request/appstaterequest.h"
+#include "Rpc/proto/response/baseresponse.h"
+
+#include <QHostAddress>
+#include <QJsonDocument>
 
 RpcClient::RpcClient(QObject *parent)
     : QObject{parent}
+    , m_tcpClient(new TcpClient(this))
 {
+    connect(m_tcpClient, &TcpClient::commandResponse, this, &RpcClient::onCommandResponse);
+    connect(m_tcpClient, &TcpClient::commandErrorOccured, this, &RpcClient::onCommandError);
 
+    QString error;
+    m_tcpClient->connectToHost(QHostAddress::LocalHost, 50022, error);
 }
 
-bool RpcClient::connectToHost(const QHostAddress &address, quint16 port, QString error)
+void RpcClient::requestAppState()
 {
-    m_thread = new QThread();
-    m_socket = new QTcpSocket();
-    m_socket->moveToThread(m_thread);
-
-    connect(m_socket, &QTcpSocket::disconnected, m_socket, &QTcpSocket::deleteLater);
-    connect(m_socket, &QTcpSocket::destroyed, this, [=]() {
-        qDebug() << "Socket destroyed";
-    });
-    connect(m_socket, &QTcpSocket::disconnected, m_thread, &QThread::quit);
-    connect(m_thread, &QThread::finished, m_thread, &QThread::deleteLater);
-    connect(m_thread, &QThread::destroyed, this, [=]() {
-        qDebug() << "Thread destroyed";
-    });
-
-    connect(m_socket, &QTcpSocket::stateChanged, this, &RpcClient::onSocketStateChanged);
-    connect(m_socket, &QTcpSocket::errorOccurred, this, &RpcClient::onSocketErrorOccured);
-
-    connect(m_socket, &QTcpSocket::bytesWritten, this, &RpcClient::onSocketBytesWritten);
-
-    connect(m_socket, &QTcpSocket::readyRead, this, &RpcClient::onSocketReadyRead);
-
-    m_thread->start();
-
-    m_socket->connectToHost(address, port);
+    g14rpc::AppStateRequest request;
+    m_tcpClient->sendCommand(request);
 }
 
-void RpcClient::sendCommand(const QByteArray &request)
+void RpcClient::processResponse(const g14rpc::MessageType type, const QJsonObject &response)
 {
-    qint64 bytesWritten = m_socket->write(request);
-    if (bytesWritten != request.size()) {
-        g14rpc::RpcError error;
-        error.code = g14rpc::ErrorCode::SEND_FAILED;
-        error.message = tr("Couldn't send message, message size = %1, bytes written = %2")
-                .arg(request.size())
-                .arg(bytesWritten);
-
-        emit commandErrorOccured(error);
+    switch (type) {
+        case g14rpc::MessageType::APP_STATE:
+        {
+            g14rpc::AppStateResponse resp = fromJson<g14rpc::AppStateResponse>(response);
+            emit appStateResponse(resp.appState);
+            break;
+        }
+        default:
+            break;
     }
 }
 
-void RpcClient::processBuffer()
+void RpcClient::onCommandResponse(const QByteArray response)
 {
-    qDebug() << QString::fromUtf8(m_buffer);
-    m_buffer.clear();
-}
-
-void RpcClient::onSocketBytesWritten(qint64 bytes)
-{
-
-}
-
-void RpcClient::onSocketStateChanged(QAbstractSocket::SocketState socketState)
-{
-    if (socketState == QAbstractSocket::UnconnectedState) {
-        //deleting socket
-        QTcpSocket *socket = dynamic_cast<QTcpSocket*>(sender());
-        if (socket == nullptr)
-            return;
-        emit socket->disconnected();
+    QJsonParseError jsonParseError;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(response, &jsonParseError);
+    if (jsonParseError.error == QJsonParseError::NoError) {
+        if (!jsonDoc.isObject()) {
+            qDebug() << "Doc is not an object";
+        } else {
+            g14rpc::BaseResponse baseResponse = fromJson<g14rpc::BaseResponse>(jsonDoc.object());
+            processResponse(baseResponse.type, jsonDoc.object());
+        }
     }
 }
 
-void RpcClient::onSocketErrorOccured(QAbstractSocket::SocketError socketError)
+void RpcClient::onCommandError(const g14rpc::RpcError &error)
 {
-    qDebug() << socketError;
-}
 
-void RpcClient::onSocketReadyRead()
-{
-    QTcpSocket *socket = dynamic_cast<QTcpSocket*>(sender());
-    if (socket == nullptr)
-        return;
-
-    int nullIndex = -1;
-    QByteArray socketData = socket->readAll();
-    while ((nullIndex = socketData.indexOf((char)0x0)) != -1) {
-        QByteArray messageChunk = socketData.mid(0, nullIndex);
-        socketData.remove(0, nullIndex + 1);
-        if (messageChunk.size() == 0)
-            continue;
-        m_buffer.append(messageChunk);
-        processBuffer();
-    }
-    m_buffer.append(socketData);
 }

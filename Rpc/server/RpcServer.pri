@@ -13,3 +13,9 @@ SOURCES += \
 
 }
 
+HEADERS += \
+    $$PWD/socketworker.h
+
+SOURCES += \
+    $$PWD/socketworker.cpp
+
