@@ -25,7 +25,7 @@ PowerProfileTab::~PowerProfileTab()
 
 void PowerProfileTab::setAppState(const AppState &state)
 {
-    m_arCrateWidget->setCurrentArCratePlan(state.currentPlan);
+    m_arCrateWidget->setCurrentArCratePlan(state.arCratePlan);
 }
 
 void PowerProfileTab::addLayoutToBox(QWidget *widget, const QString &name)

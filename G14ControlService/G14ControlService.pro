@@ -23,7 +23,9 @@ include($$PWD/../G14AcpiController/G14AcpiController.pri)
 include($$PWD/../Rpc/server/RpcServer.pri)
 
 HEADERS += \
-    $$PWD/controller/servicecontroller.h
+    $$PWD/controller/servicecontroller.h \
+    storage/settingsstorage.h
 
 SOURCES += \
-    $$PWD/controller/servicecontroller.cpp
+    $$PWD/controller/servicecontroller.cpp \
+    storage/settingsstorage.cpp

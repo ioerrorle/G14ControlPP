@@ -14,11 +14,6 @@ enum class CpuMode
     //first_ = 0
 };
 
-struct A
-{
-    A();
-};
-
 struct CpuProfile
 {
     CpuProfile() = default;
@@ -28,14 +23,15 @@ struct CpuProfile
                float slowTime,
                float fastLimit,
                CpuMode mode);
-    void foo();
 
+    QString name;
     float stapmLimit;
     float stapmTime;
     float slowLimit;
     float slowTime;
     float fastLimit;
     CpuMode mode;
+    bool isEmpty = true;
 
     bool operator==(const CpuProfile &other);
     bool operator!=(const CpuProfile &other);

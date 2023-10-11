@@ -19,12 +19,14 @@ int main(int argc, char **argv)
     QCoreApplication a(argc, argv);
     QCoreApplication *app = &a;
 
+    metatypes();
+
     QString error;
     Win32EventController* eventController = new Win32EventController();
     if (!eventController->init(error)) {
         qCritical() << error;
         app->quit();
-        return -1;
+        return 1;
     }
 
     LoggerSingleton::getInstance().addOutput(eventController, false);
@@ -33,7 +35,7 @@ int main(int argc, char **argv)
     if (!serviceController->init(error)) {
         qCritical() << error;
         app->quit();
-        return -1;
+        return 1;
     } else {
         qDebug() << "Service controller started";
     }
@@ -42,7 +44,7 @@ int main(int argc, char **argv)
     if (!rpcController->init(error)) {
         qCritical() << error;
         app->quit();
-        return -1;
+        return 1;
     } else {
         qDebug() << "RPC controller started";
     }

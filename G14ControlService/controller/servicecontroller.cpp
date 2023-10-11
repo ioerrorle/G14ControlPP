@@ -1,10 +1,13 @@
 #include "servicecontroller.h"
 
+
+
 ServiceController::ServiceController(QObject *parent)
     : QObject{parent}
     , m_appState(new AppState)
+    , m_settingsStorage(new SettingsStorage(this))
 {
-    m_appState->arCratePlan = G14ArmouryCratePlan::WindowsPerfomance;
+
 }
 
 ServiceController::~ServiceController()
@@ -25,4 +28,9 @@ bool ServiceController::init(QString &error)
 void ServiceController::onAppStateRequested(g14rpc::AppStateResponse *appStateResponse)
 {
     appStateResponse->appState = *m_appState;
+}
+
+void ServiceController::readSettings()
+{
+
 }

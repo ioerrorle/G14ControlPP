@@ -7,7 +7,8 @@ enum class G14ArmouryCratePlan
 {
     WindowsPerfomance = 0,
     TurboManual = 1,
-    Silent = 2
+    Silent = 2,
+    Unknown = -1
 };
 
 Q_DECLARE_METATYPE(G14ArmouryCratePlan)

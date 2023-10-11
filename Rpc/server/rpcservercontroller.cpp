@@ -36,7 +36,7 @@ QByteArray RpcServerController::processRequest(const g14rpc::MessageType type, c
             return appStateResponse();
             break;
         default:
-            return baseErrorResponse(g14rpc::ErrorCode::NOT_IMPLEMENTED, "Command is not implemented");
+            return baseErrorResponse(g14rpc::ErrorCode::NOT_IMPLEMENTED, tr("Command is not implemented"));
             break;
         }
 }
@@ -74,13 +74,13 @@ QByteArray RpcServerController::onNewSocketRequest(const QByteArray request)
     if (error.error == QJsonParseError::NoError) {
         if (!a.isObject()) {
             qDebug() << "Doc is not an object";
-            return baseErrorResponse(g14rpc::ErrorCode::NOT_IMPLEMENTED, "JSON is not an object");
+            return baseErrorResponse(g14rpc::ErrorCode::NOT_IMPLEMENTED, tr("JSON is not an object"));
         } else {
             g14rpc::BaseRequest baseRequest = fromJson<g14rpc::BaseRequest>(a.object());
             return processRequest(baseRequest.type, request);
         }
     } else {
         qDebug() << "couldn't parse message" << error.errorString();
-        return baseErrorResponse(g14rpc::ErrorCode::NOT_IMPLEMENTED, "Coldn't parse message: " + error.errorString());
+        return baseErrorResponse(g14rpc::ErrorCode::NOT_IMPLEMENTED, tr("Couldn't parse message: %1").arg(error.errorString()));
     }
 }

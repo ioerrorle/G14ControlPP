@@ -7,11 +7,7 @@ CpuProfile::CpuProfile(float stapmLimit, float stapmTime, float slowLimit, float
     , slowTime(slowTime)
     , fastLimit(fastLimit)
     , mode(mode)
-{
-
-}
-
-void CpuProfile::foo()
+    , isEmpty(false)
 {
 
 }
