@@ -27,10 +27,30 @@ bool AcpiControlSingleton::init(QString &error) {
     unsigned char outBuffer[8];
     DWORD bytesReturned;
 
+    unsigned char osvrData[12] = {0x4F, 0x53, 0x56, 0x52,
+                                  0x04, 0x00, 0x00, 0x00, /*prefix*/
+                                  0x00, 0x04, 0x00, 0x00 /* data */
+    };
+
+    WINBOOL result = DeviceIoControl(ATKACPIhandle,
+                                     0x22240C,
+                                     &osvrData[0],
+                                     12,
+                                     &outBuffer[0],
+                                     8,
+                                     &bytesReturned,
+                                     NULL);
+
+    if (!result) {
+        //todo return error string
+        auto errorCode = GetLastError();
+        return false;
+    }
+
     unsigned char initData[12] = "INIT\x04";
     memset(&initData[5], 0, 7);
 
-    WINBOOL result = DeviceIoControl(ATKACPIhandle,
+     result = DeviceIoControl(ATKACPIhandle,
                                      0x22240C,
                                      &initData[0],
                                      8,
@@ -45,10 +65,46 @@ bool AcpiControlSingleton::init(QString &error) {
         return false;
     }
 
-    //todo check outbuffer
+    unsigned char sfunData[12] = {0x53, 0x46, 0x55, 0x4E,
+                                  0x04, 0x00, 0x00, 0x00, /*prefix*/
+                                  0x00, 0x00, 0x00, 0x00 /* data */
+    };
 
+    result = DeviceIoControl(ATKACPIhandle,
+                             0x22240C,
+                             &sfunData[0],
+                             8,
+                             &outBuffer[0],
+                             8,
+                             &bytesReturned,
+                             NULL);
 
-    //creating listener thread
+    if (!result) {
+        //todo return error string
+        auto errorCode = GetLastError();
+        return false;
+    }
+
+    unsigned char devsData[16] = {0x44, 0x45, 0x56, 0x53,
+                               0x08, 0x00, 0x00, 0x00, /*prefix*/
+                               0x11, 0x00, 0x05, 0x00,
+                               0x02, 0x00, 0x00, 0x00 /* data */
+    };
+
+    result = DeviceIoControl(ATKACPIhandle,
+                                     0x22240C,
+                                     &devsData[0],
+                                     16,
+                                     &outBuffer[0],
+                                     8,
+                                     &bytesReturned,
+                                     NULL);
+
+    if (!result) {
+        //todo return error string
+        auto errorCode = GetLastError();
+        return false;
+    }
 
 
     return true;

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 
 project(G14ControlPP LANGUAGES CXX)
-set(CMAKE_PREFIX_PATH d:\\Cpp_Dev\\Qt\\5.15.2\\mingw81_64\\)
+set(CMAKE_PREFIX_PATH D:\\share\\msys64\\mingw64)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
